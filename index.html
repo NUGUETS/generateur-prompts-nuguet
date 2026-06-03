@@ -1,0 +1,2216 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Générateur de Prompts Pédagogiques — O. NUGUET</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--cr:#F4F2ED;--white:#FFFFFF;--ink:#1C1C1A;--ink-m:#4A4A44;--ink-mu:#7A7A72;--ru:#D8D5CC;--ru-l:#EAE7E0;--gn:#0F6E56;--gn-m:#085041;--gn-l:#E1F5EE;--bl-l:#EFF6FF;--r:5px}
+body{font-family:'DM Sans',system-ui,sans-serif;font-size:14px;color:var(--ink);background:var(--cr);min-height:100vh}
+.app-header{background:var(--white);border-bottom:1px solid var(--ru);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;gap:12px}
+.app-header h1{font-family:'Playfair Display',Georgia,serif;font-size:20px;font-weight:700;color:var(--ink)}
+.app-header h1 em{font-style:italic;color:var(--gn)}
+.app-header p{font-size:11px;color:var(--ink-mu);margin-top:2px}
+.main{max-width:880px;margin:0 auto;padding:24px 20px 60px}
+.section{background:var(--white);border:1px solid var(--ru);border-radius:var(--r);padding:20px 22px;margin-bottom:12px}
+.section-prob{background:var(--white);border:1.5px solid var(--gn);border-radius:var(--r);padding:20px 22px;margin-bottom:12px}
+.st{font-size:11px;font-weight:600;color:var(--ink-mu);text-transform:uppercase;letter-spacing:.1em;margin-bottom:16px;display:flex;align-items:center;gap:9px}
+.sn{width:22px;height:22px;border-radius:50%;background:var(--gn);color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sn.a{background:var(--gn-l);color:var(--gn);border:1.5px solid var(--gn)}
+.badge{display:inline-block;padding:1px 7px;background:var(--gn-l);color:var(--gn);border-radius:20px;font-size:10px;font-weight:500;margin-left:6px;vertical-align:middle;text-transform:none;letter-spacing:0}
+label.fl{display:block;font-size:12px;font-weight:500;color:var(--ink-m);margin-bottom:4px}
+select,input[type=text],input[type=number],textarea{width:100%;font-size:13px;font-family:'DM Sans',sans-serif;padding:8px 10px;border:1px solid var(--ru);border-radius:var(--r);background:var(--white);color:var(--ink);outline:none;transition:border .15s}
+select:focus,input:focus,textarea:focus{border-color:var(--gn)}
+textarea{resize:vertical;min-height:80px;line-height:1.5}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.f{margin-bottom:13px}
+.cbg{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.cbi{display:flex;align-items:flex-start;gap:7px;padding:8px 10px;border:1px solid var(--ru);border-radius:var(--r);cursor:pointer;transition:all .15s;background:var(--white)}
+.cbi:hover{border-color:var(--gn);background:var(--gn-l)}
+.cbi.on{border-color:var(--gn);background:var(--gn-l)}
+.cbi input{margin-top:2px;flex-shrink:0;accent-color:var(--gn)}
+.cbl{font-size:12px;line-height:1.4;color:var(--ink)}
+.sw-panel{margin-top:9px;padding:11px 12px;background:var(--cr);border:1px solid var(--ru-l);border-radius:var(--r)}
+.sw-panel .swt{font-size:11px;font-weight:600;color:var(--ink-m);margin-bottom:7px}
+.swl{max-height:175px;overflow-y:auto;display:flex;flex-direction:column;gap:3px}
+.svi{display:flex;align-items:flex-start;gap:6px;padding:4px 6px;border-radius:3px;cursor:pointer}
+.svi:hover{background:var(--white)}
+.svi input{margin-top:2px;accent-color:var(--gn);flex-shrink:0}
+.svi span{font-size:11px;color:var(--ink-m);line-height:1.4}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--r);font-size:13px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;border:1px solid var(--ru);background:var(--white);color:var(--ink);transition:all .15s}
+.btn:hover{background:var(--cr)}
+.btn.p{background:var(--gn);color:#fff;border-color:var(--gn)}
+.btn.p:hover{background:var(--gn-m)}
+.btn.p:disabled{background:#9FE1CB;border-color:#9FE1CB;cursor:not-allowed}
+.btn.t{background:var(--gn-l);color:var(--gn);border-color:var(--gn)}
+.btn.t:hover{background:#c5edde}
+.btn.sm{padding:6px 12px;font-size:12px}
+.br{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
+.tgw{display:flex;align-items:flex-start;gap:11px;padding:10px 0;border-bottom:1px solid var(--ru-l)}
+.tgw:last-child{border-bottom:none}
+.tg{width:38px;height:21px;border-radius:11px;background:var(--ru);position:relative;cursor:pointer;flex-shrink:0;transition:background .2s}
+.tg.on{background:var(--gn)}
+.tg::after{content:'';position:absolute;top:2px;left:2px;width:17px;height:17px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 2px rgba(0,0,0,.15)}
+.tg.on::after{transform:translateX(17px)}
+.ti .tl{font-size:13px;font-weight:500}
+.ti .td{font-size:11px;color:var(--ink-mu);margin-top:2px}
+.pdi{padding:10px 12px;border:1px solid var(--ru);border-radius:var(--r);cursor:pointer;font-size:12px;line-height:1.4;transition:all .15s;text-align:center}
+.pdi:hover{border-color:var(--gn);color:var(--gn)}
+.pdi.on{border-color:var(--gn);background:var(--gn);color:#fff}
+.pdi b{display:block;margin-bottom:2px}
+.pdi small{font-size:10px;opacity:.8}
+.pl{display:flex;flex-direction:column;gap:5px;margin-top:10px}
+.pc{padding:10px 13px;border:1px solid var(--ru);border-radius:var(--r);cursor:pointer;font-size:13px;line-height:1.5;transition:all .15s}
+.pc:hover,.pc.on{border-color:var(--gn);background:var(--gn-l);font-weight:500}
+.psel{background:var(--gn-l);border:1px solid var(--gn);border-radius:var(--r);padding:10px 13px;font-size:13px;color:var(--gn-m);font-style:italic;line-height:1.5;margin-top:10px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.psel .clr{font-style:normal;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;color:var(--gn)}
+.srch{position:relative;margin-bottom:11px}
+.srch input{padding-left:34px}
+.srch svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--ink-mu);pointer-events:none}
+.drop-zone{border:1.5px dashed var(--ru);border-radius:var(--r);padding:20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--cr)}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--gn);background:var(--gn-l)}
+.dz-icon{font-size:28px;margin-bottom:6px;color:var(--ink-mu)}
+.dz-text{font-size:13px;color:var(--ink-mu)}
+.dz-sub{font-size:11px;color:var(--ink-mu);margin-top:3px}
+.file-list{display:flex;flex-direction:column;gap:5px;margin-top:8px}
+.file-item{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;background:var(--cr);border:1px solid var(--ru);border-radius:var(--r)}
+.file-item .fn{font-size:12px;font-weight:500}
+.file-item .fs{font-size:11px;color:var(--ink-mu);margin-left:5px}
+.file-item .fr{cursor:pointer;color:var(--ink-mu);font-size:16px;line-height:1;padding:2px 5px;border-radius:3px}
+.file-item .fr:hover{color:#c0392b}
+.ld{display:flex;align-items:center;gap:8px;padding:9px 0;color:var(--ink-mu);font-size:13px}
+.sp{width:17px;height:17px;border:2px solid var(--ru);border-top-color:var(--gn);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hidden{display:none}
+.inf{font-size:11px;color:var(--ink-mu);margin-top:4px;font-style:italic}
+.pb{background:var(--cr);border:1px solid var(--ru);border-radius:var(--r);padding:14px;font-size:11px;line-height:1.65;white-space:pre-wrap;max-height:380px;overflow-y:auto;font-family:'Courier New',monospace;color:var(--ink-m)}
+.al{padding:10px 13px;border-radius:var(--r);font-size:12px;margin-bottom:11px;line-height:1.5}
+.al.i{background:var(--bl-l);color:#1e3a5f;border:1px solid #bfdbfe}
+.sc-result{background:var(--gn-l);border:1px solid var(--gn);border-radius:var(--r);padding:12px 14px;font-size:13px;line-height:1.7;margin-top:10px;white-space:pre-wrap;display:none}
+.claude-result{background:var(--cr);border:1px solid var(--ru);border-radius:var(--r);padding:14px;font-size:13px;line-height:1.7;max-height:500px;overflow-y:auto;margin-top:10px;white-space:pre-wrap;display:none}
+.footer{font-size:11px;color:var(--ink-mu);text-align:center;margin-top:30px;padding-top:14px;border-top:1px solid var(--ru);line-height:1.9}
+@media(max-width:580px){.g2,.g3{grid-template-columns:1fr}.cbg{grid-template-columns:1fr}.app-header{padding:12px 14px;flex-direction:column;align-items:flex-start}.main{padding:14px 10px 40px}}
+</style>
+</head>
+<body>
+
+<!-- Résultat Claude affiché directement dans le formulaire -->
+
+<header class="app-header">
+  <div>
+    <h1>Générateur de <em>prompts</em> pédagogiques</h1>
+    <p>CAP EPC · 2nde MRC · BAC PRO MCVA · BAC PRO MCVB · BAC PRO MA — Conception : Olivier NUGUET</p>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;flex-shrink:0">
+    <div id="api-status" style="font-size:11px;color:var(--ink-mu);display:flex;align-items:center;gap:6px">
+      <span id="status-dot" style="width:8px;height:8px;border-radius:50%;background:var(--ru);display:inline-block"></span>
+      <span id="status-label">Vérification...</span>
+    </div>
+    <button class="btn sm" onclick="resetAll()">↺ Réinitialiser</button>
+  </div>
+</header>
+
+<main class="main">
+
+<!-- S1 -->
+<div class="section">
+  <div class="st"><span class="sn">1</span> Contexte de formation</div>
+  <div class="g2">
+    <div class="f"><label class="fl">Référentiel</label>
+      <select id="sel-ref" onchange="onRefChange()">
+        <option value="">-- Choisir --</option>
+        <option value="cap-epc">CAP EPC</option>
+        <option value="2nde-mrc">2nde MRC</option>
+        <option value="bac-ma">BAC PRO MA</option>
+        <option value="bac-mcva">BAC PRO MCVA</option>
+        <option value="bac-mcvb">BAC PRO MCVB</option>
+      </select>
+    </div>
+    <div class="f"><label class="fl">Niveau</label>
+      <select id="sel-niveau" onchange="onNiveauChange()" disabled><option value="">-- Choisir --</option></select>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="f"><label class="fl">Nombre de séances</label><input type="number" id="nb-seances" value="1" min="1" max="10"></div>
+    <div class="f"><label class="fl">Effectif classe</label>
+      <select id="sel-effectif">
+        <option value="entiere">Classe entière (~24-30 élèves)</option>
+        <option value="demi-groupe" selected>Demi-groupe (~12-15 élèves)</option>
+      </select>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="f"><label class="fl">Niveau de difficulté</label>
+      <select id="sel-diff">
+        <option value="debutant">Débutant — notions nouvelles</option>
+        <option value="confirme">Intermédiaire — bases acquises</option>
+        <option value="expert">Avancé — mise en défi</option>
+      </select>
+    </div>
+    <div class="f"><label class="fl">Approche(s) pédagogique(s)</label>
+      <div class="cbg" id="pedas">
+        <label class="cbi"><input type="checkbox" value="Méthode active"> <span class="cbl">Méthode active</span></label>
+        <label class="cbi"><input type="checkbox" value="Méthode interrogative"> <span class="cbl">Méthode interrogative</span></label>
+        <label class="cbi"><input type="checkbox" value="Méthode transmissive"> <span class="cbl">Méthode transmissive</span></label>
+        <label class="cbi"><input type="checkbox" value="Méthode démonstrative"> <span class="cbl">Méthode démonstrative</span></label>
+        <label class="cbi"><input type="checkbox" value="Pédagogie de projet"> <span class="cbl">Pédagogie de projet</span></label>
+        <label class="cbi"><input type="checkbox" value="Classe inversée"> <span class="cbl">Classe inversée</span></label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S2 -->
+<div id="s2" class="section hidden">
+  <div class="st"><span class="sn">2</span> Compétences et savoirs</div>
+  <div class="srch">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="search-comp" placeholder="Rechercher par mot-clé..." oninput="filterComp()" style="padding-left:34px">
+  </div>
+  <div id="comp-list" class="cbg"></div>
+  <div id="savoirs-container"></div>
+</div>
+
+<!-- S PROB -->
+<div id="s-prob" class="section-prob hidden">
+  <div class="st"><span class="sn a">?</span> Générer une problématique <span class="badge">optionnel</span></div>
+  <p class="inf" style="margin-bottom:10px">Sélectionnez un niveau, cliquez sur "Générer", puis choisissez la problématique à intégrer au prompt.</p>
+  <div class="f"><label class="fl">Complexité</label>
+    <div class="g3">
+      <div class="pdi" id="diff-simple" onclick="selectDiff('simple')"><b>Simple</b><small>Directe, concrète</small></div>
+      <div class="pdi on" id="diff-intermediaire" onclick="selectDiff('intermediaire')"><b>Intermédiaire</b><small>Analytique</small></div>
+      <div class="pdi" id="diff-complexe" onclick="selectDiff('complexe')"><b>Complexe</b><small>Réflexion critique</small></div>
+    </div>
+  </div>
+  <button class="btn t" onclick="generateProblematics()">✦ Générer 3 problématiques</button>
+  <div id="prob-loader" class="ld hidden"><div class="sp"></div> Génération en cours...</div>
+  <div id="prob-list" class="pl"></div>
+  <div id="prob-sel-wrap" class="hidden"></div>
+</div>
+
+<!-- S3 -->
+<div class="section">
+  <div class="st"><span class="sn">3</span> Contexte entreprise</div>
+  <div class="g2">
+    <div class="f"><label class="fl">Nom de l'entreprise fil rouge</label><input type="text" id="company-name" placeholder="Ex : Décathlon Matoury, Kiabi Family Plaza..."></div>
+    <div class="f"><label class="fl">Type d'entreprise</label>
+      <select id="company-type">
+        <option value="">-- Choisir --</option>
+        <option value="local">Entreprise locale (indépendante, guyanaise)</option>
+        <option value="national-guyane">Entreprise nationale implantée en Guyane</option>
+        <option value="national-france">Entreprise nationale implantée en France métropolitaine</option>
+      </select>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="f"><label class="fl">Rayon / département <span class="badge">facultatif</span></label><input type="text" id="company-rayon" placeholder="Ex : Rayon sport collectif, Électroménager..."></div>
+    <div class="f"><label class="fl">Type(s) de produits vendus <span class="badge">facultatif</span></label><input type="text" id="company-produits" placeholder="Ex : Articles de sport, High-tech..."></div>
+  </div>
+  <div class="f">
+    <label class="fl">Mise en situation professionnelle</label>
+    <textarea id="pro-context" rows="4" placeholder="Décrivez le scénario professionnel qui place l'élève dans son rôle..."></textarea>
+    <p class="inf">Laissez vide pour le scénario par défaut, ou générez-en un ci-dessous.</p>
+  </div>
+  <button class="btn t" onclick="genScenario()">✦ Générer la mise en situation</button>
+  <div id="sc-loader" class="ld hidden"><div class="sp"></div> Génération en cours...</div>
+  <div id="sc-result" class="sc-result"></div>
+  <div id="sc-copy-btn" style="display:none;margin-top:8px">
+    <button class="btn sm" onclick="copyScenario()">Copier la mise en situation</button>
+    <span style="font-size:11px;color:var(--ink-mu);margin-left:8px">→ Elle a été automatiquement insérée dans le champ ci-dessus.</span>
+  </div>
+</div>
+
+<!-- S3b -->
+<div class="section">
+  <div class="st"><span class="sn">3b</span> Ressources et supports</div>
+  <p class="inf" style="margin-bottom:10px">Déposez vos fichiers (cours, articles, supports TXT/MD) pour qu'ils soient intégrés comme base aux activités.</p>
+  <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+    <div class="dz-icon">⬆</div>
+    <div class="dz-text">Cliquez pour sélectionner ou glissez vos fichiers ici</div>
+    <div class="dz-sub">TXT, MD, PDF — contenu extrait et intégré au prompt</div>
+  </div>
+  <input type="file" id="file-input" multiple accept=".txt,.md,.pdf" style="display:none" onchange="handleFiles(this.files)">
+  <div id="file-list" class="file-list"></div>
+  <div id="file-loader" class="ld hidden"><div class="sp"></div> Lecture...</div>
+</div>
+
+<!-- S4 -->
+<div class="section">
+  <div class="st"><span class="sn">4</span> Types d'activités</div>
+  <div class="cbg" id="act-types">
+    <label class="cbi"><input type="checkbox" value="Travaux individuels"> <span class="cbl">Travaux individuels</span></label>
+    <label class="cbi"><input type="checkbox" value="Travaux en groupe"> <span class="cbl">Travaux en groupe</span></label>
+    <label class="cbi"><input type="checkbox" value="Activités sur table à l'écrit"> <span class="cbl">Activités à l'écrit</span></label>
+    <label class="cbi"><input type="checkbox" value="Activités à l'oral"> <span class="cbl">Activités à l'oral</span></label>
+    <label class="cbi"><input type="checkbox" value="Activités sur informatique"> <span class="cbl">Activités sur informatique</span></label>
+    <label class="cbi"><input type="checkbox" value="Scénario pédagogique"> <span class="cbl">Scénario pédagogique</span></label>
+    <label class="cbi"><input type="checkbox" value="Étude de cas"> <span class="cbl">Étude de cas</span></label>
+    <label class="cbi"><input type="checkbox" value="Jeux de rôle"> <span class="cbl">Jeux de rôle</span></label>
+    <label class="cbi"><input type="checkbox" value="Création de support visuel"> <span class="cbl">Création de support visuel</span></label>
+    <label class="cbi"><input type="checkbox" value="Activités engageantes"> <span class="cbl">Activités engageantes</span></label>
+    <label class="cbi"><input type="checkbox" value="Activités coopératives"> <span class="cbl">Activités coopératives</span></label>
+    <label class="cbi"><input type="checkbox" value="Magasin pédagogique"> <span class="cbl">Magasin pédagogique</span></label>
+  </div>
+</div>
+
+<!-- S4b ÉVALUATION -->
+<div class="section">
+  <div class="st"><span class="sn">4b</span> Forme(s) d'évaluation <span class="badge">optionnel</span></div>
+  <div class="cbg" id="evals">
+    <label class="cbi"><input type="checkbox" value="Évaluation diagnostique (en amont de la séance)"> <span class="cbl">Diagnostique</span></label>
+    <label class="cbi"><input type="checkbox" value="Évaluation formative (en cours de séance)"> <span class="cbl">Formative</span></label>
+    <label class="cbi"><input type="checkbox" value="Évaluation sommative (bilan de fin de séquence)"> <span class="cbl">Sommative</span></label>
+    <label class="cbi"><input type="checkbox" value="Évaluation certificative (en conditions d'examen)"> <span class="cbl">Certificative</span></label>
+    <label class="cbi"><input type="checkbox" value="Devoir sur table"> <span class="cbl">Devoir sur table</span></label>
+    <label class="cbi"><input type="checkbox" value="Prestation orale notée"> <span class="cbl">Prestation orale</span></label>
+    <label class="cbi"><input type="checkbox" value="Auto-évaluation par grille de critères"> <span class="cbl">Auto-évaluation par grille de critères</span></label>
+    <label class="cbi"><input type="checkbox" value="Co-évaluation entre pairs"> <span class="cbl">Co-évaluation entre pairs</span></label>
+  </div>
+</div>
+
+<!-- S5 -->
+<div class="section">
+  <div class="st"><span class="sn">5</span> Options avancées</div>
+  <div class="f"><label class="fl">Calculs à intégrer</label>
+    <div class="cbg" id="calcs">
+      <label class="cbi"><input type="checkbox" value="Calculs commerciaux (marge, TVA, prix de vente, coût d'achat)"> <span class="cbl">Calculs commerciaux (marge, TVA, prix)</span></label>
+      <label class="cbi"><input type="checkbox" value="Calculs de pourcentages d'évolution"> <span class="cbl">Pourcentages d'évolution</span></label>
+      <label class="cbi"><input type="checkbox" value="Calculs de réduction et/ou d'augmentation"> <span class="cbl">Réduction / augmentation</span></label>
+      <label class="cbi"><input type="checkbox" value="Calculs de gestion des stocks"> <span class="cbl">Gestion des stocks</span></label>
+      <label class="cbi"><input type="checkbox" value="Calculs d'indicateurs de performance"> <span class="cbl">Indicateurs de performance</span></label>
+      <label class="cbi"><input type="checkbox" value="Calculs de gestion de linéaire"> <span class="cbl">Gestion de linéaire</span></label>
+    </div>
+  </div>
+  <div class="f" style="margin-top:12px"><label class="fl">Activités numériques à intégrer</label>
+    <div class="cbg" id="dig">
+      <label class="cbi"><input type="checkbox" value="Création graphique Canva (infographie, affiche)"> <span class="cbl">Canva (infographie, affiche)</span></label>
+      <label class="cbi"><input type="checkbox" value="Carte mentale MindMeister"> <span class="cbl">Carte mentale MindMeister</span></label>
+      <label class="cbi"><input type="checkbox" value="Diaporama PowerPoint / Google Slides"> <span class="cbl">Diaporama PPT / Google Slides</span></label>
+      <label class="cbi"><input type="checkbox" value="Capsule vidéo"> <span class="cbl">Capsule vidéo</span></label>
+    </div>
+  </div>
+  <div style="margin-top:14px"><label class="fl" style="margin-bottom:9px">Documents de sortie souhaités</label>
+    <div class="tgw"><div class="tg" id="tog-eleve" onclick="toggleSwitch('eleve')"></div><div class="ti"><div class="tl">Dossier Élève</div><div class="td">Page de garde, scénario détaillé, mises en situation, activités, annexes</div></div></div>
+    <div class="tgw"><div class="tg" id="tog-enseignant" onclick="toggleSwitch('enseignant')"></div><div class="ti"><div class="tl">Dossier Enseignant confidentiel</div><div class="td">Corrigés complets, conseils d'animation, différenciation (implique le dossier élève)</div></div></div>
+    <div class="tgw"><div class="tg" id="tog-h5p" onclick="toggleSwitch('h5p')"></div><div class="ti"><div class="tl">Contenu H5P (Éléa / Moodle)</div><div class="td">Activités H5P prêt à l'emploi : texte à trous, QCM, Vrai/Faux</div></div></div>
+    <div class="tgw"><div class="tg" id="tog-pronote" onclick="toggleSwitch('pronote')"></div><div class="ti"><div class="tl">QCM Pronote (.xml)</div><div class="td">Export QCM compatible Pronote</div></div></div>
+    <div class="tgw"><div class="tg" id="tog-ludic" onclick="toggleSwitch('ludic')"></div><div class="ti"><div class="tl">Activité ludique / gamification</div><div class="td">Jeu pédagogique + document Word annexe cartes à plastifier</div></div></div>
+  </div>
+</div>
+
+<!-- S6 -->
+<div class="section">
+  <div class="st"><span class="sn">6</span> Instructions complémentaires</div>
+  <div class="f"><label class="fl">Ressources textuelles supplémentaires (articles, extraits...)</label><textarea id="ext-resources" rows="3" placeholder="Collez ici des extraits d'articles ou ressources professionnelles..."></textarea></div>
+  <div class="f"><label class="fl">Instructions spécifiques supplémentaires</label><textarea id="add-instructions" rows="3" placeholder="Consignes particulières, contraintes spécifiques, demandes spéciales..."></textarea></div>
+</div>
+
+<div class="br">
+  <button class="btn p" id="btn-gen" onclick="generatePrompt()" disabled>Générer le prompt</button>
+  <button class="btn" onclick="copyPrompt()" id="btn-copy" disabled>Copier le prompt</button>
+</div>
+
+<div id="s-prompt" class="hidden" style="margin-top:14px">
+  <div class="section">
+    <div class="st">Prompt généré</div>
+    <div class="al i">Prompt prêt à l'emploi. Copiez-le et collez-le dans Claude ou tout autre IA, ou utilisez le bouton "Générer avec Claude" pour une réponse directe.</div>
+    <div class="pb" id="prompt-display"></div>
+    <div class="br">
+      <button class="btn p" onclick="generateWithClaude()">▶ Générer avec Claude</button>
+      <button class="btn" onclick="copyPrompt()">Copier le prompt</button>
+    </div>
+    <div id="claude-loader" class="ld hidden"><div class="sp"></div> Claude génère le contenu...</div>
+    <div id="claude-result" class="claude-result"></div>
+    <div id="claude-copy-btn" style="display:none;margin-top:8px">
+      <button class="btn sm" onclick="copyClaudeResult()">Copier le résultat</button>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  Lycée Max Joséphine · Commerce et Vente · Cayenne, Guyane Française<br>
+  Outil pédagogique — BAC PRO MCVA / 2nde MRC / CAP EPC<br>
+  Conception : <strong>Olivier NUGUET</strong> — Région académique Guyane
+</div>
+</main>
+
+<script>
+const CUR={
+'cap-epc':{name:'CAP EPC',niveaux:[
+  {id:'cap-1',name:'1ère année CAP',competences:[
+    {id:'b1',name:'Bloc 1 — Recevoir et suivre les commandes',competencesPrincipales:[
+      {id:'b1cp1',name:'Participer à la passation des commandes fournisseurs',competencesDetaillees:[
+        {id:'b1cp1cd1',name:"Surveiller l'état des stocks"},
+        {id:'b1cp1cd2',name:"Préparer les propositions de commandes"},
+        {id:'b1cp1cd3',name:"Utiliser le mode de transmission adapté"},
+        {id:'b1cp1cd4',name:"Transmettre la commande après validation"},
+        {id:'b1cp1cd5',name:"Assurer le suivi des commandes"}
+      ],savoirs:[
+        {id:'b1cp1s1',name:"Le circuit économique simplifié et ses agents"},
+        {id:'b1cp1s2',name:"L'entreprise"},
+        {id:'b1cp1s3',name:"Les circuits de distribution et les canaux de vente"},
+        {id:'b1cp1s4',name:"Le cadencier"},
+        {id:'b1cp1s5',name:"Les niveaux de stocks"},
+        {id:'b1cp1s6',name:"L'inventaire"},
+        {id:'b1cp1s7',name:"La communication professionnelle"},
+        {id:'b1cp1s8',name:"Les documents relatifs à la commande"}
+      ]},
+      {id:'b1cp2',name:'Réceptionner',competencesDetaillees:[
+        {id:'b1cp2cd1',name:"Identifier les documents de livraison et de traçabilité"},
+        {id:'b1cp2cd2',name:"Contrôler la qualité et la quantité"},
+        {id:'b1cp2cd3',name:"Comparer le bon de commande et le bon de livraison"},
+        {id:'b1cp2cd4',name:"Relever les anomalies éventuelles et les transmettre au responsable"},
+        {id:'b1cp2cd5',name:"Classer les documents de réception et de traçabilité"}
+      ],savoirs:[
+        {id:'b1cp2s1',name:"Les documents de gestion commerciale"},
+        {id:'b1cp2s2',name:"Les documents relatifs à la commande"},
+        {id:'b1cp2s3',name:"La communication professionnelle"},
+        {id:'b1cp2s4',name:"Les documents relatifs à la livraison"},
+        {id:'b1cp2s5',name:"Les procédures de l'entreprise"},
+        {id:'b1cp2s6',name:"Les règles d'hygiène et de sécurité"},
+        {id:'b1cp2s7',name:"Le règlement intérieur"}
+      ]},
+      {id:'b1cp3',name:'Stocker',competencesDetaillees:[
+        {id:'b1cp3cd1',name:"Utiliser le matériel de manutention adapté"},
+        {id:'b1cp3cd2',name:"Ranger les produits dans le lieu approprié en réalisant la rotation"},
+        {id:'b1cp3cd3',name:"Trier et évacuer les contenants"},
+        {id:'b1cp3cd4',name:"Maintenir l'organisation et la propreté de la réserve"}
+      ],savoirs:[
+        {id:'b1cp3s1',name:"Les équipements et les installations"},
+        {id:'b1cp3s2',name:"Le rangement des produits"},
+        {id:'b1cp3s3',name:"Le tri sélectif : réglementation et développement durable"},
+        {id:'b1cp3s4',name:"Les systèmes antivols sur les produits"}
+      ]},
+      {id:'b1cp4',name:'Préparer les commandes destinées aux clients',competencesDetaillees:[
+        {id:'b1cp4cd1',name:"Prélever et rassembler les produits commandés"},
+        {id:'b1cp4cd2',name:"Reconditionner et stocker les produits selon leur spécificité"},
+        {id:'b1cp4cd3',name:"Vérifier l'adéquation entre la commande et la préparation"},
+        {id:'b1cp4cd4',name:"Enregistrer et entreposer les colis destinés aux clients ou retournés"}
+      ],savoirs:[
+        {id:'b1cp4s1',name:"Les différents modes de préparation des commandes omnicanales"},
+        {id:'b1cp4s2',name:"Le conditionnement et l'emballage"}
+      ]}
+    ]},,
+    {id:'b2',name:'Bloc 2 — Mettre en valeur et approvisionner',competencesPrincipales:[
+      {id:'b2cp1',name:'Approvisionner, mettre en rayon et ranger selon la nature des produits',competencesDetaillees:[
+        {id:'b2cp1cd1',name:"Déterminer les quantités à mettre en rayon"},
+        {id:'b2cp1cd2',name:"Anticiper les ruptures en rayon"},
+        {id:'b2cp1cd3',name:"Identifier les produits à mettre en rayon"},
+        {id:'b2cp1cd4',name:"Acheminer les produits de la réserve vers la surface de vente"},
+        {id:'b2cp1cd5',name:"Déballer les produits à mettre en rayon"},
+        {id:'b2cp1cd6',name:"Appliquer les règles de présentation marchande"},
+        {id:'b2cp1cd7',name:"Effectuer le remplissage des linéaires, réaliser le facing, procéder au réassortiment"},
+        {id:'b2cp1cd8',name:"Procéder à la rotation des produits"},
+        {id:'b2cp1cd9',name:"Détecter les produits impropres à la vente et les retirer"}
+      ],savoirs:[
+        {id:'b2cp1s1',name:"Les biens et les services"},
+        {id:'b2cp1s2',name:"Les familles de produits"},
+        {id:'b2cp1s3',name:"L'organisation de l'espace commercial"},
+        {id:'b2cp1s4',name:"Les principes de mise en rayon"},
+        {id:'b2cp1s5',name:"Les niveaux de stock"},
+        {id:'b2cp1s6',name:"Les mobiliers"},
+        {id:'b2cp1s7',name:"Les règles de sécurité"},
+        {id:'b2cp1s8',name:"La responsabilité civile professionnelle"}
+      ]},
+      {id:'b2cp2',name:"Mettre en valeur les produits et l'espace commercial",competencesDetaillees:[
+        {id:'b2cp2cd1',name:"Participer à la mise en valeur des produits"},
+        {id:'b2cp2cd2',name:"Participer à l'aménagement de l'espace d'exposition, de vente, des vitrines"},
+        {id:'b2cp2cd3',name:"Veiller à la propreté et nettoyer les surfaces de vente"},
+        {id:'b2cp2cd4',name:"Veiller à conserver tous les lieux de vente rangés (cabines, rayons, etc.)"}
+      ],savoirs:[
+        {id:'b2cp2s1',name:"Les facteurs d'ambiance"},
+        {id:'b2cp2s2',name:"L'implantation des produits"},
+        {id:'b2cp2s3',name:"Les actions d'animation / promotion"}
+      ]},
+      {id:'b2cp3',name:'Participer aux opérations de conditionnement des produits',competencesDetaillees:[
+        {id:'b2cp3cd1',name:"Préparer et nettoyer les équipements et le mobilier"},
+        {id:'b2cp3cd2',name:"Rassembler le matériel et fournitures nécessaires à l'opération de conditionnement"},
+        {id:'b2cp3cd3',name:"Sélectionner le(s) produit(s), selon les références, les quantités, les prix"},
+        {id:'b2cp3cd4',name:"Conditionner et / ou emballer le produit"},
+        {id:'b2cp3cd5',name:"Calculer le prix de vente"},
+        {id:'b2cp3cd6',name:"Appliquer les règles d'hygiène, de sécurité et de conservation du produit et le protocole de traçabilité"}
+      ],savoirs:[
+        {id:'b2cp3s1',name:"L'emballage et le conditionnement"},
+        {id:'b2cp3s2',name:"L'étiquetage et la traçabilité"},
+        {id:'b2cp3s3',name:"Le calcul du prix"},
+        {id:'b2cp3s4',name:"La TVA"},
+        {id:'b2cp3s5',name:"Les règles d'hygiène et de sécurité"},
+        {id:'b2cp3s6',name:"Les organismes de contrôle"}
+      ]},
+      {id:'b2cp4',name:'Installer et mettre à jour la signalétique',competencesDetaillees:[
+        {id:'b2cp4cd1',name:"Éditer des étiquettes prix, produits, étiquettes promotionnelles"},
+        {id:'b2cp4cd2',name:"Installer et mettre à jour l'ILV et la PLV"},
+        {id:'b2cp4cd3',name:"Mettre en place et vérifier le balisage"},
+        {id:'b2cp4cd4',name:"Vérifier l'exactitude de l'affichage et alerter en cas d'anomalies"}
+      ],savoirs:[
+        {id:'b2cp4s1',name:"L'information et la publicité sur le lieu de vente"},
+        {id:'b2cp4s2',name:"L'étiquetage et la traçabilité"},
+        {id:'b2cp4s3',name:"La protection du consommateur"}
+      ]},
+      {id:'b2cp5',name:"Lutter contre la démarque et participer aux opérations d'inventaire",competencesDetaillees:[
+        {id:'b2cp5cd1',name:"Poser les antivols sur les produits"},
+        {id:'b2cp5cd2',name:"Identifier, repérer et implanter les produits à dates courtes"},
+        {id:'b2cp5cd3',name:"Repérer et enregistrer la démarque connue"},
+        {id:'b2cp5cd4',name:"Ranger et compter les produits"},
+        {id:'b2cp5cd5',name:"Enregistrer le comptage et rendre compte"}
+      ],savoirs:[
+        {id:'b2cp5s1',name:"Les systèmes antivols sur les produits"},
+        {id:'b2cp5s2',name:"Les principes de mise en rayon"},
+        {id:'b2cp5s3',name:"La démarque"},
+        {id:'b2cp5s4',name:"L'inventaire"}
+      ]}
+    ]},
+    {id:'b3',name:'Bloc 3 — Conseiller et accompagner le client dans son parcours d\'achat',competencesPrincipales:[
+      {id:'b3cp1',name:"Préparer son environnement de travail",competencesDetaillees:[
+        {id:'b3cp1cd1',name:"Préparer son matériel"},
+        {id:'b3cp1cd2',name:"Respecter une tenue professionnelle adaptée au contexte et à l'image de l'unité commerciale"},
+        {id:'b3cp1cd3',name:"Vérifier le bon fonctionnement du matériel et des outils d'aide à la vente"}
+      ],savoirs:[
+        {id:'b3cp1s1',name:"Le poste de travail"},
+        {id:'b3cp1s2',name:"L'image de l'entreprise"},
+        {id:'b3cp1s3',name:"L'entreprise et ses performances"},
+        {id:'b3cp1s4',name:"Le contrat de travail"}
+      ]},
+      {id:'b3cp2',name:"Prendre contact avec le client",competencesDetaillees:[
+        {id:'b3cp2cd1',name:"Accueillir le client"},
+        {id:'b3cp2cd2',name:"S'adapter au contexte commercial et au comportement du client"},
+        {id:'b3cp2cd3',name:"Adopter une attitude d'accueil"},
+        {id:'b3cp2cd4',name:"Favoriser un climat de confiance"}
+      ],savoirs:[
+        {id:'b3cp2s1',name:"La communication professionnelle"}
+      ]},
+      {id:'b3cp3',name:"Accompagner le parcours client dans un contexte omnicanal",competencesDetaillees:[
+        {id:'b3cp3cd1',name:"Adopter une écoute active"},
+        {id:'b3cp3cd2',name:"Identifier la demande du client, la prendre en compte et / ou la transférer au responsable"},
+        {id:'b3cp3cd3',name:"Orienter le client"},
+        {id:'b3cp3cd4',name:"Informer le client"},
+        {id:'b3cp3cd5',name:"Conseiller le client"},
+        {id:'b3cp3cd6',name:"Accompagner le client dans l'utilisation des outils digitaux"},
+        {id:'b3cp3cd7',name:"Présenter le ou les produits"},
+        {id:'b3cp3cd8',name:"Proposer des services associés et complémentaires"},
+        {id:'b3cp3cd9',name:"Renseigner le bon de commande, le document de vente et rédiger un message"},
+        {id:'b3cp3cd10',name:"Remettre les colis, les sacs et les produits réservés aux clients"},
+        {id:'b3cp3cd11',name:"Réaliser des livraisons"}
+      ],savoirs:[
+        {id:'b3cp3s1',name:"Les produits"},
+        {id:'b3cp3s2',name:"Les services"},
+        {id:'b3cp3s3',name:"Les circuits de distribution et les canaux de vente"},
+        {id:'b3cp3s4',name:"La communication commerciale"},
+        {id:'b3cp3s5',name:"La demande du client"},
+        {id:'b3cp3s6',name:"Les outils d'aide à la vente"},
+        {id:'b3cp3s7',name:"Les procédures de prise en charge des commandes et des colis"},
+        {id:'b3cp3s8',name:"La définition d'un contrat de vente"},
+        {id:'b3cp3s9',name:"La responsabilité civile contractuelle"}
+      ]},
+      {id:'b3cp4',name:"Finaliser la prise en charge du client",competencesDetaillees:[
+        {id:'b3cp4cd1',name:"Enregistrer les achats et / ou retours"},
+        {id:'b3cp4cd2',name:"Proposer un moyen de fidélisation"},
+        {id:'b3cp4cd3',name:"Encaisser et / ou accompagner l'encaissement digital, automatique et / ou mobile"},
+        {id:'b3cp4cd4',name:"Réaliser les opérations complémentaires à l'encaissement"},
+        {id:'b3cp4cd5',name:"Prendre congé"},
+        {id:'b3cp4cd6',name:"Collecter et actualiser l'information sur le client"},
+        {id:'b3cp4cd7',name:"Fermer la caisse et procéder aux opérations de clôture"}
+      ],savoirs:[
+        {id:'b3cp4s1',name:"Le règlement"},
+        {id:'b3cp4s2',name:"La fidélisation"},
+        {id:'b3cp4s3',name:"Les documents de gestion commerciale"}
+      ]},
+      {id:'b3cp5',name:"Recevoir les réclamations courantes",competencesDetaillees:[
+        {id:'b3cp5cd1',name:"Écouter et identifier clairement le type de réclamation"},
+        {id:'b3cp5cd2',name:"Proposer une action corrective dans le cas d'une réclamation simple"},
+        {id:'b3cp5cd3',name:"Transférer les réclamations non solutionnées au responsable"},
+        {id:'b3cp5cd4',name:"Expliquer au client la solution proposée"}
+      ],savoirs:[
+        {id:'b3cp5s1',name:"Le traitement des réclamations"},
+        {id:'b3cp5s2',name:"La gestion du stress"}
+      ]}
+    ]}
+  ]},
+  {id:'cap-t',name:'Terminale CAP',competences:[
+    {id:'b1',name:'Bloc 1 — Recevoir et suivre les commandes',competencesPrincipales:[
+      {id:'b1cp1',name:'Participer à la passation des commandes fournisseurs',competencesDetaillees:[
+        {id:'b1cp1cd1',name:"Surveiller l'état des stocks"},
+        {id:'b1cp1cd2',name:"Préparer les propositions de commandes"},
+        {id:'b1cp1cd3',name:"Utiliser le mode de transmission adapté"},
+        {id:'b1cp1cd4',name:"Transmettre la commande après validation"},
+        {id:'b1cp1cd5',name:"Assurer le suivi des commandes"}
+      ],savoirs:[
+        {id:'b1cp1s1',name:"Le circuit économique simplifié et ses agents"},
+        {id:'b1cp1s2',name:"L'entreprise"},
+        {id:'b1cp1s3',name:"Les circuits de distribution et les canaux de vente"},
+        {id:'b1cp1s4',name:"Le cadencier"},
+        {id:'b1cp1s5',name:"Les niveaux de stocks"},
+        {id:'b1cp1s6',name:"L'inventaire"},
+        {id:'b1cp1s7',name:"La communication professionnelle"},
+        {id:'b1cp1s8',name:"Les documents relatifs à la commande"}
+      ]},
+      {id:'b1cp2',name:'Réceptionner',competencesDetaillees:[
+        {id:'b1cp2cd1',name:"Identifier les documents de livraison et de traçabilité"},
+        {id:'b1cp2cd2',name:"Contrôler la qualité et la quantité"},
+        {id:'b1cp2cd3',name:"Comparer le bon de commande et le bon de livraison"},
+        {id:'b1cp2cd4',name:"Relever les anomalies éventuelles et les transmettre au responsable"},
+        {id:'b1cp2cd5',name:"Classer les documents de réception et de traçabilité"}
+      ],savoirs:[
+        {id:'b1cp2s1',name:"Les documents de gestion commerciale"},
+        {id:'b1cp2s2',name:"Les documents relatifs à la commande"},
+        {id:'b1cp2s3',name:"La communication professionnelle"},
+        {id:'b1cp2s4',name:"Les documents relatifs à la livraison"},
+        {id:'b1cp2s5',name:"Les procédures de l'entreprise"},
+        {id:'b1cp2s6',name:"Les règles d'hygiène et de sécurité"},
+        {id:'b1cp2s7',name:"Le règlement intérieur"}
+      ]},
+      {id:'b1cp3',name:'Stocker',competencesDetaillees:[
+        {id:'b1cp3cd1',name:"Utiliser le matériel de manutention adapté"},
+        {id:'b1cp3cd2',name:"Ranger les produits dans le lieu approprié en réalisant la rotation"},
+        {id:'b1cp3cd3',name:"Trier et évacuer les contenants"},
+        {id:'b1cp3cd4',name:"Maintenir l'organisation et la propreté de la réserve"}
+      ],savoirs:[
+        {id:'b1cp3s1',name:"Les équipements et les installations"},
+        {id:'b1cp3s2',name:"Le rangement des produits"},
+        {id:'b1cp3s3',name:"Le tri sélectif : réglementation et développement durable"},
+        {id:'b1cp3s4',name:"Les systèmes antivols sur les produits"}
+      ]},
+      {id:'b1cp4',name:'Préparer les commandes destinées aux clients',competencesDetaillees:[
+        {id:'b1cp4cd1',name:"Prélever et rassembler les produits commandés"},
+        {id:'b1cp4cd2',name:"Reconditionner et stocker les produits selon leur spécificité"},
+        {id:'b1cp4cd3',name:"Vérifier l'adéquation entre la commande et la préparation"},
+        {id:'b1cp4cd4',name:"Enregistrer et entreposer les colis destinés aux clients ou retournés"}
+      ],savoirs:[
+        {id:'b1cp4s1',name:"Les différents modes de préparation des commandes omnicanales"},
+        {id:'b1cp4s2',name:"Le conditionnement et l'emballage"}
+      ]}
+    ]},,
+    {id:'b2',name:'Bloc 2 — Mettre en valeur et approvisionner',competencesPrincipales:[
+      {id:'b2cp1',name:'Approvisionner, mettre en rayon et ranger selon la nature des produits',competencesDetaillees:[
+        {id:'b2cp1cd1',name:"Déterminer les quantités à mettre en rayon"},
+        {id:'b2cp1cd2',name:"Anticiper les ruptures en rayon"},
+        {id:'b2cp1cd3',name:"Identifier les produits à mettre en rayon"},
+        {id:'b2cp1cd4',name:"Acheminer les produits de la réserve vers la surface de vente"},
+        {id:'b2cp1cd5',name:"Déballer les produits à mettre en rayon"},
+        {id:'b2cp1cd6',name:"Appliquer les règles de présentation marchande"},
+        {id:'b2cp1cd7',name:"Effectuer le remplissage des linéaires, réaliser le facing, procéder au réassortiment"},
+        {id:'b2cp1cd8',name:"Procéder à la rotation des produits"},
+        {id:'b2cp1cd9',name:"Détecter les produits impropres à la vente et les retirer"}
+      ],savoirs:[
+        {id:'b2cp1s1',name:"Les biens et les services"},
+        {id:'b2cp1s2',name:"Les familles de produits"},
+        {id:'b2cp1s3',name:"L'organisation de l'espace commercial"},
+        {id:'b2cp1s4',name:"Les principes de mise en rayon"},
+        {id:'b2cp1s5',name:"Les niveaux de stock"},
+        {id:'b2cp1s6',name:"Les mobiliers"},
+        {id:'b2cp1s7',name:"Les règles de sécurité"},
+        {id:'b2cp1s8',name:"La responsabilité civile professionnelle"}
+      ]},
+      {id:'b2cp2',name:"Mettre en valeur les produits et l'espace commercial",competencesDetaillees:[
+        {id:'b2cp2cd1',name:"Participer à la mise en valeur des produits"},
+        {id:'b2cp2cd2',name:"Participer à l'aménagement de l'espace d'exposition, de vente, des vitrines"},
+        {id:'b2cp2cd3',name:"Veiller à la propreté et nettoyer les surfaces de vente"},
+        {id:'b2cp2cd4',name:"Veiller à conserver tous les lieux de vente rangés (cabines, rayons, etc.)"}
+      ],savoirs:[
+        {id:'b2cp2s1',name:"Les facteurs d'ambiance"},
+        {id:'b2cp2s2',name:"L'implantation des produits"},
+        {id:'b2cp2s3',name:"Les actions d'animation / promotion"}
+      ]},
+      {id:'b2cp3',name:'Participer aux opérations de conditionnement des produits',competencesDetaillees:[
+        {id:'b2cp3cd1',name:"Préparer et nettoyer les équipements et le mobilier"},
+        {id:'b2cp3cd2',name:"Rassembler le matériel et fournitures nécessaires à l'opération de conditionnement"},
+        {id:'b2cp3cd3',name:"Sélectionner le(s) produit(s), selon les références, les quantités, les prix"},
+        {id:'b2cp3cd4',name:"Conditionner et / ou emballer le produit"},
+        {id:'b2cp3cd5',name:"Calculer le prix de vente"},
+        {id:'b2cp3cd6',name:"Appliquer les règles d'hygiène, de sécurité et de conservation du produit et le protocole de traçabilité"}
+      ],savoirs:[
+        {id:'b2cp3s1',name:"L'emballage et le conditionnement"},
+        {id:'b2cp3s2',name:"L'étiquetage et la traçabilité"},
+        {id:'b2cp3s3',name:"Le calcul du prix"},
+        {id:'b2cp3s4',name:"La TVA"},
+        {id:'b2cp3s5',name:"Les règles d'hygiène et de sécurité"},
+        {id:'b2cp3s6',name:"Les organismes de contrôle"}
+      ]},
+      {id:'b2cp4',name:'Installer et mettre à jour la signalétique',competencesDetaillees:[
+        {id:'b2cp4cd1',name:"Éditer des étiquettes prix, produits, étiquettes promotionnelles"},
+        {id:'b2cp4cd2',name:"Installer et mettre à jour l'ILV et la PLV"},
+        {id:'b2cp4cd3',name:"Mettre en place et vérifier le balisage"},
+        {id:'b2cp4cd4',name:"Vérifier l'exactitude de l'affichage et alerter en cas d'anomalies"}
+      ],savoirs:[
+        {id:'b2cp4s1',name:"L'information et la publicité sur le lieu de vente"},
+        {id:'b2cp4s2',name:"L'étiquetage et la traçabilité"},
+        {id:'b2cp4s3',name:"La protection du consommateur"}
+      ]},
+      {id:'b2cp5',name:"Lutter contre la démarque et participer aux opérations d'inventaire",competencesDetaillees:[
+        {id:'b2cp5cd1',name:"Poser les antivols sur les produits"},
+        {id:'b2cp5cd2',name:"Identifier, repérer et implanter les produits à dates courtes"},
+        {id:'b2cp5cd3',name:"Repérer et enregistrer la démarque connue"},
+        {id:'b2cp5cd4',name:"Ranger et compter les produits"},
+        {id:'b2cp5cd5',name:"Enregistrer le comptage et rendre compte"}
+      ],savoirs:[
+        {id:'b2cp5s1',name:"Les systèmes antivols sur les produits"},
+        {id:'b2cp5s2',name:"Les principes de mise en rayon"},
+        {id:'b2cp5s3',name:"La démarque"},
+        {id:'b2cp5s4',name:"L'inventaire"}
+      ]}
+    ]},
+    {id:'b3',name:'Bloc 3 — Conseiller et accompagner le client dans son parcours d\'achat',competencesPrincipales:[
+      {id:'b3cp1',name:"Préparer son environnement de travail",competencesDetaillees:[
+        {id:'b3cp1cd1',name:"Préparer son matériel"},
+        {id:'b3cp1cd2',name:"Respecter une tenue professionnelle adaptée au contexte et à l'image de l'unité commerciale"},
+        {id:'b3cp1cd3',name:"Vérifier le bon fonctionnement du matériel et des outils d'aide à la vente"}
+      ],savoirs:[
+        {id:'b3cp1s1',name:"Le poste de travail"},
+        {id:'b3cp1s2',name:"L'image de l'entreprise"},
+        {id:'b3cp1s3',name:"L'entreprise et ses performances"},
+        {id:'b3cp1s4',name:"Le contrat de travail"}
+      ]},
+      {id:'b3cp2',name:"Prendre contact avec le client",competencesDetaillees:[
+        {id:'b3cp2cd1',name:"Accueillir le client"},
+        {id:'b3cp2cd2',name:"S'adapter au contexte commercial et au comportement du client"},
+        {id:'b3cp2cd3',name:"Adopter une attitude d'accueil"},
+        {id:'b3cp2cd4',name:"Favoriser un climat de confiance"}
+      ],savoirs:[
+        {id:'b3cp2s1',name:"La communication professionnelle"}
+      ]},
+      {id:'b3cp3',name:"Accompagner le parcours client dans un contexte omnicanal",competencesDetaillees:[
+        {id:'b3cp3cd1',name:"Adopter une écoute active"},
+        {id:'b3cp3cd2',name:"Identifier la demande du client, la prendre en compte et / ou la transférer au responsable"},
+        {id:'b3cp3cd3',name:"Orienter le client"},
+        {id:'b3cp3cd4',name:"Informer le client"},
+        {id:'b3cp3cd5',name:"Conseiller le client"},
+        {id:'b3cp3cd6',name:"Accompagner le client dans l'utilisation des outils digitaux"},
+        {id:'b3cp3cd7',name:"Présenter le ou les produits"},
+        {id:'b3cp3cd8',name:"Proposer des services associés et complémentaires"},
+        {id:'b3cp3cd9',name:"Renseigner le bon de commande, le document de vente et rédiger un message"},
+        {id:'b3cp3cd10',name:"Remettre les colis, les sacs et les produits réservés aux clients"},
+        {id:'b3cp3cd11',name:"Réaliser des livraisons"}
+      ],savoirs:[
+        {id:'b3cp3s1',name:"Les produits"},
+        {id:'b3cp3s2',name:"Les services"},
+        {id:'b3cp3s3',name:"Les circuits de distribution et les canaux de vente"},
+        {id:'b3cp3s4',name:"La communication commerciale"},
+        {id:'b3cp3s5',name:"La demande du client"},
+        {id:'b3cp3s6',name:"Les outils d'aide à la vente"},
+        {id:'b3cp3s7',name:"Les procédures de prise en charge des commandes et des colis"},
+        {id:'b3cp3s8',name:"La définition d'un contrat de vente"},
+        {id:'b3cp3s9',name:"La responsabilité civile contractuelle"}
+      ]},
+      {id:'b3cp4',name:"Finaliser la prise en charge du client",competencesDetaillees:[
+        {id:'b3cp4cd1',name:"Enregistrer les achats et / ou retours"},
+        {id:'b3cp4cd2',name:"Proposer un moyen de fidélisation"},
+        {id:'b3cp4cd3',name:"Encaisser et / ou accompagner l'encaissement digital, automatique et / ou mobile"},
+        {id:'b3cp4cd4',name:"Réaliser les opérations complémentaires à l'encaissement"},
+        {id:'b3cp4cd5',name:"Prendre congé"},
+        {id:'b3cp4cd6',name:"Collecter et actualiser l'information sur le client"},
+        {id:'b3cp4cd7',name:"Fermer la caisse et procéder aux opérations de clôture"}
+      ],savoirs:[
+        {id:'b3cp4s1',name:"Le règlement"},
+        {id:'b3cp4s2',name:"La fidélisation"},
+        {id:'b3cp4s3',name:"Les documents de gestion commerciale"}
+      ]},
+      {id:'b3cp5',name:"Recevoir les réclamations courantes",competencesDetaillees:[
+        {id:'b3cp5cd1',name:"Écouter et identifier clairement le type de réclamation"},
+        {id:'b3cp5cd2',name:"Proposer une action corrective dans le cas d'une réclamation simple"},
+        {id:'b3cp5cd3',name:"Transférer les réclamations non solutionnées au responsable"},
+        {id:'b3cp5cd4',name:"Expliquer au client la solution proposée"}
+      ],savoirs:[
+        {id:'b3cp5s1',name:"Le traitement des réclamations"},
+        {id:'b3cp5s2',name:"La gestion du stress"}
+      ]}
+    ]}
+  ]}
+],sc:"Vous êtes un(e) employé(e) commercial(e) polyvalent(e) dans une enseigne de grande distribution. Votre tuteur vous confie des missions variées : réception des marchandises, mise en rayon, conseil client et encaissement."},
+'2nde-mrc':{name:'2nde MRC',niveaux:[
+  {id:'2-mrc',name:'Seconde MRC',competences:[
+    {id:'c1',name:'Intégrer la relation client dans un cadre omnicanal',savoirs:[{id:'s1',name:"Gérer simultanément les activités"},{id:'s2',name:"Prendre contact avec le public"},{id:'s3',name:"Identifier et traiter la demande"},{id:'s4',name:"Repérer les caractéristiques du public"},{id:'s5',name:"Intégrer l'omnicanal dans le processus de vente"},{id:'s6',name:"S'adapter au contexte commercial et au comportement du client"},{id:'s7',name:"Découvrir, identifier et reformuler les besoins du client"},{id:'s8',name:"Conseiller le client en proposant la solution adaptée"},{id:'s9',name:"Proposer les produits et/ou services associés"},{id:'s10',name:"Effectuer des ventes au rebond"}]},
+    {id:'c2',name:'Assurer le suivi de la relation client',savoirs:[{id:'s1',name:"Identifier les prestations inhérentes aux activités d'accueil"},{id:'s2',name:"Assurer le suivi d'une prestation"},{id:'s3',name:"Suivre l'évolution de la commande et du règlement"},{id:'s4',name:"Identifier et proposer une solution aux problèmes du client"},{id:'s5',name:"Collecter les informations de satisfaction"},{id:'s6',name:"Sélectionner et mettre en œuvre les outils de fidélisation"}]},
+    {id:'c3',name:"Collecter et exploiter l'information",savoirs:[{id:'s1',name:"Repérer les sources d'information"},{id:'s2',name:"Actualiser une base de données"},{id:'s3',name:"Rendre compte de l'activité"},{id:'s4',name:"Collecter et identifier les motifs de satisfaction et d'insatisfaction"},{id:'s5',name:"Traiter les messages et/ou les demandes des clients"},{id:'s6',name:"Analyser les données (recueillir, extraire, exploiter, synthétiser)"}]}
+  ]}
+],sc:"Vous êtes en stage dans une entreprise possédant un magasin physique et un site e-commerce. Affecté(e) au pôle Relation Client, vous répondez aux demandes clients en face à face, par téléphone et par e-mail."},
+'bac-ma':{name:'BAC PRO MA',niveaux:[
+  {id:'ma-1',name:'1ère BAC PRO MA',competences:[
+    {id:'ma-b1',name:"Bloc 1 — Gérer l'accueil multicanal à des fins d'information, d'orientation et de conseil",competencesPrincipales:[
+      {id:'ma-b1cp1',name:"1.1 Gérer simultanément les activités",competencesDetaillees:[
+        {id:'ma-b1cp1cd1',name:"Recenser et prioriser les activités"},
+        {id:'ma-b1cp1cd2',name:"Organiser ses activités en coordination avec l'équipe"},
+        {id:'ma-b1cp1cd3',name:"Repérer et gérer les aléas"}
+      ],savoirs:[
+        {id:'ma-b1cp1s1',name:"La relation de service"},
+        {id:'ma-b1cp1s2',name:"La communication interpersonnelle"},
+        {id:'ma-b1cp1s3',name:"La démarche qualité"},
+        {id:'ma-b1cp1s4',name:"Les chartes et procédures d'accueil"},
+        {id:'ma-b1cp1s5',name:"La gestion du temps et ses outils"}
+      ]},
+      {id:'ma-b1cp2',name:"1.2 Prendre contact avec le public",competencesDetaillees:[
+        {id:'ma-b1cp2cd1',name:"Identifier le public et repérer ses caractéristiques"},
+        {id:'ma-b1cp2cd2',name:"Recevoir le visiteur"}
+      ],savoirs:[
+        {id:'ma-b1cp2s1',name:"Les acteurs internes et externes de l'organisation"},
+        {id:'ma-b1cp2s2',name:"L'accueil multicanal"}
+      ]},
+      {id:'ma-b1cp3',name:"1.3 Identifier la demande",competencesDetaillees:[
+        {id:'ma-b1cp3cd1',name:"Appréhender la demande du public"},
+        {id:'ma-b1cp3cd2',name:"Apprécier la complexité de la demande"},
+        {id:'ma-b1cp3cd3',name:"Interagir pour préciser la demande"}
+      ],savoirs:[
+        {id:'ma-b1cp3s1',name:"La découverte des besoins"},
+        {id:'ma-b1cp3s2',name:"Les règles de confidentialité et d'éthique"}
+      ]},
+      {id:'ma-b1cp4',name:"1.4 Traiter la demande",competencesDetaillees:[
+        {id:'ma-b1cp4cd1',name:"Identifier et mobiliser les ressources utiles"},
+        {id:'ma-b1cp4cd2',name:"Apporter une réponse adaptée"},
+        {id:'ma-b1cp4cd3',name:"Construire une réponse personnalisée en termes d'orientation, d'information, de conseils et d'accompagnement"}
+      ],savoirs:[
+        {id:'ma-b1cp4s1',name:"Les ressources internes et externes de l'organisation"}
+      ]},
+      {id:'ma-b1cp5',name:"1.5 Gérer les flux",competencesDetaillees:[
+        {id:'ma-b1cp5cd1',name:"Identifier les paramètres générant du flux"},
+        {id:'ma-b1cp5cd2',name:"Mesurer l'impact du flux sur l'attente"},
+        {id:'ma-b1cp5cd3',name:"Repérer les signes de tensions générées par l'attente"},
+        {id:'ma-b1cp5cd4',name:"Accompagner l'attente du public"},
+        {id:'ma-b1cp5cd5',name:"Hiérarchiser les activités pour organiser l'attente"}
+      ],savoirs:[
+        {id:'ma-b1cp5s1',name:"La gestion du flux"}
+      ]},
+      {id:'ma-b1cp6',name:"1.6 Gérer les conflits",competencesDetaillees:[
+        {id:'ma-b1cp6cd1',name:"Repérer les signes de tension susceptibles de déboucher sur un conflit"},
+        {id:'ma-b1cp6cd2',name:"Interagir pour désamorcer la tension, le conflit"},
+        {id:'ma-b1cp6cd3',name:"Mettre en œuvre les solutions pour résoudre le conflit"}
+      ],savoirs:[
+        {id:'ma-b1cp6s1',name:"Les sources et les types de conflits"},
+        {id:'ma-b1cp6s2',name:"Les facteurs de stress et le contrôle de soi"},
+        {id:'ma-b1cp6s3',name:"La gestion des conflits"}
+      ]}
+    ]},,
+    {id:'ma-b2',name:"Bloc 2 — Gérer l'information et des prestations à des fins organisationnelles",competencesPrincipales:[
+      {id:'ma-b2cp1',name:"2.1 Gérer l'information",competencesDetaillees:[
+        {id:'ma-b2cp1cd1',name:"Repérer les sources d'information"},
+        {id:'ma-b2cp1cd2',name:"Contrôler l'information"},
+        {id:'ma-b2cp1cd3',name:"Actualiser une base de données"},
+        {id:'ma-b2cp1cd4',name:"Sélectionner l'information utile au service"},
+        {id:'ma-b2cp1cd5',name:"Mutualiser l'information nécessaire à la continuité du service"},
+        {id:'ma-b2cp1cd6',name:"Rendre compte de l'activité"}
+      ],savoirs:[
+        {id:'ma-b2cp1s1',name:"L'intelligence collective"},
+        {id:'ma-b2cp1s2',name:"La communication professionnelle orale et écrite"},
+        {id:'ma-b2cp1s3',name:"Les méthodes et outils de recherche d'information"},
+        {id:'ma-b2cp1s4',name:"La qualité de l'information"},
+        {id:'ma-b2cp1s5',name:"Le système d'information"},
+        {id:'ma-b2cp1s6',name:"Le traitement, la formalisation et la diffusion de l'information"},
+        {id:'ma-b2cp1s7',name:"Le compte rendu d'activités"}
+      ]},
+      {id:'ma-b2cp2',name:"2.2 Gérer des prestations internes et externes",competencesDetaillees:[
+        {id:'ma-b2cp2cd1',name:"Identifier les prestations inhérentes aux activités d'accueil"},
+        {id:'ma-b2cp2cd2',name:"Formaliser une demande et/ou une offre de prestations"},
+        {id:'ma-b2cp2cd3',name:"Assurer le suivi d'une prestation"},
+        {id:'ma-b2cp2cd4',name:"Mesurer la qualité des prestations et proposer d'éventuelles améliorations"}
+      ],savoirs:[
+        {id:'ma-b2cp2s1',name:"Les prestations internes"},
+        {id:'ma-b2cp2s2',name:"Les prestations externes"}
+      ]},
+      {id:'ma-b2cp3',name:"2.3 Contribuer à la mise en œuvre de projet lié à l'accueil",competencesDetaillees:[
+        {id:'ma-b2cp3cd1',name:"Appréhender les enjeux du projet"},
+        {id:'ma-b2cp3cd2',name:"Participer à la réalisation et à la coordination du projet"},
+        {id:'ma-b2cp3cd3',name:"Analyser la qualité de la contribution et transmettre les résultats au porteur du projet"}
+      ],savoirs:[
+        {id:'ma-b2cp3s1',name:"La démarche de projet"}
+      ]}
+    ]},,
+    {id:'ma-b3',name:"Bloc 3 — Gérer la relation commerciale",competencesPrincipales:[
+      {id:'ma-b3cp1',name:"3.1 Contribuer au développement de la relation commerciale",competencesDetaillees:[
+        {id:'ma-b3cp1cd1',name:"Identifier les supports utiles à la relation commerciale"},
+        {id:'ma-b3cp1cd2',name:"Repérer les caractéristiques du public"},
+        {id:'ma-b3cp1cd3',name:"Appréhender l'offre de l'organisation"},
+        {id:'ma-b3cp1cd4',name:"Situer l'offre de l'organisation sur son marché"},
+        {id:'ma-b3cp1cd5',name:"Contribuer à l'amélioration de la connaissance du public"}
+      ],savoirs:[
+        {id:'ma-b3cp1s1',name:"La relation client et la relation usager"},
+        {id:'ma-b3cp1s2',name:"La personnalisation de l'offre"},
+        {id:'ma-b3cp1s3',name:"Les supports de la relation commerciale"},
+        {id:'ma-b3cp1s4',name:"La segmentation du public"},
+        {id:'ma-b3cp1s5',name:"Le positionnement de l'organisation sur le marché"}
+      ]},
+      {id:'ma-b3cp2',name:"3.2 Satisfaire et fidéliser le public",competencesDetaillees:[
+        {id:'ma-b3cp2cd1',name:"Co-construire avec le public la solution adaptée à ses besoins"},
+        {id:'ma-b3cp2cd2',name:"Finaliser la relation commerciale"},
+        {id:'ma-b3cp2cd3',name:"Contribuer à la satisfaction et à la fidélisation"},
+        {id:'ma-b3cp2cd4',name:"Collecter et identifier les motifs de satisfaction et d'insatisfaction"},
+        {id:'ma-b3cp2cd5',name:"Mesurer l'efficacité des actions de fidélisation"}
+      ],savoirs:[
+        {id:'ma-b3cp2s1',name:"La recherche de la solution adaptée au client/usager"},
+        {id:'ma-b3cp2s2',name:"Le parcours client, le parcours usager"},
+        {id:'ma-b3cp2s3',name:"L'expérience client, l'expérience usager"},
+        {id:'ma-b3cp2s4',name:"Les outils de collecte et d'analyse des motifs de satisfaction et d'insatisfaction"},
+        {id:'ma-b3cp2s5',name:"La fidélisation"}
+      ]},
+      {id:'ma-b3cp3',name:"3.3 Gérer les réclamations",competencesDetaillees:[
+        {id:'ma-b3cp3cd1',name:"Recueillir les réclamations"},
+        {id:'ma-b3cp3cd2',name:"Interagir pour comprendre les motifs de réclamation"},
+        {id:'ma-b3cp3cd3',name:"Apporter une réponse à la réclamation et/ou au mécontentement"},
+        {id:'ma-b3cp3cd4',name:"Rendre compte des situations rencontrées"}
+      ],savoirs:[
+        {id:'ma-b3cp3s1',name:"Le traitement des réclamations"}
+      ]}
+    ]}
+  ]},
+  {id:'ma-t',name:'Terminale BAC PRO MA',competences:[
+    {id:'ma-b1',name:"Bloc 1 — Gérer l'accueil multicanal à des fins d'information, d'orientation et de conseil",competencesPrincipales:[
+      {id:'ma-b1cp1',name:"1.1 Gérer simultanément les activités",competencesDetaillees:[
+        {id:'ma-b1cp1cd1',name:"Recenser et prioriser les activités"},
+        {id:'ma-b1cp1cd2',name:"Organiser ses activités en coordination avec l'équipe"},
+        {id:'ma-b1cp1cd3',name:"Repérer et gérer les aléas"}
+      ],savoirs:[
+        {id:'ma-b1cp1s1',name:"La relation de service"},
+        {id:'ma-b1cp1s2',name:"La communication interpersonnelle"},
+        {id:'ma-b1cp1s3',name:"La démarche qualité"},
+        {id:'ma-b1cp1s4',name:"Les chartes et procédures d'accueil"},
+        {id:'ma-b1cp1s5',name:"La gestion du temps et ses outils"}
+      ]},
+      {id:'ma-b1cp2',name:"1.2 Prendre contact avec le public",competencesDetaillees:[
+        {id:'ma-b1cp2cd1',name:"Identifier le public et repérer ses caractéristiques"},
+        {id:'ma-b1cp2cd2',name:"Recevoir le visiteur"}
+      ],savoirs:[
+        {id:'ma-b1cp2s1',name:"Les acteurs internes et externes de l'organisation"},
+        {id:'ma-b1cp2s2',name:"L'accueil multicanal"}
+      ]},
+      {id:'ma-b1cp3',name:"1.3 Identifier la demande",competencesDetaillees:[
+        {id:'ma-b1cp3cd1',name:"Appréhender la demande du public"},
+        {id:'ma-b1cp3cd2',name:"Apprécier la complexité de la demande"},
+        {id:'ma-b1cp3cd3',name:"Interagir pour préciser la demande"}
+      ],savoirs:[
+        {id:'ma-b1cp3s1',name:"La découverte des besoins"},
+        {id:'ma-b1cp3s2',name:"Les règles de confidentialité et d'éthique"}
+      ]},
+      {id:'ma-b1cp4',name:"1.4 Traiter la demande",competencesDetaillees:[
+        {id:'ma-b1cp4cd1',name:"Identifier et mobiliser les ressources utiles"},
+        {id:'ma-b1cp4cd2',name:"Apporter une réponse adaptée"},
+        {id:'ma-b1cp4cd3',name:"Construire une réponse personnalisée en termes d'orientation, d'information, de conseils et d'accompagnement"}
+      ],savoirs:[
+        {id:'ma-b1cp4s1',name:"Les ressources internes et externes de l'organisation"}
+      ]},
+      {id:'ma-b1cp5',name:"1.5 Gérer les flux",competencesDetaillees:[
+        {id:'ma-b1cp5cd1',name:"Identifier les paramètres générant du flux"},
+        {id:'ma-b1cp5cd2',name:"Mesurer l'impact du flux sur l'attente"},
+        {id:'ma-b1cp5cd3',name:"Repérer les signes de tensions générées par l'attente"},
+        {id:'ma-b1cp5cd4',name:"Accompagner l'attente du public"},
+        {id:'ma-b1cp5cd5',name:"Hiérarchiser les activités pour organiser l'attente"}
+      ],savoirs:[
+        {id:'ma-b1cp5s1',name:"La gestion du flux"}
+      ]},
+      {id:'ma-b1cp6',name:"1.6 Gérer les conflits",competencesDetaillees:[
+        {id:'ma-b1cp6cd1',name:"Repérer les signes de tension susceptibles de déboucher sur un conflit"},
+        {id:'ma-b1cp6cd2',name:"Interagir pour désamorcer la tension, le conflit"},
+        {id:'ma-b1cp6cd3',name:"Mettre en œuvre les solutions pour résoudre le conflit"}
+      ],savoirs:[
+        {id:'ma-b1cp6s1',name:"Les sources et les types de conflits"},
+        {id:'ma-b1cp6s2',name:"Les facteurs de stress et le contrôle de soi"},
+        {id:'ma-b1cp6s3',name:"La gestion des conflits"}
+      ]}
+    ]},,
+    {id:'ma-b2',name:"Bloc 2 — Gérer l'information et des prestations à des fins organisationnelles",competencesPrincipales:[
+      {id:'ma-b2cp1',name:"2.1 Gérer l'information",competencesDetaillees:[
+        {id:'ma-b2cp1cd1',name:"Repérer les sources d'information"},
+        {id:'ma-b2cp1cd2',name:"Contrôler l'information"},
+        {id:'ma-b2cp1cd3',name:"Actualiser une base de données"},
+        {id:'ma-b2cp1cd4',name:"Sélectionner l'information utile au service"},
+        {id:'ma-b2cp1cd5',name:"Mutualiser l'information nécessaire à la continuité du service"},
+        {id:'ma-b2cp1cd6',name:"Rendre compte de l'activité"}
+      ],savoirs:[
+        {id:'ma-b2cp1s1',name:"L'intelligence collective"},
+        {id:'ma-b2cp1s2',name:"La communication professionnelle orale et écrite"},
+        {id:'ma-b2cp1s3',name:"Les méthodes et outils de recherche d'information"},
+        {id:'ma-b2cp1s4',name:"La qualité de l'information"},
+        {id:'ma-b2cp1s5',name:"Le système d'information"},
+        {id:'ma-b2cp1s6',name:"Le traitement, la formalisation et la diffusion de l'information"},
+        {id:'ma-b2cp1s7',name:"Le compte rendu d'activités"}
+      ]},
+      {id:'ma-b2cp2',name:"2.2 Gérer des prestations internes et externes",competencesDetaillees:[
+        {id:'ma-b2cp2cd1',name:"Identifier les prestations inhérentes aux activités d'accueil"},
+        {id:'ma-b2cp2cd2',name:"Formaliser une demande et/ou une offre de prestations"},
+        {id:'ma-b2cp2cd3',name:"Assurer le suivi d'une prestation"},
+        {id:'ma-b2cp2cd4',name:"Mesurer la qualité des prestations et proposer d'éventuelles améliorations"}
+      ],savoirs:[
+        {id:'ma-b2cp2s1',name:"Les prestations internes"},
+        {id:'ma-b2cp2s2',name:"Les prestations externes"}
+      ]},
+      {id:'ma-b2cp3',name:"2.3 Contribuer à la mise en œuvre de projet lié à l'accueil",competencesDetaillees:[
+        {id:'ma-b2cp3cd1',name:"Appréhender les enjeux du projet"},
+        {id:'ma-b2cp3cd2',name:"Participer à la réalisation et à la coordination du projet"},
+        {id:'ma-b2cp3cd3',name:"Analyser la qualité de la contribution et transmettre les résultats au porteur du projet"}
+      ],savoirs:[
+        {id:'ma-b2cp3s1',name:"La démarche de projet"}
+      ]}
+    ]},,
+    {id:'ma-b3',name:"Bloc 3 — Gérer la relation commerciale",competencesPrincipales:[
+      {id:'ma-b3cp1',name:"3.1 Contribuer au développement de la relation commerciale",competencesDetaillees:[
+        {id:'ma-b3cp1cd1',name:"Identifier les supports utiles à la relation commerciale"},
+        {id:'ma-b3cp1cd2',name:"Repérer les caractéristiques du public"},
+        {id:'ma-b3cp1cd3',name:"Appréhender l'offre de l'organisation"},
+        {id:'ma-b3cp1cd4',name:"Situer l'offre de l'organisation sur son marché"},
+        {id:'ma-b3cp1cd5',name:"Contribuer à l'amélioration de la connaissance du public"}
+      ],savoirs:[
+        {id:'ma-b3cp1s1',name:"La relation client et la relation usager"},
+        {id:'ma-b3cp1s2',name:"La personnalisation de l'offre"},
+        {id:'ma-b3cp1s3',name:"Les supports de la relation commerciale"},
+        {id:'ma-b3cp1s4',name:"La segmentation du public"},
+        {id:'ma-b3cp1s5',name:"Le positionnement de l'organisation sur le marché"}
+      ]},
+      {id:'ma-b3cp2',name:"3.2 Satisfaire et fidéliser le public",competencesDetaillees:[
+        {id:'ma-b3cp2cd1',name:"Co-construire avec le public la solution adaptée à ses besoins"},
+        {id:'ma-b3cp2cd2',name:"Finaliser la relation commerciale"},
+        {id:'ma-b3cp2cd3',name:"Contribuer à la satisfaction et à la fidélisation"},
+        {id:'ma-b3cp2cd4',name:"Collecter et identifier les motifs de satisfaction et d'insatisfaction"},
+        {id:'ma-b3cp2cd5',name:"Mesurer l'efficacité des actions de fidélisation"}
+      ],savoirs:[
+        {id:'ma-b3cp2s1',name:"La recherche de la solution adaptée au client/usager"},
+        {id:'ma-b3cp2s2',name:"Le parcours client, le parcours usager"},
+        {id:'ma-b3cp2s3',name:"L'expérience client, l'expérience usager"},
+        {id:'ma-b3cp2s4',name:"Les outils de collecte et d'analyse des motifs de satisfaction et d'insatisfaction"},
+        {id:'ma-b3cp2s5',name:"La fidélisation"}
+      ]},
+      {id:'ma-b3cp3',name:"3.3 Gérer les réclamations",competencesDetaillees:[
+        {id:'ma-b3cp3cd1',name:"Recueillir les réclamations"},
+        {id:'ma-b3cp3cd2',name:"Interagir pour comprendre les motifs de réclamation"},
+        {id:'ma-b3cp3cd3',name:"Apporter une réponse à la réclamation et/ou au mécontentement"},
+        {id:'ma-b3cp3cd4',name:"Rendre compte des situations rencontrées"}
+      ],savoirs:[
+        {id:'ma-b3cp3s1',name:"Le traitement des réclamations"}
+      ]}
+    ]}
+  ]}
+],sc:"Vous êtes chargé(e) d'accueil dans une structure recevant du public (hôtel, siège d'entreprise, office de tourisme). Premier point de contact : accueil physique et téléphonique, orientation des visiteurs, gestion des plannings."},
+
+'bac-mcva':{name:'BAC PRO MCVA',niveaux:[
+  {id:'mcva-1',name:'1ère BAC PRO MCVA',competences:[
+    {id:'mcva-gc1',name:"GC1 — Conseiller et vendre",competencesPrincipales:[
+      {id:'mcva-gc1cp1',name:"Assurer la veille commerciale",competencesDetaillees:[
+        {id:'mcva-gc1cp1cd1',name:"Rechercher, hiérarchiser, exploiter et actualiser en continu les informations sur l'entreprise et son marché"},
+        {id:'mcva-gc1cp1cd2',name:"Maîtriser la technologie des produits"},
+        {id:'mcva-gc1cp1cd3',name:"Sélectionner les outils de recherche d'information les plus adaptés"}
+      ],savoirs:[
+        {id:'mcva-gc1cp1s1',name:"L'information"},
+        {id:'mcva-gc1cp1s2',name:"Les outils de recherche d'information"},
+        {id:'mcva-gc1cp1s3',name:"Les métiers commerciaux"},
+        {id:'mcva-gc1cp1s4',name:"Le marché"},
+        {id:'mcva-gc1cp1s5',name:"La zone de chalandise"},
+        {id:'mcva-gc1cp1s6',name:"Les caractéristiques des produits"},
+        {id:'mcva-gc1cp1s7',name:"Les exigences liées au développement durable et à l'éthique"},
+        {id:'mcva-gc1cp1s8',name:"Les prix et les marges"},
+        {id:'mcva-gc1cp1s9',name:"Les différents circuits et canaux de vente"}
+      ]},
+      {id:'mcva-gc1cp2',name:"Réaliser la vente dans un cadre omnicanal",competencesDetaillees:[
+        {id:'mcva-gc1cp2cd1',name:"Intégrer l'omnicanal dans le processus de vente"},
+        {id:'mcva-gc1cp2cd2',name:"Prendre contact avec le client"},
+        {id:'mcva-gc1cp2cd3',name:"S'adapter au contexte commercial et au comportement du client"},
+        {id:'mcva-gc1cp2cd4',name:"Découvrir, analyser et identifier le(s) besoin(s) du client, sa (ses) motivation(s) et ses freins éventuels"},
+        {id:'mcva-gc1cp2cd5',name:"Découvrir, analyser et reformuler les besoins du client"},
+        {id:'mcva-gc1cp2cd6',name:"Présenter l'entreprise et/ou ses produits et/ou ses services"},
+        {id:'mcva-gc1cp2cd7',name:"Conseiller le client en proposant la solution adaptée"},
+        {id:'mcva-gc1cp2cd8',name:"Argumenter"},
+        {id:'mcva-gc1cp2cd9',name:"Réaliser une démonstration le cas échéant"},
+        {id:'mcva-gc1cp2cd10',name:"Répondre aux objections du client"},
+        {id:'mcva-gc1cp2cd11',name:"Proposer les produits et/ou les services associés"},
+        {id:'mcva-gc1cp2cd12',name:"Détecter les opportunités de vente(s) additionnelle(s) et les concrétiser"},
+        {id:'mcva-gc1cp2cd13',name:"S'assurer de la disponibilité du produit"},
+        {id:'mcva-gc1cp2cd14',name:"Formaliser l'accord du client"}
+      ],savoirs:[
+        {id:'mcva-gc1cp2s1',name:"Les méthodes de vente"},
+        {id:'mcva-gc1cp2s2',name:"Les bases de la communication"},
+        {id:'mcva-gc1cp2s3',name:"Les outils d'aide à la vente"},
+        {id:'mcva-gc1cp2s4',name:"Les facteurs explicatifs du comportement d'achat"},
+        {id:'mcva-gc1cp2s5',name:"Le processus d'achat"},
+        {id:'mcva-gc1cp2s6',name:"Le questionnement"},
+        {id:'mcva-gc1cp2s7',name:"Les différentes étapes de la vente"},
+        {id:'mcva-gc1cp2s8',name:"Les services associés à la vente"}
+      ]},
+      {id:'mcva-gc1cp3',name:"Assurer l'exécution de la vente",competencesDetaillees:[
+        {id:'mcva-gc1cp3cd1',name:"Mettre en place les modalités de règlement et de livraison"},
+        {id:'mcva-gc1cp3cd2',name:"Rassurer le client sur son choix"},
+        {id:'mcva-gc1cp3cd3',name:"Prendre congé"}
+      ],savoirs:[
+        {id:'mcva-gc1cp3s1',name:"Le règlement"},
+        {id:'mcva-gc1cp3s2',name:"La livraison"},
+        {id:'mcva-gc1cp3s3',name:"Le contrat de vente"},
+        {id:'mcva-gc1cp3s4',name:"La garantie"}
+      ]}
+    ]},,
+    {id:'mcva-gc2',name:"GC2 — Suivre les ventes",competencesPrincipales:[
+      {id:'mcva-gc2cp1',name:"Assurer le suivi de la commande du produit et/ou du service",competencesDetaillees:[
+        {id:'mcva-gc2cp1cd1',name:"Suivre l'évolution de la commande et éventuellement du règlement"},
+        {id:'mcva-gc2cp1cd2',name:"Informer le client des délais et des modalités de mise à disposition"},
+        {id:'mcva-gc2cp1cd3',name:"Mettre en œuvre le ou les services associés"},
+        {id:'mcva-gc2cp1cd4',name:"Sélectionner le cas échéant le prestataire le plus adapté"},
+        {id:'mcva-gc2cp1cd5',name:"Collecter et transmettre les informations au service de l'entreprise ou aux prestataires concernés"},
+        {id:'mcva-gc2cp1cd6',name:"Suivre l'exécution du ou des service(s) associé(s) et en rendre compte"},
+        {id:'mcva-gc2cp1cd7',name:"Effectuer le cas échéant les relances"}
+      ],savoirs:[
+        {id:'mcva-gc2cp1s1',name:"La communication professionnelle"},
+        {id:'mcva-gc2cp1s2',name:"Les documents commerciaux"},
+        {id:'mcva-gc2cp1s3',name:"Les documents relatifs aux modalités de financement"},
+        {id:'mcva-gc2cp1s4',name:"Les modalités et procédures de livraison"},
+        {id:'mcva-gc2cp1s5',name:"La mesure de l'activité des vendeurs"}
+      ]},
+      {id:'mcva-gc2cp2',name:"Traiter les retours et les réclamations du client",competencesDetaillees:[
+        {id:'mcva-gc2cp2cd1',name:"Identifier le(s) problème(s) rencontré(s) par le client"},
+        {id:'mcva-gc2cp2cd2',name:"Proposer une solution adaptée en tenant compte des procédures de l'entreprise et de la réglementation"},
+        {id:'mcva-gc2cp2cd3',name:"S'assurer de la satisfaction du client"},
+        {id:'mcva-gc2cp2cd4',name:"Collecter les informations de satisfaction auprès des clients"},
+        {id:'mcva-gc2cp2cd5',name:"Mesurer et analyser la satisfaction du client"},
+        {id:'mcva-gc2cp2cd6',name:"Transmettre les informations sur la satisfaction du client"}
+      ],savoirs:[
+        {id:'mcva-gc2cp2s1',name:"La gestion des conflits"},
+        {id:'mcva-gc2cp2s2',name:"La gestion du stress"},
+        {id:'mcva-gc2cp2s3',name:"La protection du consommateur"},
+        {id:'mcva-gc2cp2s4',name:"Les contentieux"},
+        {id:'mcva-gc2cp2s5',name:"Les outils de mesure et d'analyse de la satisfaction client"}
+      ]},
+      {id:'mcva-gc2cp3',name:"Exploiter les informations recueillies à des fins d'amélioration",competencesDetaillees:[
+        {id:'mcva-gc2cp3cd1',name:"Proposer des éléments de nature à améliorer la satisfaction client"}
+      ],savoirs:[
+        {id:'mcva-gc2cp3s1',name:"Le système d'information commercial de l'entreprise"}
+      ]}
+    ]},,
+    {id:'mcva-gc3',name:"GC3 — Fidéliser la clientèle et développer la relation client",competencesPrincipales:[
+      {id:'mcva-gc3cp1',name:"Traiter et exploiter l'information ou le contact client",competencesDetaillees:[
+        {id:'mcva-gc3cp1cd1',name:"Traiter les messages et/ou les demandes des clients"},
+        {id:'mcva-gc3cp1cd2',name:"Recueillir, extraire, exploiter, synthétiser les données de sources internes et de sources externes"},
+        {id:'mcva-gc3cp1cd3',name:"Rendre compte des données appropriées"},
+        {id:'mcva-gc3cp1cd4',name:"Proposer des actions de fidélisation et/ou de développement de la relation client en adéquation avec les données recueillies"}
+      ],savoirs:[
+        {id:'mcva-gc3cp1s1',name:"La communication professionnelle"},
+        {id:'mcva-gc3cp1s2',name:"Le système d'information commercial et ses aspects juridiques"},
+        {id:'mcva-gc3cp1s3',name:"Les sources d'information internes et externes"},
+        {id:'mcva-gc3cp1s4',name:"La démarche mercatique"},
+        {id:'mcva-gc3cp1s5',name:"La démarche de projet"},
+        {id:'mcva-gc3cp1s6',name:"La fidélisation"},
+        {id:'mcva-gc3cp1s7',name:"Le développement de la relation client"}
+      ]},
+      {id:'mcva-gc3cp2',name:"Contribuer à des actions de fidélisation de la clientèle et de développement de la relation client",competencesDetaillees:[
+        {id:'mcva-gc3cp2cd1',name:"Sélectionner et mettre en œuvre les outils de fidélisation et/ou de développement de la relation client de l'entreprise"},
+        {id:'mcva-gc3cp2cd2',name:"Concourir à la préparation et à l'organisation d'événements et/ou d'opérations de fidélisation"},
+        {id:'mcva-gc3cp2cd3',name:"Participer à la mise en œuvre des événements et/ou opérations de fidélisation"},
+        {id:'mcva-gc3cp2cd4',name:"Effectuer des ventes au rebond"},
+        {id:'mcva-gc3cp2cd5',name:"Réaliser les opérations de suivi post événement"},
+        {id:'mcva-gc3cp2cd6',name:"Mobiliser les outils d'internet et les réseaux sociaux"}
+      ],savoirs:[
+        {id:'mcva-gc3cp2s1',name:"Les blogs, les réseaux sociaux, la mercatique digitale, l'e-réputation"},
+        {id:'mcva-gc3cp2s2',name:"Les événements et opérations commerciales"},
+        {id:'mcva-gc3cp2s3',name:"La mercatique directe"},
+        {id:'mcva-gc3cp2s4',name:"La promotion des ventes"},
+        {id:'mcva-gc3cp2s5',name:"Les caractéristiques de la vente au rebond"}
+      ]},
+      {id:'mcva-gc3cp3',name:"Évaluer les actions de fidélisation et de développement de la relation client",competencesDetaillees:[
+        {id:'mcva-gc3cp3cd1',name:"Enrichir et actualiser le SIC"},
+        {id:'mcva-gc3cp3cd2',name:"Mesurer et analyser les résultats"},
+        {id:'mcva-gc3cp3cd3',name:"Rendre compte des actions et des résultats par écrit et/ou à l'oral"},
+        {id:'mcva-gc3cp3cd4',name:"Proposer des axes d'amélioration"}
+      ],savoirs:[
+        {id:'mcva-gc3cp3s1',name:"La mesure de la satisfaction de la clientèle"},
+        {id:'mcva-gc3cp3s2',name:"Les indicateurs de gestion, de performance et d'attractivité"}
+      ]}
+    ]},
+    {id:'mcva-gc4a',name:"GC4A — Animer et gérer l'espace commercial",competencesPrincipales:[
+      {id:'mcva-gc4acp1',name:"Assurer les opérations préalables à la vente",competencesDetaillees:[
+        {id:'mcva-gc4acp1cd1',name:"Établir les commandes des produits auprès de la centrale d'achats et/ou des fournisseurs"},
+        {id:'mcva-gc4acp1cd2',name:"Préparer les commandes des clients issues de l'omnicanal"},
+        {id:'mcva-gc4acp1cd3',name:"Veiller à la gestion rigoureuse des stocks et au réapprovisionnement"},
+        {id:'mcva-gc4acp1cd4',name:"Réceptionner, contrôler et stocker les marchandises (quantitatif et qualitatif)"},
+        {id:'mcva-gc4acp1cd5',name:"Respecter les règles de valorisation des déchets et réduire le gaspillage"},
+        {id:'mcva-gc4acp1cd6',name:"Effectuer les relances et préparer les retours fournisseurs"},
+        {id:'mcva-gc4acp1cd7',name:"Établir le prix en fonction de variables commerciales données"},
+        {id:'mcva-gc4acp1cd8',name:"Étiqueter les produits et les sécuriser"},
+        {id:'mcva-gc4acp1cd9',name:"Enrichir et exploiter le système d'information commercial"},
+        {id:'mcva-gc4acp1cd10',name:"Comparer les résultats aux objectifs fixés et proposer des actions correctrices"},
+        {id:'mcva-gc4acp1cd11',name:"Participer aux opérations d'inventaire"},
+        {id:'mcva-gc4acp1cd12',name:"Identifier les invendus"},
+        {id:'mcva-gc4acp1cd13',name:"Lutter contre la démarque"},
+        {id:'mcva-gc4acp1cd14',name:"Gérer les retours et les échanges des clients"}
+      ],savoirs:[
+        {id:'mcva-gc4acp1s1',name:"Les caractéristiques des unités commerciales physiques et virtuelles"},
+        {id:'mcva-gc4acp1s2',name:"Le processus d'achat et d'approvisionnement"},
+        {id:'mcva-gc4acp1s3',name:"La gestion des approvisionnements"},
+        {id:'mcva-gc4acp1s4',name:"L'e-traitement des commandes dans le cadre de l'omnicanal"},
+        {id:'mcva-gc4acp1s5',name:"La réglementation en matière d'hygiène et de sécurité"},
+        {id:'mcva-gc4acp1s6',name:"La réception et la livraison des marchandises"},
+        {id:'mcva-gc4acp1s7',name:"Le stockage des marchandises"},
+        {id:'mcva-gc4acp1s8',name:"Le traitement des déchets"},
+        {id:'mcva-gc4acp1s9',name:"Le cadencier"},
+        {id:'mcva-gc4acp1s10',name:"Le SIC"},
+        {id:'mcva-gc4acp1s11',name:"L'étiquetage et la sécurisation des marchandises"},
+        {id:'mcva-gc4acp1s12',name:"Les informations et la réglementation sur les produits"},
+        {id:'mcva-gc4acp1s13',name:"La fixation du prix de vente"},
+        {id:'mcva-gc4acp1s14',name:"Les logiciels de gestion commerciale"},
+        {id:'mcva-gc4acp1s15',name:"Les inventaires"},
+        {id:'mcva-gc4acp1s16',name:"Les différentes démarques"},
+        {id:'mcva-gc4acp1s17',name:"Les indicateurs de gestion et d'exploitation"},
+        {id:'mcva-gc4acp1s18',name:"Les contraintes légales de la vente à distance"}
+      ]},
+      {id:'mcva-gc4acp2',name:"Rendre l'unité commerciale attractive et fonctionnelle",competencesDetaillees:[
+        {id:'mcva-gc4acp2cd1',name:"S'assurer de la disponibilité et de la qualité des produits"},
+        {id:'mcva-gc4acp2cd2',name:"Implanter les produits selon une logique commerciale et/ou d'entreprise"},
+        {id:'mcva-gc4acp2cd3',name:"Vérifier l'étiquetage, le balisage et la mise en valeur des produits"},
+        {id:'mcva-gc4acp2cd4',name:"S'assurer de la bonne tenue et de la propreté du rayon"},
+        {id:'mcva-gc4acp2cd5',name:"Accueillir, informer et orienter le client dans l'unité commerciale et à l'extérieur"},
+        {id:'mcva-gc4acp2cd6',name:"Mettre en place la signalétique"},
+        {id:'mcva-gc4acp2cd7',name:"Participer à l'agencement de la surface de vente"},
+        {id:'mcva-gc4acp2cd8',name:"Aménager la vitrine et/ou le rayon"},
+        {id:'mcva-gc4acp2cd9',name:"Mettre en scène l'offre et en optimiser la visibilité"},
+        {id:'mcva-gc4acp2cd10',name:"Veiller au respect des règles d'hygiène et de sécurité"},
+        {id:'mcva-gc4acp2cd11',name:"Valoriser l'offre sur les sites marchands et les réseaux sociaux"}
+      ],savoirs:[
+        {id:'mcva-gc4acp2s1',name:"L'agencement de l'unité commerciale"},
+        {id:'mcva-gc4acp2s2',name:"Les éléments de communication intérieure mettant en valeur l'offre"},
+        {id:'mcva-gc4acp2s3',name:"Les facteurs d'ambiance"},
+        {id:'mcva-gc4acp2s4',name:"Le marchandisage de gestion et les logiciels spécifiques"},
+        {id:'mcva-gc4acp2s5',name:"Les enjeux de la mise en valeur des produits et des services associés"},
+        {id:'mcva-gc4acp2s6',name:"L'offre sur les sites marchands et les réseaux sociaux"}
+      ]},
+      {id:'mcva-gc4acp3',name:"Développer la clientèle",competencesDetaillees:[
+        {id:'mcva-gc4acp3cd1',name:"Proposer des actions commerciales génératrices de trafic dans l'unité commerciale"},
+        {id:'mcva-gc4acp3cd2',name:"Sélectionner les gammes de produits à mettre en avant en lien avec la stratégie de l'unité commerciale"},
+        {id:'mcva-gc4acp3cd3',name:"Participer à la planification et à l'organisation des actions de promotion des marchandises"},
+        {id:'mcva-gc4acp3cd4',name:"Démarcher une nouvelle clientèle"},
+        {id:'mcva-gc4acp3cd5',name:"Communiquer sur l'événement"},
+        {id:'mcva-gc4acp3cd6',name:"Recourir aux sites marchands et aux réseaux sociaux"},
+        {id:'mcva-gc4acp3cd7',name:"Inciter à l'achat par une action commerciale, le cas échéant interactive"},
+        {id:'mcva-gc4acp3cd8',name:"Générer des contacts positifs/utiles"},
+        {id:'mcva-gc4acp3cd9',name:"Participer à l'évaluation et à l'analyse des performances des actions commerciales"}
+      ],savoirs:[
+        {id:'mcva-gc4acp3s1',name:"Les études en matière de comportement du consommateur, de satisfaction-client et de concurrence"},
+        {id:'mcva-gc4acp3s2',name:"Les bases de données commerciales, les fichiers clients"},
+        {id:'mcva-gc4acp3s3',name:"La segmentation de la clientèle"},
+        {id:'mcva-gc4acp3s4',name:"Les méthodes et outils de prospection"},
+        {id:'mcva-gc4acp3s5',name:"Les logiciels spécifiques"},
+        {id:'mcva-gc4acp3s6',name:"La communication commerciale (numérique, omnicanale), ses outils et ses supports"},
+        {id:'mcva-gc4acp3s7',name:"Les réseaux sociaux"},
+        {id:'mcva-gc4acp3s8',name:"La promotion des ventes"},
+        {id:'mcva-gc4acp3s9',name:"Les plans d'actions commerciales et les budgets publi-promotionnels"},
+        {id:'mcva-gc4acp3s10',name:"L'information sur le marché"},
+        {id:'mcva-gc4acp3s11',name:"Les tableaux de bord"}
+      ]}
+    ]},
+  ]},
+  {id:'mcva-t',name:'Terminale BAC PRO MCVA',competences:[
+    {id:'mcva-gc1',name:"GC1 — Conseiller et vendre",competencesPrincipales:[
+      {id:'mcva-gc1cp1',name:"Assurer la veille commerciale",competencesDetaillees:[
+        {id:'mcva-gc1cp1cd1',name:"Rechercher, hiérarchiser, exploiter et actualiser en continu les informations sur l'entreprise et son marché"},
+        {id:'mcva-gc1cp1cd2',name:"Maîtriser la technologie des produits"},
+        {id:'mcva-gc1cp1cd3',name:"Sélectionner les outils de recherche d'information les plus adaptés"}
+      ],savoirs:[
+        {id:'mcva-gc1cp1s1',name:"L'information"},
+        {id:'mcva-gc1cp1s2',name:"Les outils de recherche d'information"},
+        {id:'mcva-gc1cp1s3',name:"Les métiers commerciaux"},
+        {id:'mcva-gc1cp1s4',name:"Le marché"},
+        {id:'mcva-gc1cp1s5',name:"La zone de chalandise"},
+        {id:'mcva-gc1cp1s6',name:"Les caractéristiques des produits"},
+        {id:'mcva-gc1cp1s7',name:"Les exigences liées au développement durable et à l'éthique"},
+        {id:'mcva-gc1cp1s8',name:"Les prix et les marges"},
+        {id:'mcva-gc1cp1s9',name:"Les différents circuits et canaux de vente"}
+      ]},
+      {id:'mcva-gc1cp2',name:"Réaliser la vente dans un cadre omnicanal",competencesDetaillees:[
+        {id:'mcva-gc1cp2cd1',name:"Intégrer l'omnicanal dans le processus de vente"},
+        {id:'mcva-gc1cp2cd2',name:"Prendre contact avec le client"},
+        {id:'mcva-gc1cp2cd3',name:"S'adapter au contexte commercial et au comportement du client"},
+        {id:'mcva-gc1cp2cd4',name:"Découvrir, analyser et identifier le(s) besoin(s) du client, sa (ses) motivation(s) et ses freins éventuels"},
+        {id:'mcva-gc1cp2cd5',name:"Découvrir, analyser et reformuler les besoins du client"},
+        {id:'mcva-gc1cp2cd6',name:"Présenter l'entreprise et/ou ses produits et/ou ses services"},
+        {id:'mcva-gc1cp2cd7',name:"Conseiller le client en proposant la solution adaptée"},
+        {id:'mcva-gc1cp2cd8',name:"Argumenter"},
+        {id:'mcva-gc1cp2cd9',name:"Réaliser une démonstration le cas échéant"},
+        {id:'mcva-gc1cp2cd10',name:"Répondre aux objections du client"},
+        {id:'mcva-gc1cp2cd11',name:"Proposer les produits et/ou les services associés"},
+        {id:'mcva-gc1cp2cd12',name:"Détecter les opportunités de vente(s) additionnelle(s) et les concrétiser"},
+        {id:'mcva-gc1cp2cd13',name:"S'assurer de la disponibilité du produit"},
+        {id:'mcva-gc1cp2cd14',name:"Formaliser l'accord du client"}
+      ],savoirs:[
+        {id:'mcva-gc1cp2s1',name:"Les méthodes de vente"},
+        {id:'mcva-gc1cp2s2',name:"Les bases de la communication"},
+        {id:'mcva-gc1cp2s3',name:"Les outils d'aide à la vente"},
+        {id:'mcva-gc1cp2s4',name:"Les facteurs explicatifs du comportement d'achat"},
+        {id:'mcva-gc1cp2s5',name:"Le processus d'achat"},
+        {id:'mcva-gc1cp2s6',name:"Le questionnement"},
+        {id:'mcva-gc1cp2s7',name:"Les différentes étapes de la vente"},
+        {id:'mcva-gc1cp2s8',name:"Les services associés à la vente"}
+      ]},
+      {id:'mcva-gc1cp3',name:"Assurer l'exécution de la vente",competencesDetaillees:[
+        {id:'mcva-gc1cp3cd1',name:"Mettre en place les modalités de règlement et de livraison"},
+        {id:'mcva-gc1cp3cd2',name:"Rassurer le client sur son choix"},
+        {id:'mcva-gc1cp3cd3',name:"Prendre congé"}
+      ],savoirs:[
+        {id:'mcva-gc1cp3s1',name:"Le règlement"},
+        {id:'mcva-gc1cp3s2',name:"La livraison"},
+        {id:'mcva-gc1cp3s3',name:"Le contrat de vente"},
+        {id:'mcva-gc1cp3s4',name:"La garantie"}
+      ]}
+    ]},,
+    {id:'mcva-gc2',name:"GC2 — Suivre les ventes",competencesPrincipales:[
+      {id:'mcva-gc2cp1',name:"Assurer le suivi de la commande du produit et/ou du service",competencesDetaillees:[
+        {id:'mcva-gc2cp1cd1',name:"Suivre l'évolution de la commande et éventuellement du règlement"},
+        {id:'mcva-gc2cp1cd2',name:"Informer le client des délais et des modalités de mise à disposition"},
+        {id:'mcva-gc2cp1cd3',name:"Mettre en œuvre le ou les services associés"},
+        {id:'mcva-gc2cp1cd4',name:"Sélectionner le cas échéant le prestataire le plus adapté"},
+        {id:'mcva-gc2cp1cd5',name:"Collecter et transmettre les informations au service de l'entreprise ou aux prestataires concernés"},
+        {id:'mcva-gc2cp1cd6',name:"Suivre l'exécution du ou des service(s) associé(s) et en rendre compte"},
+        {id:'mcva-gc2cp1cd7',name:"Effectuer le cas échéant les relances"}
+      ],savoirs:[
+        {id:'mcva-gc2cp1s1',name:"La communication professionnelle"},
+        {id:'mcva-gc2cp1s2',name:"Les documents commerciaux"},
+        {id:'mcva-gc2cp1s3',name:"Les documents relatifs aux modalités de financement"},
+        {id:'mcva-gc2cp1s4',name:"Les modalités et procédures de livraison"},
+        {id:'mcva-gc2cp1s5',name:"La mesure de l'activité des vendeurs"}
+      ]},
+      {id:'mcva-gc2cp2',name:"Traiter les retours et les réclamations du client",competencesDetaillees:[
+        {id:'mcva-gc2cp2cd1',name:"Identifier le(s) problème(s) rencontré(s) par le client"},
+        {id:'mcva-gc2cp2cd2',name:"Proposer une solution adaptée en tenant compte des procédures de l'entreprise et de la réglementation"},
+        {id:'mcva-gc2cp2cd3',name:"S'assurer de la satisfaction du client"},
+        {id:'mcva-gc2cp2cd4',name:"Collecter les informations de satisfaction auprès des clients"},
+        {id:'mcva-gc2cp2cd5',name:"Mesurer et analyser la satisfaction du client"},
+        {id:'mcva-gc2cp2cd6',name:"Transmettre les informations sur la satisfaction du client"}
+      ],savoirs:[
+        {id:'mcva-gc2cp2s1',name:"La gestion des conflits"},
+        {id:'mcva-gc2cp2s2',name:"La gestion du stress"},
+        {id:'mcva-gc2cp2s3',name:"La protection du consommateur"},
+        {id:'mcva-gc2cp2s4',name:"Les contentieux"},
+        {id:'mcva-gc2cp2s5',name:"Les outils de mesure et d'analyse de la satisfaction client"}
+      ]},
+      {id:'mcva-gc2cp3',name:"Exploiter les informations recueillies à des fins d'amélioration",competencesDetaillees:[
+        {id:'mcva-gc2cp3cd1',name:"Proposer des éléments de nature à améliorer la satisfaction client"}
+      ],savoirs:[
+        {id:'mcva-gc2cp3s1',name:"Le système d'information commercial de l'entreprise"}
+      ]}
+    ]},,
+    {id:'mcva-gc3',name:"GC3 — Fidéliser la clientèle et développer la relation client",competencesPrincipales:[
+      {id:'mcva-gc3cp1',name:"Traiter et exploiter l'information ou le contact client",competencesDetaillees:[
+        {id:'mcva-gc3cp1cd1',name:"Traiter les messages et/ou les demandes des clients"},
+        {id:'mcva-gc3cp1cd2',name:"Recueillir, extraire, exploiter, synthétiser les données de sources internes et de sources externes"},
+        {id:'mcva-gc3cp1cd3',name:"Rendre compte des données appropriées"},
+        {id:'mcva-gc3cp1cd4',name:"Proposer des actions de fidélisation et/ou de développement de la relation client en adéquation avec les données recueillies"}
+      ],savoirs:[
+        {id:'mcva-gc3cp1s1',name:"La communication professionnelle"},
+        {id:'mcva-gc3cp1s2',name:"Le système d'information commercial et ses aspects juridiques"},
+        {id:'mcva-gc3cp1s3',name:"Les sources d'information internes et externes"},
+        {id:'mcva-gc3cp1s4',name:"La démarche mercatique"},
+        {id:'mcva-gc3cp1s5',name:"La démarche de projet"},
+        {id:'mcva-gc3cp1s6',name:"La fidélisation"},
+        {id:'mcva-gc3cp1s7',name:"Le développement de la relation client"}
+      ]},
+      {id:'mcva-gc3cp2',name:"Contribuer à des actions de fidélisation de la clientèle et de développement de la relation client",competencesDetaillees:[
+        {id:'mcva-gc3cp2cd1',name:"Sélectionner et mettre en œuvre les outils de fidélisation et/ou de développement de la relation client de l'entreprise"},
+        {id:'mcva-gc3cp2cd2',name:"Concourir à la préparation et à l'organisation d'événements et/ou d'opérations de fidélisation"},
+        {id:'mcva-gc3cp2cd3',name:"Participer à la mise en œuvre des événements et/ou opérations de fidélisation"},
+        {id:'mcva-gc3cp2cd4',name:"Effectuer des ventes au rebond"},
+        {id:'mcva-gc3cp2cd5',name:"Réaliser les opérations de suivi post événement"},
+        {id:'mcva-gc3cp2cd6',name:"Mobiliser les outils d'internet et les réseaux sociaux"}
+      ],savoirs:[
+        {id:'mcva-gc3cp2s1',name:"Les blogs, les réseaux sociaux, la mercatique digitale, l'e-réputation"},
+        {id:'mcva-gc3cp2s2',name:"Les événements et opérations commerciales"},
+        {id:'mcva-gc3cp2s3',name:"La mercatique directe"},
+        {id:'mcva-gc3cp2s4',name:"La promotion des ventes"},
+        {id:'mcva-gc3cp2s5',name:"Les caractéristiques de la vente au rebond"}
+      ]},
+      {id:'mcva-gc3cp3',name:"Évaluer les actions de fidélisation et de développement de la relation client",competencesDetaillees:[
+        {id:'mcva-gc3cp3cd1',name:"Enrichir et actualiser le SIC"},
+        {id:'mcva-gc3cp3cd2',name:"Mesurer et analyser les résultats"},
+        {id:'mcva-gc3cp3cd3',name:"Rendre compte des actions et des résultats par écrit et/ou à l'oral"},
+        {id:'mcva-gc3cp3cd4',name:"Proposer des axes d'amélioration"}
+      ],savoirs:[
+        {id:'mcva-gc3cp3s1',name:"La mesure de la satisfaction de la clientèle"},
+        {id:'mcva-gc3cp3s2',name:"Les indicateurs de gestion, de performance et d'attractivité"}
+      ]}
+    ]},
+    {id:'mcva-gc4a',name:"GC4A — Animer et gérer l'espace commercial",competencesPrincipales:[
+      {id:'mcva-gc4acp1',name:"Assurer les opérations préalables à la vente",competencesDetaillees:[
+        {id:'mcva-gc4acp1cd1',name:"Établir les commandes des produits auprès de la centrale d'achats et/ou des fournisseurs"},
+        {id:'mcva-gc4acp1cd2',name:"Préparer les commandes des clients issues de l'omnicanal"},
+        {id:'mcva-gc4acp1cd3',name:"Veiller à la gestion rigoureuse des stocks et au réapprovisionnement"},
+        {id:'mcva-gc4acp1cd4',name:"Réceptionner, contrôler et stocker les marchandises (quantitatif et qualitatif)"},
+        {id:'mcva-gc4acp1cd5',name:"Respecter les règles de valorisation des déchets et réduire le gaspillage"},
+        {id:'mcva-gc4acp1cd6',name:"Effectuer les relances et préparer les retours fournisseurs"},
+        {id:'mcva-gc4acp1cd7',name:"Établir le prix en fonction de variables commerciales données"},
+        {id:'mcva-gc4acp1cd8',name:"Étiqueter les produits et les sécuriser"},
+        {id:'mcva-gc4acp1cd9',name:"Enrichir et exploiter le système d'information commercial"},
+        {id:'mcva-gc4acp1cd10',name:"Comparer les résultats aux objectifs fixés et proposer des actions correctrices"},
+        {id:'mcva-gc4acp1cd11',name:"Participer aux opérations d'inventaire"},
+        {id:'mcva-gc4acp1cd12',name:"Identifier les invendus"},
+        {id:'mcva-gc4acp1cd13',name:"Lutter contre la démarque"},
+        {id:'mcva-gc4acp1cd14',name:"Gérer les retours et les échanges des clients"}
+      ],savoirs:[
+        {id:'mcva-gc4acp1s1',name:"Les caractéristiques des unités commerciales physiques et virtuelles"},
+        {id:'mcva-gc4acp1s2',name:"Le processus d'achat et d'approvisionnement"},
+        {id:'mcva-gc4acp1s3',name:"La gestion des approvisionnements"},
+        {id:'mcva-gc4acp1s4',name:"L'e-traitement des commandes dans le cadre de l'omnicanal"},
+        {id:'mcva-gc4acp1s5',name:"La réglementation en matière d'hygiène et de sécurité"},
+        {id:'mcva-gc4acp1s6',name:"La réception et la livraison des marchandises"},
+        {id:'mcva-gc4acp1s7',name:"Le stockage des marchandises"},
+        {id:'mcva-gc4acp1s8',name:"Le traitement des déchets"},
+        {id:'mcva-gc4acp1s9',name:"Le cadencier"},
+        {id:'mcva-gc4acp1s10',name:"Le SIC"},
+        {id:'mcva-gc4acp1s11',name:"L'étiquetage et la sécurisation des marchandises"},
+        {id:'mcva-gc4acp1s12',name:"Les informations et la réglementation sur les produits"},
+        {id:'mcva-gc4acp1s13',name:"La fixation du prix de vente"},
+        {id:'mcva-gc4acp1s14',name:"Les logiciels de gestion commerciale"},
+        {id:'mcva-gc4acp1s15',name:"Les inventaires"},
+        {id:'mcva-gc4acp1s16',name:"Les différentes démarques"},
+        {id:'mcva-gc4acp1s17',name:"Les indicateurs de gestion et d'exploitation"},
+        {id:'mcva-gc4acp1s18',name:"Les contraintes légales de la vente à distance"}
+      ]},
+      {id:'mcva-gc4acp2',name:"Rendre l'unité commerciale attractive et fonctionnelle",competencesDetaillees:[
+        {id:'mcva-gc4acp2cd1',name:"S'assurer de la disponibilité et de la qualité des produits"},
+        {id:'mcva-gc4acp2cd2',name:"Implanter les produits selon une logique commerciale et/ou d'entreprise"},
+        {id:'mcva-gc4acp2cd3',name:"Vérifier l'étiquetage, le balisage et la mise en valeur des produits"},
+        {id:'mcva-gc4acp2cd4',name:"S'assurer de la bonne tenue et de la propreté du rayon"},
+        {id:'mcva-gc4acp2cd5',name:"Accueillir, informer et orienter le client dans l'unité commerciale et à l'extérieur"},
+        {id:'mcva-gc4acp2cd6',name:"Mettre en place la signalétique"},
+        {id:'mcva-gc4acp2cd7',name:"Participer à l'agencement de la surface de vente"},
+        {id:'mcva-gc4acp2cd8',name:"Aménager la vitrine et/ou le rayon"},
+        {id:'mcva-gc4acp2cd9',name:"Mettre en scène l'offre et en optimiser la visibilité"},
+        {id:'mcva-gc4acp2cd10',name:"Veiller au respect des règles d'hygiène et de sécurité"},
+        {id:'mcva-gc4acp2cd11',name:"Valoriser l'offre sur les sites marchands et les réseaux sociaux"}
+      ],savoirs:[
+        {id:'mcva-gc4acp2s1',name:"L'agencement de l'unité commerciale"},
+        {id:'mcva-gc4acp2s2',name:"Les éléments de communication intérieure mettant en valeur l'offre"},
+        {id:'mcva-gc4acp2s3',name:"Les facteurs d'ambiance"},
+        {id:'mcva-gc4acp2s4',name:"Le marchandisage de gestion et les logiciels spécifiques"},
+        {id:'mcva-gc4acp2s5',name:"Les enjeux de la mise en valeur des produits et des services associés"},
+        {id:'mcva-gc4acp2s6',name:"L'offre sur les sites marchands et les réseaux sociaux"}
+      ]},
+      {id:'mcva-gc4acp3',name:"Développer la clientèle",competencesDetaillees:[
+        {id:'mcva-gc4acp3cd1',name:"Proposer des actions commerciales génératrices de trafic dans l'unité commerciale"},
+        {id:'mcva-gc4acp3cd2',name:"Sélectionner les gammes de produits à mettre en avant en lien avec la stratégie de l'unité commerciale"},
+        {id:'mcva-gc4acp3cd3',name:"Participer à la planification et à l'organisation des actions de promotion des marchandises"},
+        {id:'mcva-gc4acp3cd4',name:"Démarcher une nouvelle clientèle"},
+        {id:'mcva-gc4acp3cd5',name:"Communiquer sur l'événement"},
+        {id:'mcva-gc4acp3cd6',name:"Recourir aux sites marchands et aux réseaux sociaux"},
+        {id:'mcva-gc4acp3cd7',name:"Inciter à l'achat par une action commerciale, le cas échéant interactive"},
+        {id:'mcva-gc4acp3cd8',name:"Générer des contacts positifs/utiles"},
+        {id:'mcva-gc4acp3cd9',name:"Participer à l'évaluation et à l'analyse des performances des actions commerciales"}
+      ],savoirs:[
+        {id:'mcva-gc4acp3s1',name:"Les études en matière de comportement du consommateur, de satisfaction-client et de concurrence"},
+        {id:'mcva-gc4acp3s2',name:"Les bases de données commerciales, les fichiers clients"},
+        {id:'mcva-gc4acp3s3',name:"La segmentation de la clientèle"},
+        {id:'mcva-gc4acp3s4',name:"Les méthodes et outils de prospection"},
+        {id:'mcva-gc4acp3s5',name:"Les logiciels spécifiques"},
+        {id:'mcva-gc4acp3s6',name:"La communication commerciale (numérique, omnicanale), ses outils et ses supports"},
+        {id:'mcva-gc4acp3s7',name:"Les réseaux sociaux"},
+        {id:'mcva-gc4acp3s8',name:"La promotion des ventes"},
+        {id:'mcva-gc4acp3s9',name:"Les plans d'actions commerciales et les budgets publi-promotionnels"},
+        {id:'mcva-gc4acp3s10',name:"L'information sur le marché"},
+        {id:'mcva-gc4acp3s11',name:"Les tableaux de bord"}
+      ]}
+    ]},
+  ]}
+],sc:"Vous êtes vendeur-conseil dans une unité commerciale spécialisée (ex : Décathlon Matoury, Kiabi Family Plaza, Darty Matoury). Le manager vous a confié la responsabilité d'un rayon. Votre mission : gérer l'espace commercial et conseiller activement les clients pour atteindre les objectifs."},
+
+'bac-mcvb':{name:'BAC PRO MCVB',niveaux:[
+  {id:'mcvb-1',name:'1ère BAC PRO MCVB',competences:[
+    {id:'mcvb-gc1',name:"GC1 — Conseiller et vendre",competencesPrincipales:[
+      {id:'mcvb-gc1cp1',name:"Assurer la veille commerciale",competencesDetaillees:[
+        {id:'mcvb-gc1cp1cd1',name:"Rechercher, hiérarchiser, exploiter et actualiser en continu les informations sur l'entreprise et son marché"},
+        {id:'mcvb-gc1cp1cd2',name:"Maîtriser la technologie des produits"},
+        {id:'mcvb-gc1cp1cd3',name:"Sélectionner les outils de recherche d'information les plus adaptés"}
+      ],savoirs:[
+        {id:'mcvb-gc1cp1s1',name:"L'information"},
+        {id:'mcvb-gc1cp1s2',name:"Les outils de recherche d'information"},
+        {id:'mcvb-gc1cp1s3',name:"Les métiers commerciaux"},
+        {id:'mcvb-gc1cp1s4',name:"Le marché"},
+        {id:'mcvb-gc1cp1s5',name:"La zone de chalandise"},
+        {id:'mcvb-gc1cp1s6',name:"Les caractéristiques des produits"},
+        {id:'mcvb-gc1cp1s7',name:"Les exigences liées au développement durable et à l'éthique"},
+        {id:'mcvb-gc1cp1s8',name:"Les prix et les marges"},
+        {id:'mcvb-gc1cp1s9',name:"Les différents circuits et canaux de vente"}
+      ]},
+      {id:'mcvb-gc1cp2',name:"Réaliser la vente dans un cadre omnicanal",competencesDetaillees:[
+        {id:'mcvb-gc1cp2cd1',name:"Intégrer l'omnicanal dans le processus de vente"},
+        {id:'mcvb-gc1cp2cd2',name:"Prendre contact avec le client"},
+        {id:'mcvb-gc1cp2cd3',name:"S'adapter au contexte commercial et au comportement du client"},
+        {id:'mcvb-gc1cp2cd4',name:"Découvrir, analyser et identifier le(s) besoin(s) du client"},
+        {id:'mcvb-gc1cp2cd5',name:"Reformuler les besoins du client"},
+        {id:'mcvb-gc1cp2cd6',name:"Présenter l'entreprise et/ou ses produits et/ou ses services"},
+        {id:'mcvb-gc1cp2cd7',name:"Conseiller le client en proposant la solution adaptée"},
+        {id:'mcvb-gc1cp2cd8',name:"Argumenter"},
+        {id:'mcvb-gc1cp2cd9',name:"Répondre aux objections du client"},
+        {id:'mcvb-gc1cp2cd10',name:"Proposer les produits et/ou les services associés"},
+        {id:'mcvb-gc1cp2cd11',name:"Détecter les opportunités de vente(s) additionnelle(s) et les concrétiser"},
+        {id:'mcvb-gc1cp2cd12',name:"Formaliser l'accord du client"}
+      ],savoirs:[
+        {id:'mcvb-gc1cp2s1',name:"Les méthodes de vente"},
+        {id:'mcvb-gc1cp2s2',name:"Les bases de la communication"},
+        {id:'mcvb-gc1cp2s3',name:"Les outils d'aide à la vente"},
+        {id:'mcvb-gc1cp2s4',name:"Les facteurs explicatifs du comportement d'achat"},
+        {id:'mcvb-gc1cp2s5',name:"Le processus d'achat"},
+        {id:'mcvb-gc1cp2s6',name:"Le questionnement"},
+        {id:'mcvb-gc1cp2s7',name:"Les différentes étapes de la vente"},
+        {id:'mcvb-gc1cp2s8',name:"Les services associés à la vente"}
+      ]},
+      {id:'mcvb-gc1cp3',name:"Assurer l'exécution de la vente",competencesDetaillees:[
+        {id:'mcvb-gc1cp3cd1',name:"Mettre en place les modalités de règlement et de livraison"},
+        {id:'mcvb-gc1cp3cd2',name:"Rassurer le client sur son choix"},
+        {id:'mcvb-gc1cp3cd3',name:"Prendre congé"}
+      ],savoirs:[
+        {id:'mcvb-gc1cp3s1',name:"Le règlement"},
+        {id:'mcvb-gc1cp3s2',name:"La livraison"},
+        {id:'mcvb-gc1cp3s3',name:"Le contrat de vente"},
+        {id:'mcvb-gc1cp3s4',name:"La garantie"}
+      ]}
+    ]},,
+    {id:'mcvb-gc2',name:"GC2 — Suivre les ventes",competencesPrincipales:[
+      {id:'mcvb-gc2cp1',name:"Assurer le suivi de la commande du produit et/ou du service",competencesDetaillees:[
+        {id:'mcvb-gc2cp1cd1',name:"Suivre l'évolution de la commande et éventuellement du règlement"},
+        {id:'mcvb-gc2cp1cd2',name:"Informer le client des délais et des modalités de mise à disposition"},
+        {id:'mcvb-gc2cp1cd3',name:"Mettre en œuvre le ou les services associés"},
+        {id:'mcvb-gc2cp1cd4',name:"Collecter et transmettre les informations aux services concernés"},
+        {id:'mcvb-gc2cp1cd5',name:"Effectuer le cas échéant les relances"}
+      ],savoirs:[
+        {id:'mcvb-gc2cp1s1',name:"La communication professionnelle"},
+        {id:'mcvb-gc2cp1s2',name:"Les documents commerciaux"},
+        {id:'mcvb-gc2cp1s3',name:"Les modalités et procédures de livraison"},
+        {id:'mcvb-gc2cp1s4',name:"La mesure de l'activité des vendeurs"}
+      ]},
+      {id:'mcvb-gc2cp2',name:"Traiter les retours et les réclamations du client",competencesDetaillees:[
+        {id:'mcvb-gc2cp2cd1',name:"Identifier le(s) problème(s) rencontré(s) par le client"},
+        {id:'mcvb-gc2cp2cd2',name:"Proposer une solution adaptée en tenant compte des procédures de l'entreprise"},
+        {id:'mcvb-gc2cp2cd3',name:"S'assurer de la satisfaction du client"},
+        {id:'mcvb-gc2cp2cd4',name:"Collecter et transmettre les informations sur la satisfaction du client"}
+      ],savoirs:[
+        {id:'mcvb-gc2cp2s1',name:"La gestion des conflits"},
+        {id:'mcvb-gc2cp2s2',name:"La gestion du stress"},
+        {id:'mcvb-gc2cp2s3',name:"La protection du consommateur"},
+        {id:'mcvb-gc2cp2s4',name:"Les outils de mesure et d'analyse de la satisfaction client"}
+      ]},
+      {id:'mcvb-gc2cp3',name:"Exploiter les informations recueillies à des fins d'amélioration",competencesDetaillees:[
+        {id:'mcvb-gc2cp3cd1',name:"Proposer des éléments de nature à améliorer la satisfaction client"}
+      ],savoirs:[
+        {id:'mcvb-gc2cp3s1',name:"Le système d'information commercial de l'entreprise"}
+      ]}
+    ]},,
+    {id:'mcvb-gc3',name:"GC3 — Fidéliser la clientèle et développer la relation client",competencesPrincipales:[
+      {id:'mcvb-gc3cp1',name:"Traiter et exploiter l'information ou le contact client",competencesDetaillees:[
+        {id:'mcvb-gc3cp1cd1',name:"Traiter les messages et/ou les demandes des clients"},
+        {id:'mcvb-gc3cp1cd2',name:"Recueillir, extraire, exploiter, synthétiser les données de sources internes et externes"},
+        {id:'mcvb-gc3cp1cd3',name:"Rendre compte des données appropriées"},
+        {id:'mcvb-gc3cp1cd4',name:"Proposer des actions de fidélisation et/ou de développement de la relation client"}
+      ],savoirs:[
+        {id:'mcvb-gc3cp1s1',name:"La communication professionnelle"},
+        {id:'mcvb-gc3cp1s2',name:"Le système d'information commercial et ses aspects juridiques"},
+        {id:'mcvb-gc3cp1s3',name:"Les sources d'information internes et externes"},
+        {id:'mcvb-gc3cp1s4',name:"La démarche mercatique"},
+        {id:'mcvb-gc3cp1s5',name:"La fidélisation"},
+        {id:'mcvb-gc3cp1s6',name:"Le développement de la relation client"}
+      ]},
+      {id:'mcvb-gc3cp2',name:"Contribuer à des actions de fidélisation et de développement de la relation client",competencesDetaillees:[
+        {id:'mcvb-gc3cp2cd1',name:"Sélectionner et mettre en œuvre les outils de fidélisation de l'entreprise"},
+        {id:'mcvb-gc3cp2cd2',name:"Concourir à la préparation et à l'organisation d'événements de fidélisation"},
+        {id:'mcvb-gc3cp2cd3',name:"Effectuer des ventes au rebond"},
+        {id:'mcvb-gc3cp2cd4',name:"Mobiliser les outils d'internet et les réseaux sociaux"}
+      ],savoirs:[
+        {id:'mcvb-gc3cp2s1',name:"Les blogs, les réseaux sociaux, la mercatique digitale, l'e-réputation"},
+        {id:'mcvb-gc3cp2s2',name:"Les événements et opérations commerciales"},
+        {id:'mcvb-gc3cp2s3',name:"La mercatique directe"},
+        {id:'mcvb-gc3cp2s4',name:"La promotion des ventes"}
+      ]},
+      {id:'mcvb-gc3cp3',name:"Évaluer les actions de fidélisation et de développement de la relation client",competencesDetaillees:[
+        {id:'mcvb-gc3cp3cd1',name:"Enrichir et actualiser le SIC"},
+        {id:'mcvb-gc3cp3cd2',name:"Mesurer et analyser les résultats"},
+        {id:'mcvb-gc3cp3cd3',name:"Rendre compte des actions et des résultats par écrit et/ou à l'oral"},
+        {id:'mcvb-gc3cp3cd4',name:"Proposer des axes d'amélioration"}
+      ],savoirs:[
+        {id:'mcvb-gc3cp3s1',name:"La mesure de la satisfaction de la clientèle"},
+        {id:'mcvb-gc3cp3s2',name:"Les indicateurs de gestion, de performance et d'attractivité"}
+      ]}
+    ]},
+    {id:'mcvb-gc4b',name:"GC4B — Prospecter et valoriser l'offre commerciale",competencesPrincipales:[
+      {id:'mcvb-gc4bcp1',name:"Rechercher et analyser les informations à des fins d'exploitation",competencesDetaillees:[
+        {id:'mcvb-gc4bcp1cd1',name:"Identifier, au sein du SIC, les informations internes utiles à l'opération de prospection, les extraire et les analyser"},
+        {id:'mcvb-gc4bcp1cd2',name:"Collecter, traiter et analyser les informations externes"},
+        {id:'mcvb-gc4bcp1cd3',name:"Mettre à jour le système d'information commercial"}
+      ],savoirs:[
+        {id:'mcvb-gc4bcp1s1',name:"L'information interne et externe à l'entreprise et ses sources"},
+        {id:'mcvb-gc4bcp1s2',name:"Les études en matière de comportement du consommateur, de satisfaction clients et de concurrence"},
+        {id:'mcvb-gc4bcp1s3',name:"Le SIC et ses aspects juridiques"},
+        {id:'mcvb-gc4bcp1s4',name:"Les outils de recherche d'informations"}
+      ]},
+      {id:'mcvb-gc4bcp2',name:"Participer à la conception d'une opération de prospection",competencesDetaillees:[
+        {id:'mcvb-gc4bcp2cd1',name:"Définir la cible en cohérence avec la stratégie de l'organisation et des moyens alloués"},
+        {id:'mcvb-gc4bcp2cd2',name:"Fixer les objectifs quantitatifs et qualitatifs de l'opération"},
+        {id:'mcvb-gc4bcp2cd3',name:"Déterminer la durée de l'opération en fonction des moyens alloués"},
+        {id:'mcvb-gc4bcp2cd4',name:"Déterminer la ou les techniques de prospection adaptées aux objectifs"}
+      ],savoirs:[
+        {id:'mcvb-gc4bcp2s1',name:"La segmentation des prospects"},
+        {id:'mcvb-gc4bcp2s2',name:"Le ciblage"},
+        {id:'mcvb-gc4bcp2s3',name:"Le positionnement"},
+        {id:'mcvb-gc4bcp2s4',name:"Les objectifs d'une opération de prospection"},
+        {id:'mcvb-gc4bcp2s5',name:"Les techniques de prospection"},
+        {id:'mcvb-gc4bcp2s6',name:"La force de vente"},
+        {id:'mcvb-gc4bcp2s7',name:"La gestion du temps professionnel"},
+        {id:'mcvb-gc4bcp2s8',name:"Les frais professionnels"},
+        {id:'mcvb-gc4bcp2s9',name:"Le budget"}
+      ]},
+      {id:'mcvb-gc4bcp3',name:"Mettre en œuvre une opération de prospection",competencesDetaillees:[
+        {id:'mcvb-gc4bcp3cd1',name:"Élaborer le plan de prospection et le plan de tournée"},
+        {id:'mcvb-gc4bcp3cd2',name:"Construire et/ou mettre à jour le fichier prospects"},
+        {id:'mcvb-gc4bcp3cd3',name:"Sélectionner et/ou concevoir des outils d'aide à la prospection et des supports de communication"},
+        {id:'mcvb-gc4bcp3cd4',name:"Établir le contact avec le prospect dans des situations de prospection physique et/ou à distance"},
+        {id:'mcvb-gc4bcp3cd5',name:"Identifier les besoins du prospect"},
+        {id:'mcvb-gc4bcp3cd6',name:"Argumenter"},
+        {id:'mcvb-gc4bcp3cd7',name:"Traiter les objections"},
+        {id:'mcvb-gc4bcp3cd8',name:"Conclure"},
+        {id:'mcvb-gc4bcp3cd9',name:"Prendre congé"}
+      ],savoirs:[
+        {id:'mcvb-gc4bcp3s1',name:"L'offre de l'entreprise"},
+        {id:'mcvb-gc4bcp3s2',name:"Les outils d'aide à la prospection"},
+        {id:'mcvb-gc4bcp3s3',name:"Les supports de communication"},
+        {id:'mcvb-gc4bcp3s4',name:"Les techniques d'argumentation commerciale"},
+        {id:'mcvb-gc4bcp3s5',name:"Le plan de découverte"},
+        {id:'mcvb-gc4bcp3s6',name:"L'argumentaire"},
+        {id:'mcvb-gc4bcp3s7',name:"Le traitement des objections"},
+        {id:'mcvb-gc4bcp3s8',name:"La gestion du stress"}
+      ]},
+      {id:'mcvb-gc4bcp4',name:"Suivre et évaluer l'action de prospection",competencesDetaillees:[
+        {id:'mcvb-gc4bcp4cd1',name:"Traiter et exploiter les contacts obtenus lors d'une opération de prospection"},
+        {id:'mcvb-gc4bcp4cd2',name:"Mettre à jour le fichier prospect et le système d'information mercatique"},
+        {id:'mcvb-gc4bcp4cd3',name:"Qualifier les contacts"},
+        {id:'mcvb-gc4bcp4cd4',name:"Définir les actions à mener auprès des contacts"},
+        {id:'mcvb-gc4bcp4cd5',name:"Mesurer et analyser les résultats de l'opération de prospection et les écarts par rapport aux objectifs"},
+        {id:'mcvb-gc4bcp4cd6',name:"Déterminer les causes des écarts"},
+        {id:'mcvb-gc4bcp4cd7',name:"Proposer les actions correctives"},
+        {id:'mcvb-gc4bcp4cd8',name:"Rendre compte de l'opération de prospection"}
+      ],savoirs:[
+        {id:'mcvb-gc4bcp4s1',name:"Les documents de suivi d'une visite"},
+        {id:'mcvb-gc4bcp4s2',name:"Les outils de suivi et de mesure d'une opération de prospection"},
+        {id:'mcvb-gc4bcp4s3',name:"Le tableau de bord"},
+        {id:'mcvb-gc4bcp4s4',name:"Le compte rendu"}
+      ]},
+      {id:'mcvb-gc4bcp5',name:"Valoriser les produits et/ou les services",competencesDetaillees:[
+        {id:'mcvb-gc4bcp5cd1',name:"Mettre en valeur l'offre dans un salon, show-room, un espace de vente éphémère, chez le client, sur les sites marchands et sur les réseaux sociaux"}
+      ],savoirs:[
+        {id:'mcvb-gc4bcp5s1',name:"Les événements et manifestations commerciales"},
+        {id:'mcvb-gc4bcp5s2',name:"Les grands principes du marchandisage"},
+        {id:'mcvb-gc4bcp5s3',name:"La structure et l'atmosphère d'un site marchand"}
+      ]}
+    ]},
+  ]},
+  {id:'mcvb-t',name:'Terminale BAC PRO MCVB',competences:[
+    {id:'mcvb-gc1',name:"GC1 — Conseiller et vendre",competencesPrincipales:[
+      {id:'mcvb-gc1cp1',name:"Assurer la veille commerciale",competencesDetaillees:[
+        {id:'mcvb-gc1cp1cd1',name:"Rechercher, hiérarchiser, exploiter et actualiser en continu les informations sur l'entreprise et son marché"},
+        {id:'mcvb-gc1cp1cd2',name:"Maîtriser la technologie des produits"},
+        {id:'mcvb-gc1cp1cd3',name:"Sélectionner les outils de recherche d'information les plus adaptés"}
+      ],savoirs:[
+        {id:'mcvb-gc1cp1s1',name:"L'information"},
+        {id:'mcvb-gc1cp1s2',name:"Les outils de recherche d'information"},
+        {id:'mcvb-gc1cp1s3',name:"Les métiers commerciaux"},
+        {id:'mcvb-gc1cp1s4',name:"Le marché"},
+        {id:'mcvb-gc1cp1s5',name:"La zone de chalandise"},
+        {id:'mcvb-gc1cp1s6',name:"Les caractéristiques des produits"},
+        {id:'mcvb-gc1cp1s7',name:"Les exigences liées au développement durable et à l'éthique"},
+        {id:'mcvb-gc1cp1s8',name:"Les prix et les marges"},
+        {id:'mcvb-gc1cp1s9',name:"Les différents circuits et canaux de vente"}
+      ]},
+      {id:'mcvb-gc1cp2',name:"Réaliser la vente dans un cadre omnicanal",competencesDetaillees:[
+        {id:'mcvb-gc1cp2cd1',name:"Intégrer l'omnicanal dans le processus de vente"},
+        {id:'mcvb-gc1cp2cd2',name:"Prendre contact avec le client"},
+        {id:'mcvb-gc1cp2cd3',name:"S'adapter au contexte commercial et au comportement du client"},
+        {id:'mcvb-gc1cp2cd4',name:"Découvrir, analyser et identifier le(s) besoin(s) du client"},
+        {id:'mcvb-gc1cp2cd5',name:"Reformuler les besoins du client"},
+        {id:'mcvb-gc1cp2cd6',name:"Présenter l'entreprise et/ou ses produits et/ou ses services"},
+        {id:'mcvb-gc1cp2cd7',name:"Conseiller le client en proposant la solution adaptée"},
+        {id:'mcvb-gc1cp2cd8',name:"Argumenter"},
+        {id:'mcvb-gc1cp2cd9',name:"Répondre aux objections du client"},
+        {id:'mcvb-gc1cp2cd10',name:"Proposer les produits et/ou les services associés"},
+        {id:'mcvb-gc1cp2cd11',name:"Détecter les opportunités de vente(s) additionnelle(s) et les concrétiser"},
+        {id:'mcvb-gc1cp2cd12',name:"Formaliser l'accord du client"}
+      ],savoirs:[
+        {id:'mcvb-gc1cp2s1',name:"Les méthodes de vente"},
+        {id:'mcvb-gc1cp2s2',name:"Les bases de la communication"},
+        {id:'mcvb-gc1cp2s3',name:"Les outils d'aide à la vente"},
+        {id:'mcvb-gc1cp2s4',name:"Les facteurs explicatifs du comportement d'achat"},
+        {id:'mcvb-gc1cp2s5',name:"Le processus d'achat"},
+        {id:'mcvb-gc1cp2s6',name:"Le questionnement"},
+        {id:'mcvb-gc1cp2s7',name:"Les différentes étapes de la vente"},
+        {id:'mcvb-gc1cp2s8',name:"Les services associés à la vente"}
+      ]},
+      {id:'mcvb-gc1cp3',name:"Assurer l'exécution de la vente",competencesDetaillees:[
+        {id:'mcvb-gc1cp3cd1',name:"Mettre en place les modalités de règlement et de livraison"},
+        {id:'mcvb-gc1cp3cd2',name:"Rassurer le client sur son choix"},
+        {id:'mcvb-gc1cp3cd3',name:"Prendre congé"}
+      ],savoirs:[
+        {id:'mcvb-gc1cp3s1',name:"Le règlement"},
+        {id:'mcvb-gc1cp3s2',name:"La livraison"},
+        {id:'mcvb-gc1cp3s3',name:"Le contrat de vente"},
+        {id:'mcvb-gc1cp3s4',name:"La garantie"}
+      ]}
+    ]},,
+    {id:'mcvb-gc2',name:"GC2 — Suivre les ventes",competencesPrincipales:[
+      {id:'mcvb-gc2cp1',name:"Assurer le suivi de la commande du produit et/ou du service",competencesDetaillees:[
+        {id:'mcvb-gc2cp1cd1',name:"Suivre l'évolution de la commande et éventuellement du règlement"},
+        {id:'mcvb-gc2cp1cd2',name:"Informer le client des délais et des modalités de mise à disposition"},
+        {id:'mcvb-gc2cp1cd3',name:"Mettre en œuvre le ou les services associés"},
+        {id:'mcvb-gc2cp1cd4',name:"Collecter et transmettre les informations aux services concernés"},
+        {id:'mcvb-gc2cp1cd5',name:"Effectuer le cas échéant les relances"}
+      ],savoirs:[
+        {id:'mcvb-gc2cp1s1',name:"La communication professionnelle"},
+        {id:'mcvb-gc2cp1s2',name:"Les documents commerciaux"},
+        {id:'mcvb-gc2cp1s3',name:"Les modalités et procédures de livraison"},
+        {id:'mcvb-gc2cp1s4',name:"La mesure de l'activité des vendeurs"}
+      ]},
+      {id:'mcvb-gc2cp2',name:"Traiter les retours et les réclamations du client",competencesDetaillees:[
+        {id:'mcvb-gc2cp2cd1',name:"Identifier le(s) problème(s) rencontré(s) par le client"},
+        {id:'mcvb-gc2cp2cd2',name:"Proposer une solution adaptée en tenant compte des procédures de l'entreprise"},
+        {id:'mcvb-gc2cp2cd3',name:"S'assurer de la satisfaction du client"},
+        {id:'mcvb-gc2cp2cd4',name:"Collecter et transmettre les informations sur la satisfaction du client"}
+      ],savoirs:[
+        {id:'mcvb-gc2cp2s1',name:"La gestion des conflits"},
+        {id:'mcvb-gc2cp2s2',name:"La gestion du stress"},
+        {id:'mcvb-gc2cp2s3',name:"La protection du consommateur"},
+        {id:'mcvb-gc2cp2s4',name:"Les outils de mesure et d'analyse de la satisfaction client"}
+      ]},
+      {id:'mcvb-gc2cp3',name:"Exploiter les informations recueillies à des fins d'amélioration",competencesDetaillees:[
+        {id:'mcvb-gc2cp3cd1',name:"Proposer des éléments de nature à améliorer la satisfaction client"}
+      ],savoirs:[
+        {id:'mcvb-gc2cp3s1',name:"Le système d'information commercial de l'entreprise"}
+      ]}
+    ]},,
+    {id:'mcvb-gc3',name:"GC3 — Fidéliser la clientèle et développer la relation client",competencesPrincipales:[
+      {id:'mcvb-gc3cp1',name:"Traiter et exploiter l'information ou le contact client",competencesDetaillees:[
+        {id:'mcvb-gc3cp1cd1',name:"Traiter les messages et/ou les demandes des clients"},
+        {id:'mcvb-gc3cp1cd2',name:"Recueillir, extraire, exploiter, synthétiser les données de sources internes et externes"},
+        {id:'mcvb-gc3cp1cd3',name:"Rendre compte des données appropriées"},
+        {id:'mcvb-gc3cp1cd4',name:"Proposer des actions de fidélisation et/ou de développement de la relation client"}
+      ],savoirs:[
+        {id:'mcvb-gc3cp1s1',name:"La communication professionnelle"},
+        {id:'mcvb-gc3cp1s2',name:"Le système d'information commercial et ses aspects juridiques"},
+        {id:'mcvb-gc3cp1s3',name:"Les sources d'information internes et externes"},
+        {id:'mcvb-gc3cp1s4',name:"La démarche mercatique"},
+        {id:'mcvb-gc3cp1s5',name:"La fidélisation"},
+        {id:'mcvb-gc3cp1s6',name:"Le développement de la relation client"}
+      ]},
+      {id:'mcvb-gc3cp2',name:"Contribuer à des actions de fidélisation et de développement de la relation client",competencesDetaillees:[
+        {id:'mcvb-gc3cp2cd1',name:"Sélectionner et mettre en œuvre les outils de fidélisation de l'entreprise"},
+        {id:'mcvb-gc3cp2cd2',name:"Concourir à la préparation et à l'organisation d'événements de fidélisation"},
+        {id:'mcvb-gc3cp2cd3',name:"Effectuer des ventes au rebond"},
+        {id:'mcvb-gc3cp2cd4',name:"Mobiliser les outils d'internet et les réseaux sociaux"}
+      ],savoirs:[
+        {id:'mcvb-gc3cp2s1',name:"Les blogs, les réseaux sociaux, la mercatique digitale, l'e-réputation"},
+        {id:'mcvb-gc3cp2s2',name:"Les événements et opérations commerciales"},
+        {id:'mcvb-gc3cp2s3',name:"La mercatique directe"},
+        {id:'mcvb-gc3cp2s4',name:"La promotion des ventes"}
+      ]},
+      {id:'mcvb-gc3cp3',name:"Évaluer les actions de fidélisation et de développement de la relation client",competencesDetaillees:[
+        {id:'mcvb-gc3cp3cd1',name:"Enrichir et actualiser le SIC"},
+        {id:'mcvb-gc3cp3cd2',name:"Mesurer et analyser les résultats"},
+        {id:'mcvb-gc3cp3cd3',name:"Rendre compte des actions et des résultats par écrit et/ou à l'oral"},
+        {id:'mcvb-gc3cp3cd4',name:"Proposer des axes d'amélioration"}
+      ],savoirs:[
+        {id:'mcvb-gc3cp3s1',name:"La mesure de la satisfaction de la clientèle"},
+        {id:'mcvb-gc3cp3s2',name:"Les indicateurs de gestion, de performance et d'attractivité"}
+      ]}
+    ]},
+    {id:'mcvb-gc4b',name:"GC4B — Prospecter et valoriser l'offre commerciale",competencesPrincipales:[
+      {id:'mcvb-gc4bcp1',name:"Rechercher et analyser les informations à des fins d'exploitation",competencesDetaillees:[
+        {id:'mcvb-gc4bcp1cd1',name:"Identifier, au sein du SIC, les informations internes utiles à l'opération de prospection, les extraire et les analyser"},
+        {id:'mcvb-gc4bcp1cd2',name:"Collecter, traiter et analyser les informations externes"},
+        {id:'mcvb-gc4bcp1cd3',name:"Mettre à jour le système d'information commercial"}
+      ],savoirs:[
+        {id:'mcvb-gc4bcp1s1',name:"L'information interne et externe à l'entreprise et ses sources"},
+        {id:'mcvb-gc4bcp1s2',name:"Les études en matière de comportement du consommateur, de satisfaction clients et de concurrence"},
+        {id:'mcvb-gc4bcp1s3',name:"Le SIC et ses aspects juridiques"},
+        {id:'mcvb-gc4bcp1s4',name:"Les outils de recherche d'informations"}
+      ]},
+      {id:'mcvb-gc4bcp2',name:"Participer à la conception d'une opération de prospection",competencesDetaillees:[
+        {id:'mcvb-gc4bcp2cd1',name:"Définir la cible en cohérence avec la stratégie de l'organisation et des moyens alloués"},
+        {id:'mcvb-gc4bcp2cd2',name:"Fixer les objectifs quantitatifs et qualitatifs de l'opération"},
+        {id:'mcvb-gc4bcp2cd3',name:"Déterminer la durée de l'opération en fonction des moyens alloués"},
+        {id:'mcvb-gc4bcp2cd4',name:"Déterminer la ou les techniques de prospection adaptées aux objectifs"}
+      ],savoirs:[
+        {id:'mcvb-gc4bcp2s1',name:"La segmentation des prospects"},
+        {id:'mcvb-gc4bcp2s2',name:"Le ciblage"},
+        {id:'mcvb-gc4bcp2s3',name:"Le positionnement"},
+        {id:'mcvb-gc4bcp2s4',name:"Les objectifs d'une opération de prospection"},
+        {id:'mcvb-gc4bcp2s5',name:"Les techniques de prospection"},
+        {id:'mcvb-gc4bcp2s6',name:"La force de vente"},
+        {id:'mcvb-gc4bcp2s7',name:"La gestion du temps professionnel"},
+        {id:'mcvb-gc4bcp2s8',name:"Les frais professionnels"},
+        {id:'mcvb-gc4bcp2s9',name:"Le budget"}
+      ]},
+      {id:'mcvb-gc4bcp3',name:"Mettre en œuvre une opération de prospection",competencesDetaillees:[
+        {id:'mcvb-gc4bcp3cd1',name:"Élaborer le plan de prospection et le plan de tournée"},
+        {id:'mcvb-gc4bcp3cd2',name:"Construire et/ou mettre à jour le fichier prospects"},
+        {id:'mcvb-gc4bcp3cd3',name:"Sélectionner et/ou concevoir des outils d'aide à la prospection et des supports de communication"},
+        {id:'mcvb-gc4bcp3cd4',name:"Établir le contact avec le prospect dans des situations de prospection physique et/ou à distance"},
+        {id:'mcvb-gc4bcp3cd5',name:"Identifier les besoins du prospect"},
+        {id:'mcvb-gc4bcp3cd6',name:"Argumenter"},
+        {id:'mcvb-gc4bcp3cd7',name:"Traiter les objections"},
+        {id:'mcvb-gc4bcp3cd8',name:"Conclure"},
+        {id:'mcvb-gc4bcp3cd9',name:"Prendre congé"}
+      ],savoirs:[
+        {id:'mcvb-gc4bcp3s1',name:"L'offre de l'entreprise"},
+        {id:'mcvb-gc4bcp3s2',name:"Les outils d'aide à la prospection"},
+        {id:'mcvb-gc4bcp3s3',name:"Les supports de communication"},
+        {id:'mcvb-gc4bcp3s4',name:"Les techniques d'argumentation commerciale"},
+        {id:'mcvb-gc4bcp3s5',name:"Le plan de découverte"},
+        {id:'mcvb-gc4bcp3s6',name:"L'argumentaire"},
+        {id:'mcvb-gc4bcp3s7',name:"Le traitement des objections"},
+        {id:'mcvb-gc4bcp3s8',name:"La gestion du stress"}
+      ]},
+      {id:'mcvb-gc4bcp4',name:"Suivre et évaluer l'action de prospection",competencesDetaillees:[
+        {id:'mcvb-gc4bcp4cd1',name:"Traiter et exploiter les contacts obtenus lors d'une opération de prospection"},
+        {id:'mcvb-gc4bcp4cd2',name:"Mettre à jour le fichier prospect et le système d'information mercatique"},
+        {id:'mcvb-gc4bcp4cd3',name:"Qualifier les contacts"},
+        {id:'mcvb-gc4bcp4cd4',name:"Définir les actions à mener auprès des contacts"},
+        {id:'mcvb-gc4bcp4cd5',name:"Mesurer et analyser les résultats de l'opération de prospection et les écarts par rapport aux objectifs"},
+        {id:'mcvb-gc4bcp4cd6',name:"Déterminer les causes des écarts"},
+        {id:'mcvb-gc4bcp4cd7',name:"Proposer les actions correctives"},
+        {id:'mcvb-gc4bcp4cd8',name:"Rendre compte de l'opération de prospection"}
+      ],savoirs:[
+        {id:'mcvb-gc4bcp4s1',name:"Les documents de suivi d'une visite"},
+        {id:'mcvb-gc4bcp4s2',name:"Les outils de suivi et de mesure d'une opération de prospection"},
+        {id:'mcvb-gc4bcp4s3',name:"Le tableau de bord"},
+        {id:'mcvb-gc4bcp4s4',name:"Le compte rendu"}
+      ]},
+      {id:'mcvb-gc4bcp5',name:"Valoriser les produits et/ou les services",competencesDetaillees:[
+        {id:'mcvb-gc4bcp5cd1',name:"Mettre en valeur l'offre dans un salon, show-room, un espace de vente éphémère, chez le client, sur les sites marchands et sur les réseaux sociaux"}
+      ],savoirs:[
+        {id:'mcvb-gc4bcp5s1',name:"Les événements et manifestations commerciales"},
+        {id:'mcvb-gc4bcp5s2',name:"Les grands principes du marchandisage"},
+        {id:'mcvb-gc4bcp5s3',name:"La structure et l'atmosphère d'un site marchand"}
+      ]}
+    ]},
+  ]}
+],sc:"Vous êtes un(e) commercial(e) junior pour une entreprise vendant des produits/services à des professionnels (BtoB). Votre mission : développer votre portefeuille clients, prospecter, qualifier les besoins et assurer le suivi jusqu'à la signature."}
+};
+
+let S={ref:'',niv:'',comp:{},openBlocs:{},sw:{eleve:false,enseignant:false,h5p:false,pronote:false,ludic:false},pdiff:'intermediaire',prob:'',prompt:'',files:[]};
+
+async function callClaude(prompt){
+  const resp=await fetch('/api/claude',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-opus-4-6',max_tokens:2048,messages:[{role:'user',content:prompt}]})
+  });
+  if(!resp.ok){const e=await resp.json();throw new Error(e.error?.message||'Erreur serveur proxy');}
+  const data=await resp.json();
+  return data.content?.map(c=>c.text||'').join('')||'';
+}
+
+async function checkProxyStatus(){
+  const dot=document.getElementById('status-dot');
+  const label=document.getElementById('status-label');
+  try{
+    const r=await fetch('/api/claude',{method:'OPTIONS'});
+    dot.style.background='#0F6E56';label.textContent='Service actif';
+  }catch(e){
+    dot.style.background='#f39c12';label.textContent='Proxy non joignable';
+  }
+}
+document.addEventListener('DOMContentLoaded',checkProxyStatus);
+
+function copyScenario(){const t=document.getElementById('sc-result').textContent;navigator.clipboard.writeText(t).then(()=>alert('Mise en situation copiée !'));}
+function copyClaudeResult(){const t=document.getElementById('claude-result').textContent;navigator.clipboard.writeText(t).then(()=>alert('Résultat copié !'));}
+
+/* ── Utilitaires structure ── */
+function isHierarchique(){
+  if(!S.ref||!S.niv) return false;
+  const ref=CUR[S.ref];if(!ref) return false;
+  const nv=ref.niveaux.find(n=>n.id===S.niv);if(!nv) return false;
+  return !!(nv.competences&&nv.competences[0]&&nv.competences[0].competencesPrincipales);
+}
+function isCapEpc(){return isHierarchique();}
+function getNiveau(){const ref=CUR[S.ref];return ref&&ref.niveaux.find(n=>n.id===S.niv);}
+/* Retourne toutes les compétences principales d'un niveau CAP EPC */
+function getAllCPs(nv){const cps=[];(nv.competences||[]).forEach(b=>b.competencesPrincipales&&b.competencesPrincipales.forEach(cp=>cps.push({bloc:b,cp})));return cps;}
+
+function onRefChange(){
+  const r=document.getElementById('sel-ref').value;S.ref=r;S.comp={};S.openBlocs={};S.prob='';
+  const sn=document.getElementById('sel-niveau');sn.innerHTML='<option value="">-- Choisir --</option>';sn.disabled=!r;
+  if(r&&CUR[r]){CUR[r].niveaux.forEach(n=>{const o=document.createElement('option');o.value=n.id;o.textContent=n.name;sn.appendChild(o);});if(!document.getElementById('pro-context').value)document.getElementById('pro-context').value=CUR[r].sc;}
+  ['s2','s-prob','s-prompt'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+  document.getElementById('btn-gen').disabled=true;clearProb();
+}
+function onNiveauChange(){
+  const nid=document.getElementById('sel-niveau').value;S.niv=nid;S.comp={};S.openBlocs={};
+  const ref=CUR[S.ref];if(!ref||!nid){['s2','s-prob'].forEach(id=>document.getElementById(id).classList.add('hidden'));return;}
+  const nv=ref.niveaux.find(n=>n.id===nid);if(!nv)return;
+  document.getElementById('s2').classList.remove('hidden');
+  isCapEpc()?renderCapEpc(nv):renderComps(nv.competences);
+  clearProb();
+}
+
+/* ══ Rendu CAP EPC : Bloc → CP → CD + Savoirs ══ */
+function renderCapEpc(nv){
+  const fl=document.getElementById('search-comp').value.toLowerCase();
+  const cl=document.getElementById('comp-list');
+  const sc=document.getElementById('savoirs-container');
+  cl.innerHTML=''; sc.innerHTML='';
+  cl.style.display='block'; // pas de grille pour ce mode
+
+  (nv.competences||[]).forEach(bloc=>{
+    const blocCPs=(bloc.competencesPrincipales||[]).filter(cp=>
+      !fl||cp.name.toLowerCase().includes(fl)||
+      cp.competencesDetaillees.some(cd=>cd.name.toLowerCase().includes(fl))||
+      cp.savoirs.some(s=>s.name.toLowerCase().includes(fl))
+    );
+    if(!blocCPs.length) return;
+
+    const blocOpen = S.openBlocs && S.openBlocs[bloc.id];
+
+    // ── En-tête bloc cliquable
+    const bh=document.createElement('div');
+    bh.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--gn-l);border:1px solid var(--gn);border-radius:var(--r);font-size:11px;font-weight:600;color:var(--gn);margin-top:10px;cursor:pointer;user-select:none';
+    const bTitle=document.createElement('span');
+    bTitle.textContent=bloc.name;
+    const bArrow=document.createElement('span');
+    bArrow.textContent=blocOpen?'▲':'▼';
+    bArrow.style.fontSize='10px';
+    bh.appendChild(bTitle); bh.appendChild(bArrow);
+    bh.addEventListener('click',function(){
+      if(!S.openBlocs) S.openBlocs={};
+      S.openBlocs[bloc.id]=!S.openBlocs[bloc.id];
+      renderCapEpc(getNiveau());
+    });
+    cl.appendChild(bh);
+
+    if(!blocOpen) return; // bloc fermé → on n'affiche pas les CP
+
+    // ── Compétences principales + détails inline
+    blocCPs.forEach(cp=>{
+      const ok=!!S.comp[cp.id];
+
+      // Label CP
+      const lbl=document.createElement('label');
+      lbl.className='cbi'+(ok?' on':'');
+      lbl.style.cssText='margin-top:4px;margin-left:12px;display:flex';
+
+      const chk=document.createElement('input');
+      chk.type='checkbox'; chk.checked=ok;
+      chk.addEventListener('change',function(){
+        if(S.comp[cp.id]) delete S.comp[cp.id];
+        else S.comp[cp.id]={cd:[],sav:[]};
+        renderCapEpc(getNiveau());
+      });
+
+      const span=document.createElement('span');
+      span.className='cbl'; span.textContent=cp.name;
+      lbl.appendChild(chk); lbl.appendChild(span);
+      cl.appendChild(lbl);
+
+      // ── Si cochée → panneau CD+Savoirs inline juste en dessous
+      if(ok){
+        const panel=document.createElement('div');
+        panel.style.cssText='margin:4px 0 8px 24px;padding:12px 14px;background:var(--color-background-secondary,#f7f6f2);border:1px solid var(--ru,#D8D5CC);border-left:3px solid var(--gn,#0F6E56);border-radius:var(--r)';
+
+        // Titre panneau
+        const ptitle=document.createElement('div');
+        ptitle.style.cssText='font-size:11px;font-weight:600;color:var(--gn,#0F6E56);margin-bottom:8px';
+        ptitle.textContent=cp.name;
+        panel.appendChild(ptitle);
+
+        // ── Compétences détaillées
+        const cdLabel=document.createElement('div');
+        cdLabel.style.cssText='font-size:10px;font-weight:600;color:#7A7A72;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px';
+        cdLabel.textContent='Compétences détaillées';
+        panel.appendChild(cdLabel);
+
+        const sel=S.comp[cp.id]||{cd:[],sav:[]};
+        cp.competencesDetaillees.forEach(cd=>{
+          const row=document.createElement('label');
+          row.style.cssText='display:flex;align-items:flex-start;gap:7px;padding:3px 5px;cursor:pointer;border-radius:3px;font-size:12px;color:#4A4A44';
+          row.addEventListener('mouseenter',()=>row.style.background='var(--gn-l,#E1F5EE)');
+          row.addEventListener('mouseleave',()=>row.style.background='');
+
+          const c=document.createElement('input');
+          c.type='checkbox'; c.checked=sel.cd&&sel.cd.includes(cd.id);
+          c.style.cssText='margin-top:2px;flex-shrink:0;accent-color:#0F6E56';
+          c.addEventListener('change',function(){
+            if(!S.comp[cp.id]) S.comp[cp.id]={cd:[],sav:[]};
+            const arr=S.comp[cp.id].cd;
+            const i=arr.indexOf(cd.id); if(i>=0) arr.splice(i,1); else arr.push(cd.id);
+          });
+          const s=document.createElement('span'); s.textContent=cd.name;
+          row.appendChild(c); row.appendChild(s);
+          panel.appendChild(row);
+        });
+
+        // ── Savoirs associés
+        const savLabel=document.createElement('div');
+        savLabel.style.cssText='font-size:10px;font-weight:600;color:#7A7A72;text-transform:uppercase;letter-spacing:.06em;margin-top:10px;margin-bottom:5px;padding-top:8px;border-top:1px solid #EAE7E0';
+        savLabel.textContent='Savoirs associés';
+        panel.appendChild(savLabel);
+
+        cp.savoirs.forEach(s=>{
+          const row=document.createElement('label');
+          row.style.cssText='display:flex;align-items:flex-start;gap:7px;padding:3px 5px;cursor:pointer;border-radius:3px;font-size:12px;color:#4A4A44';
+          row.addEventListener('mouseenter',()=>row.style.background='var(--gn-l,#E1F5EE)');
+          row.addEventListener('mouseleave',()=>row.style.background='');
+
+          const c=document.createElement('input');
+          c.type='checkbox'; c.checked=sel.sav&&sel.sav.includes(s.id);
+          c.style.cssText='margin-top:2px;flex-shrink:0;accent-color:#0F6E56';
+          c.addEventListener('change',function(){
+            if(!S.comp[cp.id]) S.comp[cp.id]={cd:[],sav:[]};
+            const arr=S.comp[cp.id].sav;
+            const i=arr.indexOf(s.id); if(i>=0) arr.splice(i,1); else arr.push(s.id);
+          });
+          const t=document.createElement('span'); t.textContent=s.name;
+          row.appendChild(c); row.appendChild(t);
+          panel.appendChild(row);
+        });
+
+        cl.appendChild(panel);
+      }
+    });
+  });
+  updSt();
+}
+
+/* renderCapSav intégré directement dans renderCapEpc */
+
+/* ══ Rendu standard (MCVA, MRC, etc.) ══ */
+function renderComps(comps,f=''){
+  const fl=f.toLowerCase(),cl=document.getElementById('comp-list'),sc=document.getElementById('savoirs-container');
+  cl.innerHTML='';sc.innerHTML='';
+  comps.filter(c=>!fl||c.name.toLowerCase().includes(fl)||(c.savoirs&&c.savoirs.some(s=>s.name.toLowerCase().includes(fl)))).forEach(comp=>{
+    const ok=!!S.comp[comp.id];
+    const d=document.createElement('label');d.className='cbi'+(ok?' on':'');
+    d.innerHTML='<input type="checkbox"'+(ok?' checked':'')+' onchange="tComp(\''+comp.id+'\')"> <span class="cbl">'+comp.name+'</span>';
+    cl.appendChild(d);if(ok)renderSav(comp,sc);
+  });updSt();
+}
+function renderSav(comp,container){
+  const sel=S.comp[comp.id]||[];
+  const d=document.createElement('div');d.className='sw-panel';
+  d.innerHTML='<div class="swt">Savoirs — '+comp.name+'</div><div class="swl">'+comp.savoirs.map(s=>'<label class="svi"><input type="checkbox"'+(sel.includes(s.id)?' checked':'')+' onchange="tSav(\''+comp.id+'\',\''+s.id+'\')"><span>'+s.name+'</span></label>').join('')+'</div>';
+  container.appendChild(d);
+}
+function tComp(cid){const nv=getNiveau();if(S.comp[cid])delete S.comp[cid];else S.comp[cid]=[];renderComps(nv.competences,document.getElementById('search-comp').value);}
+function tSav(cid,sid){if(!S.comp[cid])S.comp[cid]=[];const i=S.comp[cid].indexOf(sid);if(i>=0)S.comp[cid].splice(i,1);else S.comp[cid].push(sid);}
+function filterComp(){const nv=getNiveau();if(!nv)return;isCapEpc()?renderCapEpc(nv):renderComps(nv.competences,document.getElementById('search-comp').value);}
+function updSt(){
+  const hc=Object.keys(S.comp).length>0;
+  document.getElementById('btn-gen').disabled=!(hc&&S.ref&&S.niv);
+  document.getElementById('btn-copy').disabled=!S.prompt;
+  document.getElementById('s-prob').classList.toggle('hidden',!hc);
+}
+function toggleSwitch(k){
+  S.sw[k]=!S.sw[k];if(k==='enseignant'&&S.sw.enseignant)S.sw.eleve=true;if(k==='eleve'&&!S.sw.eleve)S.sw.enseignant=false;
+  Object.keys(S.sw).forEach(k=>{const t=document.getElementById('tog-'+k);if(t)t.classList.toggle('on',S.sw[k]);});
+}
+function selectDiff(d){S.pdiff=d;document.querySelectorAll('[id^=diff-]').forEach(el=>el.classList.remove('on'));document.getElementById('diff-'+d).classList.add('on');}
+function clearProb(){S.prob='';document.getElementById('prob-list').innerHTML='';const w=document.getElementById('prob-sel-wrap');w.classList.add('hidden');w.innerHTML='';}
+
+async function generateProblematics(){
+  const ref=S.ref&&CUR[S.ref],nv=ref&&ref.niveaux.find(n=>n.id===S.niv);
+  if(!nv||!Object.keys(S.comp).length){alert('Sélectionnez au moins une compétence.');return;}
+  let comps='';
+  if(isCapEpc()){
+    (nv.competences||[]).forEach(bloc=>{(bloc.competencesPrincipales||[]).forEach(cp=>{if(S.comp[cp.id]) comps+='- '+cp.name+' ('+bloc.name+')\n';});});
+  } else {
+    comps=Object.keys(S.comp).map(cid=>{const c=nv.competences.find(x=>x.id===cid);return c?'- '+c.name:'';}).filter(Boolean).join('\n');
+  }
+  const dm={simple:"Génère 3 problématiques SIMPLES, directes et concrètes.",intermediaire:"Génère 3 problématiques INTERMÉDIAIRES qui demandent une première analyse.",complexe:"Génère 3 problématiques COMPLEXES poussant à la réflexion critique."};
+  const cn=document.getElementById('company-name').value.trim();
+  const rayon=document.getElementById('company-rayon').value.trim();
+  const prompt='Tu es expert en ingénierie pédagogique pour lycée professionnel (contexte guyanais).\nRéférentiel : '+ref.name+' | Niveau : '+nv.name+(cn?'\nEntreprise fil rouge : '+cn+(rayon?' — '+rayon:''):'')+'\nCompétences visées :\n'+comps+'\n\n'+dm[S.pdiff]+'\nAncrées dans le contexte guyanais (Cayenne, Matoury, Family Plaza...).\n\nRéponds avec EXACTEMENT ce format, 3 lignes numérotées, sans introduction ni conclusion :\n1. [Problématique]\n2. [Problématique]\n3. [Problématique]';
+  const loader=document.getElementById('prob-loader');loader.classList.remove('hidden');
+  document.getElementById('prob-list').innerHTML='';
+  try{
+    const text=await callClaude(prompt);
+    if(!text)return;
+    const lines=text.split('\n').filter(l=>/^\d\./.test(l.trim())).map(l=>l.replace(/^\d\.\s*/,'').trim());
+    const list=document.getElementById('prob-list');list.innerHTML='';
+    lines.forEach((p,i)=>{
+      const d=document.createElement('div');d.className='pc'+(S.prob===p?' on':'');
+      d.textContent=(i+1)+'. '+p;
+      d.onclick=()=>{S.prob=S.prob===p?'':p;renderProbs(lines);const w=document.getElementById('prob-sel-wrap');if(S.prob){w.classList.remove('hidden');w.innerHTML='<div class="psel"><span>'+S.prob+'</span><span class="clr" onclick="clearProb()">Désélectionner</span></div>';}else{w.classList.add('hidden');w.innerHTML='';}};
+      list.appendChild(d);
+    });
+  }catch(e){alert('Erreur : '+e.message);}
+  loader.classList.add('hidden');
+}
+function renderProbs(lines){
+  const list=document.getElementById('prob-list');list.innerHTML='';
+  lines.forEach((p,i)=>{
+    const d=document.createElement('div');d.className='pc'+(S.prob===p?' on':'');
+    d.textContent=(i+1)+'. '+p;
+    d.onclick=()=>{S.prob=S.prob===p?'':p;renderProbs(lines);const w=document.getElementById('prob-sel-wrap');if(S.prob){w.classList.remove('hidden');w.innerHTML='<div class="psel"><span>'+S.prob+'</span><span class="clr" onclick="clearProb()">Désélectionner</span></div>';}else{w.classList.add('hidden');w.innerHTML='';}};
+    list.appendChild(d);
+  });
+}
+
+async function genScenario(){
+  const ref=S.ref&&CUR[S.ref],nv=ref&&ref.niveaux.find(n=>n.id===S.niv);
+  const cn=document.getElementById('company-name').value.trim();
+  const ct=document.getElementById('company-type').value;
+  const rayon=document.getElementById('company-rayon').value.trim();
+  const produits=document.getElementById('company-produits').value.trim();
+  const ctMap={local:'entreprise locale indépendante guyanaise','national-guyane':'enseigne nationale implantée en Guyane','national-france':'enseigne nationale implantée en France métropolitaine'};
+  let comps='';
+  if(ref&&nv){
+    if(isCapEpc()){
+      (nv.competences||[]).forEach(bloc=>{(bloc.competencesPrincipales||[]).forEach(cp=>{if(S.comp[cp.id]) comps+='- '+cp.name+' ('+bloc.name+')\n';});});
+    } else {
+      comps=Object.keys(S.comp).map(cid=>{const c=nv.competences.find(x=>x.id===cid);return c?'- '+c.name:'';}).filter(Boolean).join('\n');
+    }
+  }
+  const prompt='Tu es expert en ingénierie pédagogique pour lycées professionnels en Guyane française.\n\nRédige une mise en situation professionnelle courte et immersive (8-12 lignes) pour un(e) élève de '+(nv?nv.name:'lycée professionnel')+(ref?' en '+ref.name:'')+'. Utilise le vouvoiement ("Vous êtes...").\n\n'+(cn?'Entreprise fil rouge : '+cn+(ct&&ctMap[ct]?' ('+ctMap[ct]+')':'')+'.\n':'')+(rayon?'Rayon / département : '+rayon+'.\n':'')+(produits?'Type de produits vendus : '+produits+'.\n':'')+(comps?'Compétences visées :\n'+comps+'\n':'')+'\nLa mise en situation doit :\n- Placer l\'élève dans un rôle professionnel précis avec un prénom fictif\n- Nommer un tuteur fictif avec prénom et nom\n- Décrire l\'environnement de travail de façon concrète'+(rayon?' en mentionnant le rayon/département':'')+'\n- Mentionner 2-3 missions principales en lien avec les compétences\n- Être ancrée dans la réalité guyanaise\n\nRédige uniquement la mise en situation, sans titre ni introduction.';
+  const loader=document.getElementById('sc-loader');loader.classList.remove('hidden');
+  try{
+    const text=await callClaude(prompt);
+    if(!text)return;
+    document.getElementById('pro-context').value=text;
+    const scRes=document.getElementById('sc-result');scRes.textContent=text;scRes.style.display='block';
+    document.getElementById('sc-copy-btn').style.display='block';
+    scRes.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }catch(e){alert('Erreur : '+e.message);}
+  loader.classList.add('hidden');
+}
+
+function onDragOver(e){e.preventDefault();document.getElementById('drop-zone').classList.add('drag');}
+function onDragLeave(){document.getElementById('drop-zone').classList.remove('drag');}
+function onDrop(e){e.preventDefault();document.getElementById('drop-zone').classList.remove('drag');handleFiles(e.dataTransfer.files);}
+function handleFiles(files){
+  Array.from(files).forEach(file=>{
+    if(S.files.find(f=>f.name===file.name))return;
+    document.getElementById('file-loader').classList.remove('hidden');
+    const ext=file.name.split('.').pop().toLowerCase();
+    const reader=new FileReader();
+    if(ext==='txt'||ext==='md'){
+      reader.onload=e=>{addFile(file.name,file.size,e.target.result);document.getElementById('file-loader').classList.add('hidden');};
+      reader.readAsText(file);
+    } else if(ext==='pdf'){
+      reader.onload=async e=>{
+        try{
+          const typedarray=new Uint8Array(e.target.result);
+          const pdf=await pdfjsLib.getDocument({data:typedarray}).promise;
+          let fullText='';
+          for(let p=1;p<=Math.min(pdf.numPages,30);p++){
+            const page=await pdf.getPage(p);
+            const tc=await page.getTextContent();
+            fullText+=tc.items.map(i=>i.str).join(' ')+'\n';
+          }
+          if(pdf.numPages>30) fullText+=`\n[... ${pdf.numPages-30} page(s) supplémentaire(s) non extraites]`;
+          addFile(file.name,file.size,fullText.trim()||'[PDF sans texte extractible — veuillez coller le contenu manuellement]');
+        }catch(err){
+          addFile(file.name,file.size,'[Erreur extraction PDF : '+err.message+']');
+        }
+        document.getElementById('file-loader').classList.add('hidden');
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      addFile(file.name,file.size,'[Fichier '+ext.toUpperCase()+' : coller le texte dans les instructions complémentaires]');
+      document.getElementById('file-loader').classList.add('hidden');
+    }
+  });
+}
+function addFile(name,size,content){S.files.push({name,size,content});renderFileList();}
+function removeFile(name){S.files=S.files.filter(f=>f.name!==name);renderFileList();}
+function renderFileList(){
+  const list=document.getElementById('file-list');list.innerHTML='';
+  S.files.forEach(f=>{
+    const kb=Math.round(f.size/1024);
+    const d=document.createElement('div');d.className='file-item';
+    d.innerHTML='<div style="display:flex;align-items:center;gap:6px"><span style="color:#0F6E56">📄</span><span class="fn">'+f.name+'</span><span class="fs">'+kb+' ko</span></div><span class="fr" onclick="removeFile(\''+f.name.replace(/\\/g,'\\\\').replace(/'/g,"\\'")+'\')">✕</span>';
+    list.appendChild(d);
+  });
+}
+
+function buildPrompt(){
+  const ref=CUR[S.ref],nv=ref.niveaux.find(n=>n.id===S.niv);
+  const sc=document.getElementById('pro-context').value.trim()||ref.sc;
+  const cn=document.getElementById('company-name').value.trim();
+  const ct=document.getElementById('company-type').value;
+  const rayon=document.getElementById('company-rayon').value.trim();
+  const produits=document.getElementById('company-produits').value.trim();
+  const nb=parseInt(document.getElementById('nb-seances').value)||1;
+  const ef=document.getElementById('sel-effectif').value;
+  const df=document.getElementById('sel-diff').value;
+  const pedas=Array.from(document.querySelectorAll('#pedas input:checked')).map(i=>i.value);
+  const evals=Array.from(document.querySelectorAll('#evals input:checked')).map(i=>i.value);
+  const dm={debutant:"FACILE — adapté à des élèves découvrant ces notions pour la première fois.",confirme:"INTERMÉDIAIRE — pour des élèves ayant des bases.",expert:"AVANCÉ — élèves maîtrisant les bases, mise en défi."};
+  const em={entiere:"classe entière (~24-30 élèves)",'demi-groupe':"demi-groupe (~12-15 élèves)"};
+  const cm={local:"Entreprise locale/indépendante guyanaise",'national-guyane':"Entreprise nationale implantée en Guyane (spécificités DOM)",'national-france':"Entreprise nationale implantée en France métropolitaine"};
+  let compsT='';
+  if(isCapEpc()){
+    // Hiérarchie : Bloc → CP → CD + Savoirs
+    (nv.competences||[]).forEach(bloc=>{
+      const cpLines=[];
+      (bloc.competencesPrincipales||[]).forEach(cp=>{
+        if(!S.comp[cp.id]) return;
+        const sel=S.comp[cp.id];
+        let line='  · '+cp.name;
+        if(sel.cd&&sel.cd.length) line+='\n    Compétences détaillées : '+sel.cd.map(id=>cp.competencesDetaillees.find(c=>c.id===id)?.name).filter(Boolean).join(' | ');
+        if(sel.sav&&sel.sav.length) line+='\n    Savoirs : '+sel.sav.map(id=>cp.savoirs.find(s=>s.id===id)?.name).filter(Boolean).join(' | ');
+        cpLines.push(line);
+      });
+      if(cpLines.length) compsT+='- '+bloc.name+'\n'+cpLines.join('\n')+'\n';
+    });
+  } else {
+    compsT=Object.keys(S.comp).map(cid=>{const c=nv.competences.find(x=>x.id===cid);if(!c)return '';const savs=(S.comp[cid]||[]).map(sid=>c.savoirs.find(s=>s.id===sid)?.name).filter(Boolean);return '- '+c.name+(savs.length?'\n  Savoirs : '+savs.join(' | '):'');}).filter(Boolean).join('\n');
+  }
+  const calcs=Array.from(document.querySelectorAll('#calcs input:checked')).map(i=>i.value);
+  const dig=Array.from(document.querySelectorAll('#dig input:checked')).map(i=>i.value);
+  const acts=Array.from(document.querySelectorAll('#act-types input:checked')).map(i=>i.value);
+  let ent='';if(cn)ent+='\nEntreprise "Fil Rouge" : '+cn+'.';if(ct&&cm[ct])ent+='\nType : '+cm[ct]+'.';if(rayon)ent+='\nRayon / département : '+rayon+'.';if(produits)ent+='\nProduits vendus : '+produits+'.';
+  const pbl=S.prob?'\nProblématique : "'+S.prob+'"':'';
+  const lud=S.sw.ludic?'\n**GAMIFICATION** : activité ludique 10-20 min (jeu de cartes Notion/Définition, dominos, flashcards). Fournir contenu prêt à l\'emploi. Document Word annexe cartes à plastifier (NOTION=bleu clair, DÉFINITION=vert pastel).\n':'';
+  const evalBlock=evals.length?'\n**FORME(S) D\'ÉVALUATION À INTÉGRER :**\n'+evals.map(e=>'- '+e).join('\n'):'';
+  const folders=(S.sw.eleve?'\n**DOSSIER ÉLÈVE :**\n- Page de garde : compétences visées, savoirs à acquérir, objectifs\n- Scénario détaillé : rôle, environnement pro, tuteur fictif\n- Consignes numérotées pour chaque tâche\n- Annexes professionnelles pertinentes\n- Pour chaque activité : mise en situation + consigne précise + espace trace écrite\n':'')+(S.sw.enseignant?'\n**DOSSIER ENSEIGNANT CONFIDENTIEL :**\n- Corrigés complets détaillés\n- Conseils d\'animation et gestion de classe\n- Stratégies de différenciation\n':'')+(S.sw.h5p?'\n**CONTENU H5P :** texte à trous, QCM, Vrai/Faux\n':'')+(S.sw.pronote?'\n**QCM PRONOTE XML :** 5-10 questions\n':'');
+  const filesBlock=S.files.filter(f=>f.content&&!f.content.startsWith('[Fichier')).map(f=>'--- RESSOURCE : '+f.name+' ---\n'+f.content.substring(0,3000)+'\n--- FIN ---').join('\n\n');
+  const ext=document.getElementById('ext-resources').value.trim();
+  const add=document.getElementById('add-instructions').value.trim();
+  return 'Agis en expert en ingénierie pédagogique pour lycées professionnels français (filière commerce/vente). Contexte : Lycée Max Joséphine, Cayenne, Guyane. Élèves niveau hétérogène, globalement faible. Ancrer TOUS les exemples dans la réalité guyanaise.\n\n**MISE EN SITUATION (Fil rouge) :**\n'+sc+ent+pbl+'\n\n**MISSION :** Créer un plan de cours détaillé pour '+(nb===1?'une séance unique':'une séquence de '+nb+' séances')+'.\n\n**CONTEXTE :**\n- Référentiel : '+ref.name+' | Niveau : '+nv.name+'\n- Effectif : '+em[ef]+'\n- Pédagogie(s) : '+(pedas.length?pedas.join(', '):'Non spécifiée')+'\n- Difficulté : '+dm[df]+'\n\n**COMPÉTENCES ET SAVOIRS :**\n'+(compsT||'Non spécifié')+'\n\n**TYPES D\'ACTIVITÉS :**\n'+(acts.length?acts.map(a=>'- '+a).join('\n'):'Non spécifié')+evalBlock+'\n\n**ABC LEARNING DESIGN (OBLIGATOIRE) :**\nVarier : Acquisition / Discussion / Entraînement / Enquête / Production / Collaboration.\n\n**EXIGENCES :**\n1. Déroulement en PROSE (pas de tableau) — chaque activité : Type ABC | Organisation | Support | puis Description / Démarche pédagogique / Intérêt / Apports élèves\n2. Consignes élèves précises et actionnables\n3. Vocabulaire professionnel défini systématiquement\n4. Lien PFMP quand pertinent\n5. Signature : Olivier NUGUET — Région académique Guyane + pagination\n6. TVA métropolitaine : 20%, 10%, 5,5%, 2,1%\n'+(calcs.length?'\n**CALCULS :** '+calcs.join(', '):'')+(dig.length?'\n**NUMÉRIQUE :** '+dig.join(', '):'')+lud+(filesBlock?'\n**SUPPORTS FOURNIS :**\n'+filesBlock:'')+(ext?'\n**RESSOURCES SUPPLÉMENTAIRES :**\n'+ext:'')+(add?'\n**INSTRUCTIONS SPÉCIFIQUES :**\n'+add:'')+folders+'\nGénérer en français.';
+}
+
+function generatePrompt(){
+  S.prompt=buildPrompt();
+  document.getElementById('prompt-display').textContent=S.prompt;
+  document.getElementById('s-prompt').classList.remove('hidden');
+  document.getElementById('btn-copy').disabled=false;
+  document.getElementById('s-prompt').scrollIntoView({behavior:'smooth'});
+}
+
+async function generateWithClaude(){
+  const loader=document.getElementById('claude-loader');loader.classList.remove('hidden');
+  const resBox=document.getElementById('claude-result');resBox.style.display='none';resBox.textContent='';
+  document.getElementById('claude-copy-btn').style.display='none';
+  try{
+    const text=await callClaude(S.prompt);
+    if(!text)return;
+    resBox.textContent=text;resBox.style.display='block';
+    document.getElementById('claude-copy-btn').style.display='block';
+    resBox.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }catch(e){alert('Erreur : '+e.message);}
+  loader.classList.add('hidden');
+}
+
+function copyPrompt(){if(S.prompt)navigator.clipboard.writeText(S.prompt).then(()=>alert('Prompt copié !')).catch(()=>{});}
+
+function resetAll(){
+  if(!confirm('Réinitialiser tout le formulaire ?'))return;
+  S={ref:'',niv:'',comp:{},openBlocs:{},sw:{eleve:false,enseignant:false,h5p:false,pronote:false,ludic:false},pdiff:'intermediaire',prob:'',prompt:'',files:[]};
+  ['sel-ref','sel-niveau','company-type'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('sel-niveau').disabled=true;
+  ['pro-context','company-name','company-rayon','company-produits','add-instructions','ext-resources','search-comp'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('nb-seances').value='1';
+  document.querySelectorAll('input[type=checkbox]').forEach(i=>i.checked=false);
+  document.querySelectorAll('.tg').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.cbi').forEach(t=>t.classList.remove('on'));
+  ['s2','s-prob','s-prompt'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+  ['comp-list','savoirs-container','prob-list','file-list'].forEach(id=>document.getElementById(id).innerHTML='');
+  document.getElementById('prob-sel-wrap').innerHTML='';document.getElementById('prob-sel-wrap').classList.add('hidden');
+  document.getElementById('btn-gen').disabled=true;document.getElementById('btn-copy').disabled=true;
+  ['simple','intermediaire','complexe'].forEach(d=>document.getElementById('diff-'+d).classList.toggle('on',d==='intermediaire'));
+}
+
+// Init checkbox toggle
+document.querySelectorAll('.cbi').forEach(item=>{
+  const inp=item.querySelector('input');
+  if(inp)inp.addEventListener('change',function(){item.classList.toggle('on',this.checked);});
+});
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+if(typeof pdfjsLib!=='undefined'){
+  pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
+</script>
+</body>
+</html>
