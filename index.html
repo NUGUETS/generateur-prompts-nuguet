@@ -90,8 +90,22 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
 .al{padding:10px 13px;border-radius:var(--r);font-size:12px;margin-bottom:11px;line-height:1.5}
 .al.i{background:var(--bl-l);color:#1e3a5f;border:1px solid #bfdbfe}
 .sc-result{background:var(--gn-l);border:1px solid var(--gn);border-radius:var(--r);padding:12px 14px;font-size:13px;line-height:1.7;margin-top:10px;white-space:pre-wrap;display:none}
-.claude-result{background:var(--cr);border:1px solid var(--ru);border-radius:var(--r);padding:14px;font-size:13px;line-height:1.7;max-height:500px;overflow-y:auto;margin-top:10px;white-space:pre-wrap;display:none}
 .footer{font-size:11px;color:var(--ink-mu);text-align:center;margin-top:30px;padding-top:14px;border-top:1px solid var(--ru);line-height:1.9}
+/* Accordéons */
+.acc-header{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:14px 18px;border-radius:var(--r);user-select:none;transition:background .15s;gap:10px}
+.acc-header:hover{background:var(--cr)}
+.acc-header .acc-left{display:flex;align-items:center;gap:9px;flex:1;min-width:0}
+.acc-header .acc-title{font-size:11px;font-weight:600;color:var(--ink-mu);text-transform:uppercase;letter-spacing:.1em}
+.acc-header .acc-badge{font-size:10px;color:var(--ink-mu);font-weight:400;text-transform:none;letter-spacing:0;font-style:italic;white-space:nowrap}
+.acc-arrow{font-size:11px;color:var(--ink-mu);transition:transform .2s;flex-shrink:0}
+.acc-arrow.open{transform:rotate(180deg)}
+.acc-body{padding:0 18px 18px;display:none}
+.acc-body.open{display:block}
+.section{padding:0;background:var(--white);border:1px solid var(--ru);border-radius:var(--r);margin-bottom:8px}
+.section-prob{padding:0;background:var(--white);border:1.5px solid var(--gn);border-radius:var(--r);margin-bottom:8px}
+.section.done .acc-header .acc-title{color:var(--gn)}
+.section.done{border-color:var(--gn-l)}
+.acc-summary{font-size:10px;color:var(--gn);font-weight:500;background:var(--gn-l);padding:2px 8px;border-radius:20px;white-space:nowrap;max-width:240px;overflow:hidden;text-overflow:ellipsis}
 @media(max-width:580px){.g2,.g3{grid-template-columns:1fr}.cbg{grid-template-columns:1fr}.app-header{padding:12px 14px;flex-direction:column;align-items:flex-start}.main{padding:14px 10px 40px}}
 </style>
 </head>
@@ -116,8 +130,12 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
 <main class="main">
 
 <!-- S1 -->
-<div class="section">
-  <div class="st"><span class="sn">1</span> Contexte de formation</div>
+<div class="section" id="acc-s1">
+  <div class="acc-header" onclick="toggleAcc('s1')">
+    <div class="acc-left"><span class="sn">1</span><span class="acc-title">Contexte de formation</span></div>
+    <span class="acc-arrow open" id="arr-s1">▼</span>
+  </div>
+  <div class="acc-body open" id="body-s1">
   <div class="g2">
     <div class="f"><label class="fl">Référentiel</label>
       <select id="sel-ref" onchange="onRefChange()">
@@ -179,22 +197,31 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
       </div>
     </div>
   </div>
+  </div>
 </div>
 
 <!-- S2 -->
-<div id="s2" class="section hidden">
-  <div class="st"><span class="sn">2</span> Compétences et savoirs</div>
+<div id="s2" class="section hidden" id="acc-s2">
+  <div class="acc-header" onclick="toggleAcc('s2')">
+    <div class="acc-left"><span class="sn">2</span><span class="acc-title">Compétences et savoirs</span></div>
+    <span class="acc-arrow open" id="arr-s2">▼</span>
+  </div>
+  <div class="acc-body open" id="body-s2">
   <div class="srch">
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     <input type="text" id="search-comp" placeholder="Rechercher par mot-clé..." oninput="filterComp()" style="padding-left:34px">
   </div>
   <div id="comp-list" class="cbg"></div>
-  <div id="savoirs-container"></div>
+  <div id="savoirs-container">  </div>
 </div>
 
 <!-- S3 -->
-<div class="section">
-  <div class="st"><span class="sn">3</span> Contexte entreprise</div>
+<div class="section" id="acc-s3">
+  <div class="acc-header" onclick="toggleAcc('s3')">
+    <div class="acc-left"><span class="sn">3</span><span class="acc-title">Contexte entreprise</span></div>
+    <span class="acc-arrow" id="arr-s3">▼</span>
+  </div>
+  <div class="acc-body" id="body-s3">
   <div class="g2">
     <div class="f"><label class="fl">Nom de l'entreprise fil rouge</label><input type="text" id="company-name" placeholder="Ex : Décathlon Matoury, Kiabi Family Plaza..."></div>
     <div class="f"><label class="fl">Type d'entreprise</label>
@@ -221,12 +248,16 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
   <div id="sc-copy-btn" style="display:none;margin-top:8px">
     <button class="btn sm" onclick="copyScenario()">Copier la mise en situation</button>
     <span style="font-size:11px;color:var(--ink-mu);margin-left:8px">→ Elle a été automatiquement insérée dans le champ ci-dessus.</span>
-  </div>
+    </div>
 </div>
 
 <!-- S3b -->
-<div class="section">
-  <div class="st"><span class="sn">3b</span> Ressources et supports</div>
+<div class="section" id="acc-s3b">
+  <div class="acc-header" onclick="toggleAcc('s3b')">
+    <div class="acc-left"><span class="sn">3b</span><span class="acc-title">Ressources et supports</span><span class="acc-badge">facultatif</span></div>
+    <span class="acc-arrow" id="arr-s3b">▼</span>
+  </div>
+  <div class="acc-body" id="body-s3b">
   <p class="inf" style="margin-bottom:10px">Déposez vos fichiers (cours, articles, supports TXT/MD) pour qu'ils soient intégrés comme base aux activités.</p>
   <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
     <div class="dz-icon">⬆</div>
@@ -238,8 +269,12 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
   <div id="file-loader" class="ld hidden"><div class="sp"></div> Lecture...</div>
 
 <!-- S PROB -->
-<div id="s-prob" class="section-prob hidden">
-  <div class="st"><span class="sn a">?</span> Générer une problématique <span class="badge">optionnel</span></div>
+<div id="s-prob" class="section-prob hidden" style="margin-top:8px">
+  <div class="acc-header" onclick="toggleAcc('sprob')" style="border-radius:var(--r)">
+    <div class="acc-left"><span class="sn a">?</span><span class="acc-title" style="color:var(--gn)">Générer une problématique</span><span class="acc-badge">optionnel</span></div>
+    <span class="acc-arrow" id="arr-sprob">▼</span>
+  </div>
+  <div class="acc-body" id="body-sprob">
   <p class="inf" style="margin-bottom:10px">Renseignez l'entreprise fil rouge (section 3) avant de générer pour obtenir des problématiques contextualisées à votre enseigne.</p>
   <div class="f"><label class="fl">Complexité</label>
     <div class="g3">
@@ -252,12 +287,16 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
   <div id="prob-loader" class="ld hidden"><div class="sp"></div> Génération en cours...</div>
   <div id="prob-list" class="pl"></div>
   <div id="prob-sel-wrap" class="hidden"></div>
-</div>
+  </div>
 </div>
 
 <!-- S4 -->
-<div class="section">
-  <div class="st"><span class="sn">4</span> Types d'activités</div>
+<div class="section" id="acc-s4">
+  <div class="acc-header" onclick="toggleAcc('s4')">
+    <div class="acc-left"><span class="sn">4</span><span class="acc-title">Types d'activités</span></div>
+    <span class="acc-arrow" id="arr-s4">▼</span>
+  </div>
+  <div class="acc-body" id="body-s4">
   <div class="cbg" id="act-types">
     <label class="cbi"><input type="checkbox" value="Travaux individuels"> <span class="cbl">Travaux individuels</span></label>
     <label class="cbi"><input type="checkbox" value="Travaux en groupe"> <span class="cbl">Travaux en groupe</span></label>
@@ -272,11 +311,16 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
     <label class="cbi"><input type="checkbox" value="Activités coopératives"> <span class="cbl">Activités coopératives</span></label>
     <label class="cbi"><input type="checkbox" value="Magasin pédagogique"> <span class="cbl">Magasin pédagogique</span></label>
   </div>
+  </div>
 </div>
 
 <!-- S4b ÉVALUATION -->
-<div class="section">
-  <div class="st"><span class="sn">4b</span> Forme(s) d'évaluation <span class="badge">optionnel</span></div>
+<div class="section" id="acc-s4b">
+  <div class="acc-header" onclick="toggleAcc('s4b')">
+    <div class="acc-left"><span class="sn">4b</span><span class="acc-title">Forme(s) d'évaluation</span><span class="acc-badge">optionnel</span></div>
+    <span class="acc-arrow" id="arr-s4b">▼</span>
+  </div>
+  <div class="acc-body" id="body-s4b">
   <div class="cbg" id="evals">
     <label class="cbi"><input type="checkbox" value="Évaluation diagnostique (en amont de la séance)"> <span class="cbl">Diagnostique</span></label>
     <label class="cbi"><input type="checkbox" value="Évaluation formative (en cours de séance)"> <span class="cbl">Formative</span></label>
@@ -287,26 +331,36 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
     <label class="cbi"><input type="checkbox" value="Auto-évaluation par grille de critères"> <span class="cbl">Auto-évaluation par grille de critères</span></label>
     <label class="cbi"><input type="checkbox" value="Co-évaluation entre pairs"> <span class="cbl">Co-évaluation entre pairs</span></label>
   </div>
+  </div>
 </div>
 
 <!-- S4c MATÉRIEL -->
-<div class="section">
-  <div class="st"><span class="sn">4c</span> Matériel mis à disposition <span class="badge">optionnel</span></div>
+<div class="section" id="acc-s4c">
+  <div class="acc-header" onclick="toggleAcc('s4c')">
+    <div class="acc-left"><span class="sn">4c</span><span class="acc-title">Matériel mis à disposition</span><span class="acc-badge">optionnel</span></div>
+    <span class="acc-arrow" id="arr-s4c">▼</span>
+  </div>
+  <div class="acc-body" id="body-s4c">
   <div class="cbg" id="materiel">
-    <label class="cbi"><input type="checkbox" value="Vidéoprojecteur / écran interactif"> <span class="cbl">Vidéoprojecteur / écran interactif</span></label>
+    <label class="cbi"><input type="checkbox" value="Vidéoprojecteur"> <span class="cbl">Vidéoprojecteur</span></label>
     <label class="cbi"><input type="checkbox" value="Salle informatique (postes individuels)"> <span class="cbl">Salle informatique (postes individuels)</span></label>
     <label class="cbi"><input type="checkbox" value="Tablettes numériques"> <span class="cbl">Tablettes numériques</span></label>
-    <label class="cbi"><input type="checkbox" value="Smartphones des élèves (BYOD)"> <span class="cbl">Smartphones élèves (BYOD)</span></label>
+    <label class="cbi"><input type="checkbox" value="Smartphones des élèves"> <span class="cbl">Smartphones des élèves</span></label>
     <label class="cbi"><input type="checkbox" value="Imprimante disponible en classe"> <span class="cbl">Imprimante disponible</span></label>
-    <label class="cbi"><input type="checkbox" value="Tableau blanc / paper board"> <span class="cbl">Tableau blanc / paper board</span></label>
+    <label class="cbi"><input type="checkbox" value="Tableau blanc"> <span class="cbl">Tableau blanc</span></label>
     <label class="cbi"><input type="checkbox" value="Magasin pédagogique équipé"> <span class="cbl">Magasin pédagogique équipé</span></label>
     <label class="cbi"><input type="checkbox" value="Accès internet (Wi-Fi)"> <span class="cbl">Accès internet (Wi-Fi)</span></label>
+  </div>
   </div>
 </div>
 
 <!-- S5 -->
-<div class="section">
-  <div class="st"><span class="sn">5</span> Options avancées</div>
+<div class="section" id="acc-s5">
+  <div class="acc-header" onclick="toggleAcc('s5')">
+    <div class="acc-left"><span class="sn">5</span><span class="acc-title">Options avancées</span></div>
+    <span class="acc-arrow" id="arr-s5">▼</span>
+  </div>
+  <div class="acc-body" id="body-s5">
   <div class="f"><label class="fl">Calculs à intégrer</label>
     <div class="cbg" id="calcs">
       <label class="cbi"><input type="checkbox" value="Calculs commerciaux (marge, TVA, prix de vente, coût d'achat)"> <span class="cbl">Calculs commerciaux (marge, TVA, prix)</span></label>
@@ -332,13 +386,18 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
     <div class="tgw"><div class="tg" id="tog-pronote" onclick="toggleSwitch('pronote')"></div><div class="ti"><div class="tl">QCM Pronote (.xml)</div><div class="td">Export QCM compatible Pronote</div></div></div>
     <div class="tgw"><div class="tg" id="tog-ludic" onclick="toggleSwitch('ludic')"></div><div class="ti"><div class="tl">Activité ludique / gamification</div><div class="td">Jeu pédagogique + document Word annexe cartes à plastifier</div></div></div>
   </div>
+  </div>
 </div>
 
 <!-- S6 -->
-<div class="section">
-  <div class="st"><span class="sn">6</span> Instructions complémentaires</div>
+<div class="section" id="acc-s6">
+  <div class="acc-header" onclick="toggleAcc('s6')">
+    <div class="acc-left"><span class="sn">6</span><span class="acc-title">Instructions complémentaires</span><span class="acc-badge">optionnel</span></div>
+    <span class="acc-arrow" id="arr-s6">▼</span>
+  </div>
+  <div class="acc-body" id="body-s6">
   <div class="f"><label class="fl">Ressources textuelles supplémentaires (articles, extraits...)</label><textarea id="ext-resources" rows="3" placeholder="Collez ici des extraits d'articles ou ressources professionnelles..."></textarea></div>
-  <div class="f"><label class="fl">Instructions spécifiques supplémentaires</label><textarea id="add-instructions" rows="3" placeholder="Consignes particulières, contraintes spécifiques, demandes spéciales..."></textarea></div>
+  <div class="f"><label class="fl">Instructions spécifiques supplémentaires</label><textarea id="add-instructions" rows="3" placeholder="Consignes particulières, contraintes spécifiques, demandes spéciales..."></textarea>  </div>
 </div>
 
 <div class="br">
@@ -349,7 +408,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
 <div id="s-prompt" class="hidden" style="margin-top:14px">
   <div class="section">
     <div class="st">Prompt généré</div>
-    <div class="al i">Prompt structuré et prêt à l'emploi. Utilisez "Générer avec Claude" pour une réponse directe, ou copiez le prompt brut.</div>
+    <div class="al i">Prompt structuré et prêt à l'emploi. Copiez-le et collez-le dans l'interface de votre choix (Claude, ChatGPT, Gemini…).</div>
     <!-- Prévisualisation structurée -->
     <div id="prompt-preview" style="margin-bottom:12px"></div>
     <!-- Prompt brut (masqué par défaut) -->
@@ -360,13 +419,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
       <button class="btn sm" id="btn-toggle-raw" onclick="toggleRaw()" style="font-size:11px">Afficher le prompt brut</button>
     </div>
     <div class="br">
-      <button class="btn p" onclick="generateWithClaude()">▶ Générer avec Claude</button>
-      <button class="btn" onclick="copyPrompt()">Copier le prompt brut</button>
-    </div>
-    <div id="claude-loader" class="ld hidden"><div class="sp"></div> Claude génère le contenu...</div>
-    <div id="claude-result" class="claude-result"></div>
-    <div id="claude-copy-btn" style="display:none;margin-top:8px">
-      <button class="btn sm" onclick="copyClaudeResult()">Copier le résultat</button>
+      <button class="btn p" onclick="copyPrompt()">📋 Copier le prompt</button>
     </div>
   </div>
 </div>
@@ -379,6 +432,15 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
 </main>
 
 <script>
+function toggleAcc(id){
+  const body=document.getElementById('body-'+id);
+  const arr=document.getElementById('arr-'+id);
+  if(!body) return;
+  const isOpen=body.classList.contains('open');
+  body.classList.toggle('open',!isOpen);
+  if(arr) arr.classList.toggle('open',!isOpen);
+}
+
 const CUR={
 'cap-epc':{name:'CAP EPC',niveaux:[
   {id:'cap-1',name:'1ère année CAP',competences:[
@@ -1989,31 +2051,6 @@ const CUR={
 
 let S={ref:'',niv:'',comp:{},openBlocs:{},sw:{eleve:false,enseignant:false,h5p:false,pronote:false,ludic:false},pdiff:'intermediaire',prob:'',prompt:'',files:[]};
 
-async function callClaude(prompt){
-  const resp=await fetch('/api/claude',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-opus-4-6',max_tokens:2048,messages:[{role:'user',content:prompt}]})
-  });
-  if(!resp.ok){const e=await resp.json();throw new Error(e.error?.message||'Erreur serveur proxy');}
-  const data=await resp.json();
-  return data.content?.map(c=>c.text||'').join('')||'';
-}
-
-async function checkProxyStatus(){
-  const dot=document.getElementById('status-dot');
-  const label=document.getElementById('status-label');
-  try{
-    const r=await fetch('/api/claude',{method:'OPTIONS'});
-    dot.style.background='#0F6E56';label.textContent='Service actif';
-  }catch(e){
-    dot.style.background='#f39c12';label.textContent='Proxy non joignable';
-  }
-}
-document.addEventListener('DOMContentLoaded',checkProxyStatus);
-
-function copyScenario(){const t=document.getElementById('sc-result').textContent;navigator.clipboard.writeText(t).then(()=>alert('Mise en situation copiée !'));}
-function copyClaudeResult(){const t=document.getElementById('claude-result').textContent;navigator.clipboard.writeText(t).then(()=>alert('Résultat copié !'));}
 
 /* ── Utilitaires structure ── */
 function isHierarchique(){
@@ -2040,6 +2077,9 @@ function onNiveauChange(){
   const ref=CUR[S.ref];if(!ref||!nid){['s2','s-prob'].forEach(id=>document.getElementById(id).classList.add('hidden'));return;}
   const nv=ref.niveaux.find(n=>n.id===nid);if(!nv)return;
   document.getElementById('s2').classList.remove('hidden');
+  // Auto-open s2 body
+  const b2=document.getElementById('body-s2'); const a2=document.getElementById('arr-s2');
+  if(b2){b2.classList.add('open');} if(a2){a2.classList.add('open');}
   if(isMrc()) renderMrc(nv);
   else if(isCapEpc()) renderCapEpc(nv);
   else renderComps(nv.competences);
@@ -2326,7 +2366,9 @@ function updSt(){
   const hc=Object.keys(S.comp).length>0;
   document.getElementById('btn-gen').disabled=!(hc&&S.ref&&S.niv);
   document.getElementById('btn-copy').disabled=!S.prompt;
+  const sprobWasHidden=document.getElementById('s-prob').classList.contains('hidden');
   document.getElementById('s-prob').classList.toggle('hidden',!hc);
+  if(hc&&sprobWasHidden){const bsp=document.getElementById('body-sprob');const asp=document.getElementById('arr-sprob');if(bsp)bsp.classList.remove('open');if(asp)asp.classList.remove('open');}
 }
 function toggleSwitch(k){
   S.sw[k]=!S.sw[k];if(k==='enseignant'&&S.sw.enseignant)S.sw.eleve=true;if(k==='eleve'&&!S.sw.eleve)S.sw.enseignant=false;
@@ -2334,6 +2376,13 @@ function toggleSwitch(k){
 }
 function selectDiff(d){S.pdiff=d;document.querySelectorAll('[id^=diff-]').forEach(el=>el.classList.remove('on'));document.getElementById('diff-'+d).classList.add('on');}
 function clearProb(){S.prob='';document.getElementById('prob-list').innerHTML='';const w=document.getElementById('prob-sel-wrap');w.classList.add('hidden');w.innerHTML='';}
+
+async function callClaude(prompt){
+  const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+  const d=await r.json();
+  if(d.error) throw new Error(d.error.message);
+  return d.content.map(i=>i.text||'').join('');
+}
 
 async function generateProblematics(){
   const ref=S.ref&&CUR[S.ref],nv=ref&&ref.niveaux.find(n=>n.id===S.niv);
@@ -2640,19 +2689,6 @@ function renderPromptPreview(prompt){
   container.appendChild(summary);
 }
 
-async function generateWithClaude(){
-  const loader=document.getElementById('claude-loader');loader.classList.remove('hidden');
-  const resBox=document.getElementById('claude-result');resBox.style.display='none';resBox.textContent='';
-  document.getElementById('claude-copy-btn').style.display='none';
-  try{
-    const text=await callClaude(S.prompt);
-    if(!text)return;
-    resBox.textContent=text;resBox.style.display='block';
-    document.getElementById('claude-copy-btn').style.display='block';
-    resBox.scrollIntoView({behavior:'smooth',block:'nearest'});
-  }catch(e){alert('Erreur : '+e.message);}
-  loader.classList.add('hidden');
-}
 
 function copyPrompt(){if(S.prompt)navigator.clipboard.writeText(S.prompt).then(()=>alert('Prompt copié !')).catch(()=>{});}
 
