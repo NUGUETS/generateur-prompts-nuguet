@@ -143,6 +143,24 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
     </div>
   </div>
   <div class="g2">
+    <div class="f"><label class="fl">Durée par séance</label>
+      <select id="sel-duree">
+        <option value="1h">1 heure</option>
+        <option value="2h" selected>2 heures</option>
+        <option value="3h">3 heures</option>
+        <option value="4h">4 heures</option>
+      </select>
+    </div>
+    <div class="f"><label class="fl">Type de séance</label>
+      <select id="sel-type-seance">
+        <option value="decouverte">Découverte — première approche de la notion</option>
+        <option value="entrainement">Entraînement — mise en pratique guidée</option>
+        <option value="approfondissement">Approfondissement — complexification et transfert</option>
+        <option value="evaluation">Évaluation — bilan des acquis</option>
+      </select>
+    </div>
+  </div>
+  <div class="g2">
     <div class="f"><label class="fl">Niveau de difficulté</label>
       <select id="sel-diff">
         <option value="debutant">Débutant — notions nouvelles</option>
@@ -172,23 +190,6 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
   </div>
   <div id="comp-list" class="cbg"></div>
   <div id="savoirs-container"></div>
-</div>
-
-<!-- S PROB -->
-<div id="s-prob" class="section-prob hidden">
-  <div class="st"><span class="sn a">?</span> Générer une problématique <span class="badge">optionnel</span></div>
-  <p class="inf" style="margin-bottom:10px">Sélectionnez un niveau, cliquez sur "Générer", puis choisissez la problématique à intégrer au prompt.</p>
-  <div class="f"><label class="fl">Complexité</label>
-    <div class="g3">
-      <div class="pdi" id="diff-simple" onclick="selectDiff('simple')"><b>Simple</b><small>Directe, concrète</small></div>
-      <div class="pdi on" id="diff-intermediaire" onclick="selectDiff('intermediaire')"><b>Intermédiaire</b><small>Analytique</small></div>
-      <div class="pdi" id="diff-complexe" onclick="selectDiff('complexe')"><b>Complexe</b><small>Réflexion critique</small></div>
-    </div>
-  </div>
-  <button class="btn t" onclick="generateProblematics()">✦ Générer 3 problématiques</button>
-  <div id="prob-loader" class="ld hidden"><div class="sp"></div> Génération en cours...</div>
-  <div id="prob-list" class="pl"></div>
-  <div id="prob-sel-wrap" class="hidden"></div>
 </div>
 
 <!-- S3 -->
@@ -235,6 +236,23 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
   <input type="file" id="file-input" multiple accept=".txt,.md,.pdf" style="display:none" onchange="handleFiles(this.files)">
   <div id="file-list" class="file-list"></div>
   <div id="file-loader" class="ld hidden"><div class="sp"></div> Lecture...</div>
+
+<!-- S PROB -->
+<div id="s-prob" class="section-prob hidden">
+  <div class="st"><span class="sn a">?</span> Générer une problématique <span class="badge">optionnel</span></div>
+  <p class="inf" style="margin-bottom:10px">Renseignez l'entreprise fil rouge (section 3) avant de générer pour obtenir des problématiques contextualisées à votre enseigne.</p>
+  <div class="f"><label class="fl">Complexité</label>
+    <div class="g3">
+      <div class="pdi" id="diff-simple" onclick="selectDiff('simple')"><b>Simple</b><small>Directe, concrète</small></div>
+      <div class="pdi on" id="diff-intermediaire" onclick="selectDiff('intermediaire')"><b>Intermédiaire</b><small>Analytique</small></div>
+      <div class="pdi" id="diff-complexe" onclick="selectDiff('complexe')"><b>Complexe</b><small>Réflexion critique</small></div>
+    </div>
+  </div>
+  <button class="btn t" onclick="generateProblematics()">✦ Générer 3 problématiques</button>
+  <div id="prob-loader" class="ld hidden"><div class="sp"></div> Génération en cours...</div>
+  <div id="prob-list" class="pl"></div>
+  <div id="prob-sel-wrap" class="hidden"></div>
+</div>
 </div>
 
 <!-- S4 -->
@@ -268,6 +286,21 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
     <label class="cbi"><input type="checkbox" value="Prestation orale notée"> <span class="cbl">Prestation orale</span></label>
     <label class="cbi"><input type="checkbox" value="Auto-évaluation par grille de critères"> <span class="cbl">Auto-évaluation par grille de critères</span></label>
     <label class="cbi"><input type="checkbox" value="Co-évaluation entre pairs"> <span class="cbl">Co-évaluation entre pairs</span></label>
+  </div>
+</div>
+
+<!-- S4c MATÉRIEL -->
+<div class="section">
+  <div class="st"><span class="sn">4c</span> Matériel mis à disposition <span class="badge">optionnel</span></div>
+  <div class="cbg" id="materiel">
+    <label class="cbi"><input type="checkbox" value="Vidéoprojecteur / écran interactif"> <span class="cbl">Vidéoprojecteur / écran interactif</span></label>
+    <label class="cbi"><input type="checkbox" value="Salle informatique (postes individuels)"> <span class="cbl">Salle informatique (postes individuels)</span></label>
+    <label class="cbi"><input type="checkbox" value="Tablettes numériques"> <span class="cbl">Tablettes numériques</span></label>
+    <label class="cbi"><input type="checkbox" value="Smartphones des élèves (BYOD)"> <span class="cbl">Smartphones élèves (BYOD)</span></label>
+    <label class="cbi"><input type="checkbox" value="Imprimante disponible en classe"> <span class="cbl">Imprimante disponible</span></label>
+    <label class="cbi"><input type="checkbox" value="Tableau blanc / paper board"> <span class="cbl">Tableau blanc / paper board</span></label>
+    <label class="cbi"><input type="checkbox" value="Magasin pédagogique équipé"> <span class="cbl">Magasin pédagogique équipé</span></label>
+    <label class="cbi"><input type="checkbox" value="Accès internet (Wi-Fi)"> <span class="cbl">Accès internet (Wi-Fi)</span></label>
   </div>
 </div>
 
@@ -316,11 +349,19 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
 <div id="s-prompt" class="hidden" style="margin-top:14px">
   <div class="section">
     <div class="st">Prompt généré</div>
-    <div class="al i">Prompt prêt à l'emploi. Copiez-le et collez-le dans Claude ou tout autre IA, ou utilisez le bouton "Générer avec Claude" pour une réponse directe.</div>
-    <div class="pb" id="prompt-display"></div>
+    <div class="al i">Prompt structuré et prêt à l'emploi. Utilisez "Générer avec Claude" pour une réponse directe, ou copiez le prompt brut.</div>
+    <!-- Prévisualisation structurée -->
+    <div id="prompt-preview" style="margin-bottom:12px"></div>
+    <!-- Prompt brut (masqué par défaut) -->
+    <div id="prompt-raw-wrap" style="display:none;margin-top:8px">
+      <div class="pb" id="prompt-display"></div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap">
+      <button class="btn sm" id="btn-toggle-raw" onclick="toggleRaw()" style="font-size:11px">Afficher le prompt brut</button>
+    </div>
     <div class="br">
       <button class="btn p" onclick="generateWithClaude()">▶ Générer avec Claude</button>
-      <button class="btn" onclick="copyPrompt()">Copier le prompt</button>
+      <button class="btn" onclick="copyPrompt()">Copier le prompt brut</button>
     </div>
     <div id="claude-loader" class="ld hidden"><div class="sp"></div> Claude génère le contenu...</div>
     <div id="claude-result" class="claude-result"></div>
@@ -393,7 +434,7 @@ const CUR={
         {id:'b1cp4s1',name:"Les différents modes de préparation des commandes omnicanales"},
         {id:'b1cp4s2',name:"Le conditionnement et l'emballage"}
       ]}
-    ]},,
+    ]},
     {id:'b2',name:'Bloc 2 — Mettre en valeur et approvisionner',competencesPrincipales:[
       {id:'b2cp1',name:'Approvisionner, mettre en rayon et ranger selon la nature des produits',competencesDetaillees:[
         {id:'b2cp1cd1',name:"Déterminer les quantités à mettre en rayon"},
@@ -582,7 +623,7 @@ const CUR={
         {id:'b1cp4s1',name:"Les différents modes de préparation des commandes omnicanales"},
         {id:'b1cp4s2',name:"Le conditionnement et l'emballage"}
       ]}
-    ]},,
+    ]},
     {id:'b2',name:'Bloc 2 — Mettre en valeur et approvisionner',competencesPrincipales:[
       {id:'b2cp1',name:'Approvisionner, mettre en rayon et ranger selon la nature des produits',competencesDetaillees:[
         {id:'b2cp1cd1',name:"Déterminer les quantités à mettre en rayon"},
@@ -721,9 +762,177 @@ const CUR={
 ],sc:"Vous êtes un(e) employé(e) commercial(e) polyvalent(e) dans une enseigne de grande distribution. Votre tuteur vous confie des missions variées : réception des marchandises, mise en rayon, conseil client et encaissement."},
 '2nde-mrc':{name:'2nde MRC',niveaux:[
   {id:'2-mrc',name:'Seconde MRC',competences:[
-    {id:'c1',name:'Intégrer la relation client dans un cadre omnicanal',savoirs:[{id:'s1',name:"Gérer simultanément les activités"},{id:'s2',name:"Prendre contact avec le public"},{id:'s3',name:"Identifier et traiter la demande"},{id:'s4',name:"Repérer les caractéristiques du public"},{id:'s5',name:"Intégrer l'omnicanal dans le processus de vente"},{id:'s6',name:"S'adapter au contexte commercial et au comportement du client"},{id:'s7',name:"Découvrir, identifier et reformuler les besoins du client"},{id:'s8',name:"Conseiller le client en proposant la solution adaptée"},{id:'s9',name:"Proposer les produits et/ou services associés"},{id:'s10',name:"Effectuer des ventes au rebond"}]},
-    {id:'c2',name:'Assurer le suivi de la relation client',savoirs:[{id:'s1',name:"Identifier les prestations inhérentes aux activités d'accueil"},{id:'s2',name:"Assurer le suivi d'une prestation"},{id:'s3',name:"Suivre l'évolution de la commande et du règlement"},{id:'s4',name:"Identifier et proposer une solution aux problèmes du client"},{id:'s5',name:"Collecter les informations de satisfaction"},{id:'s6',name:"Sélectionner et mettre en œuvre les outils de fidélisation"}]},
-    {id:'c3',name:"Collecter et exploiter l'information",savoirs:[{id:'s1',name:"Repérer les sources d'information"},{id:'s2',name:"Actualiser une base de données"},{id:'s3',name:"Rendre compte de l'activité"},{id:'s4',name:"Collecter et identifier les motifs de satisfaction et d'insatisfaction"},{id:'s5',name:"Traiter les messages et/ou les demandes des clients"},{id:'s6',name:"Analyser les données (recueillir, extraire, exploiter, synthétiser)"}]}
+    {id:'mrc-b1',name:"Bloc 1 — Intégrer la relation client dans un cadre omnicanal",competencesPrincipales:[
+      {id:'mrc-b1cp1',name:"MA — Gérer l'accueil multicanal à des fins d'information, d'orientation et de conseil",competencesDetaillees:[
+        {id:'mrc-b1cp1cd1',name:"Gérer simultanément les activités",sousCp:[
+          {id:'mrc-b1cp1cd1sc1',name:"Recenser et prioriser les activités"},
+          {id:'mrc-b1cp1cd1sc2',name:"Organiser ses activités en coordination avec l'équipe"},
+          {id:'mrc-b1cp1cd1sc3',name:"Repérer et gérer les aléas"}
+        ]},
+        {id:'mrc-b1cp1cd2',name:"Prendre contact avec le public",sousCp:[
+          {id:'mrc-b1cp1cd2sc1',name:"Identifier le public et repérer ses caractéristiques"},
+          {id:'mrc-b1cp1cd2sc2',name:"Recevoir le visiteur"}
+        ]},
+        {id:'mrc-b1cp1cd3',name:"Identifier la demande",sousCp:[
+          {id:'mrc-b1cp1cd3sc1',name:"Appréhender la demande du public"},
+          {id:'mrc-b1cp1cd3sc2',name:"Apprécier la complexité de la demande"},
+          {id:'mrc-b1cp1cd3sc3',name:"Interagir pour préciser la demande"}
+        ]},
+        {id:'mrc-b1cp1cd4',name:"Traiter la demande",sousCp:[
+          {id:'mrc-b1cp1cd4sc1',name:"Identifier et mobiliser les ressources utiles"},
+          {id:'mrc-b1cp1cd4sc2',name:"Apporter une réponse adaptée"},
+          {id:'mrc-b1cp1cd4sc3',name:"Construire une réponse personnalisée en termes d'orientation, d'information, de conseils et d'accompagnement"}
+        ]}
+      ]},
+      {id:'mrc-b1cp2',name:"MA — Gérer la relation commerciale",competencesDetaillees:[
+        {id:'mrc-b1cp2cd1',name:"Contribuer au développement de la relation commerciale",sousCp:[
+          {id:'mrc-b1cp2cd1sc1',name:"Repérer les caractéristiques du public"}
+        ]}
+      ]},
+      {id:'mrc-b1cp3',name:"MCVA et MCVB — Conseiller et vendre",competencesDetaillees:[
+        {id:'mrc-b1cp3cd1',name:"Réaliser la vente dans un cadre omnicanal",sousCp:[
+          {id:'mrc-b1cp3cd1sc1',name:"Intégrer l'omnicanal dans le processus de vente"},
+          {id:'mrc-b1cp3cd1sc2',name:"Prendre contact"},
+          {id:'mrc-b1cp3cd1sc3',name:"S'adapter au contexte commercial et au comportement du client"},
+          {id:'mrc-b1cp3cd1sc4',name:"Découvrir, identifier/analyser et reformuler les besoins du client, sa (ses) motivation(s) et ses freins éventuels"},
+          {id:'mrc-b1cp3cd1sc5',name:"Présenter l'entreprise et/ou ses produits et/ou ses services"},
+          {id:'mrc-b1cp3cd1sc6',name:"Conseiller le client en proposant la solution adaptée"},
+          {id:'mrc-b1cp3cd1sc7',name:"Proposer les produits et/ou services associés"}
+        ]}
+      ]},
+      {id:'mrc-b1cp4',name:"MCVA et MCVB — Fidéliser la clientèle et développer la relation client",competencesDetaillees:[
+        {id:'mrc-b1cp4cd1',name:"Contribuer à des actions de fidélisation de la clientèle et de développement de la relation client",sousCp:[
+          {id:'mrc-b1cp4cd1sc1',name:"Effectuer des ventes au rebond"}
+        ]}
+      ]},
+      {id:'mrc-b1cp5',name:"MCVA — Animer et gérer l'espace commercial",competencesDetaillees:[
+        {id:'mrc-b1cp5cd1',name:"Rendre l'unité commerciale attractive et fonctionnelle",sousCp:[
+          {id:'mrc-b1cp5cd1sc1',name:"Accueillir, informer et orienter le client dans l'unité commerciale et à l'extérieur"}
+        ]},
+        {id:'mrc-b1cp5cd2',name:"Développer la clientèle",sousCp:[
+          {id:'mrc-b1cp5cd2sc1',name:"Proposer des actions commerciales génératrices de trafic dans l'unité commerciale"},
+          {id:'mrc-b1cp5cd2sc2',name:"Sélectionner les gammes de produits à mettre en avant en lien avec la stratégie de l'unité commerciale"},
+          {id:'mrc-b1cp5cd2sc3',name:"Recourir aux sites marchands et aux réseaux sociaux"},
+          {id:'mrc-b1cp5cd2sc4',name:"Inciter à l'achat par une action commerciale, le cas échéant interactive"}
+        ]}
+      ]},
+      {id:'mrc-b1cp6',name:"MCVB — Prospecter et valoriser l'offre commerciale",competencesDetaillees:[
+        {id:'mrc-b1cp6cd1',name:"Mettre en oeuvre une opération de prospection",sousCp:[
+          {id:'mrc-b1cp6cd1sc1',name:"Établir le contact avec le prospect dans des situations de prospection physique et/ou à distance"},
+          {id:'mrc-b1cp6cd1sc2',name:"Identifier les besoins du prospect"},
+          {id:'mrc-b1cp6cd1sc3',name:"Argumenter"}
+        ]}
+      ]}
+    ]},
+    {id:'mrc-b2',name:"Bloc 2 — Assurer le suivi de la relation client",competencesPrincipales:[
+      {id:'mrc-b2cp1',name:"MA — Gérer l'information et des prestations à des fins organisationnelles",competencesDetaillees:[
+        {id:'mrc-b2cp1cd1',name:"Gérer des prestations internes et externes",sousCp:[
+          {id:'mrc-b2cp1cd1sc1',name:"Identifier les prestations inhérentes aux activités d'accueil"},
+          {id:'mrc-b2cp1cd1sc2',name:"Formaliser une demande et/ou une offre de prestations"},
+          {id:'mrc-b2cp1cd1sc3',name:"Assurer le suivi d'une prestation"}
+        ]}
+      ]},
+      {id:'mrc-b2cp2',name:"MA — Gérer la relation commerciale",competencesDetaillees:[
+        {id:'mrc-b2cp2cd1',name:"Contribuer au développement de la relation commerciale",sousCp:[
+          {id:'mrc-b2cp2cd1sc1',name:"Identifier les supports utiles à la relation commerciale"}
+        ]},
+        {id:'mrc-b2cp2cd2',name:"Satisfaire et fidéliser le public",sousCp:[
+          {id:'mrc-b2cp2cd2sc1',name:"Construire avec le public la solution adaptée à ses besoins"},
+          {id:'mrc-b2cp2cd2sc2',name:"Contribuer à la satisfaction et à la fidélisation"}
+        ]},
+        {id:'mrc-b2cp2cd3',name:"Gérer les réclamations",sousCp:[
+          {id:'mrc-b2cp2cd3sc1',name:"Recueillir les réclamations"}
+        ]}
+      ]},
+      {id:'mrc-b2cp3',name:"MCVA et MCVB — Suivre les ventes",competencesDetaillees:[
+        {id:'mrc-b2cp3cd1',name:"Assurer le suivi de la commande du produit et/ou du service",sousCp:[
+          {id:'mrc-b2cp3cd1sc1',name:"Suivre l'évolution de la commande et éventuellement du règlement"},
+          {id:'mrc-b2cp3cd1sc2',name:"Informer le client des délais et des modalités de mise à disposition"}
+        ]},
+        {id:'mrc-b2cp3cd2',name:"Mettre en oeuvre le ou les services associés",sousCp:[
+          {id:'mrc-b2cp3cd2sc1',name:"Sélectionner le cas échéant le prestataire le plus adapté"},
+          {id:'mrc-b2cp3cd2sc2',name:"Suivre l'exécution du ou des service(s) associé(s) et en rendre compte"},
+          {id:'mrc-b2cp3cd2sc3',name:"Effectuer le cas échéant les relances"}
+        ]},
+        {id:'mrc-b2cp3cd3',name:"Traiter les retours et les réclamations du client",sousCp:[
+          {id:'mrc-b2cp3cd3sc1',name:"Identifier le(s) problème(s) rencontré(s) par le client"},
+          {id:'mrc-b2cp3cd3sc2',name:"Proposer une solution adaptée en tenant compte des procédures de l'entreprise et de la réglementation"}
+        ]},
+        {id:'mrc-b2cp3cd4',name:"S'assurer de la satisfaction du client",sousCp:[
+          {id:'mrc-b2cp3cd4sc1',name:"Collecter les informations de satisfaction auprès des clients"}
+        ]},
+        {id:'mrc-b2cp3cd5',name:"Fidéliser la clientèle et développer la relation client",sousCp:[
+          {id:'mrc-b2cp3cd5sc1',name:"Sélectionner et mettre en oeuvre les outils de fidélisation et/ou de développement de la relation client de l'entreprise"},
+          {id:'mrc-b2cp3cd5sc2',name:"Concourir à la préparation et à l'organisation d'évènements et/ou d'opérations de fidélisation/développement de la relation client"},
+          {id:'mrc-b2cp3cd5sc3',name:"Participer à la mise en oeuvre des évènements et/ou opérations de fidélisation/développement de la relation client"}
+        ]}
+      ]},
+      {id:'mrc-b2cp4',name:"MCVA — Animer et gérer l'espace commercial",competencesDetaillees:[
+        {id:'mrc-b2cp4cd1',name:"Assurer les opérations préalables à la vente",sousCp:[
+          {id:'mrc-b2cp4cd1sc1',name:"Établir les commandes des produits auprès de la centrale d'achats et/ou des fournisseurs indépendants sélectionnés avec la hiérarchie, en tenant compte des contraintes"},
+          {id:'mrc-b2cp4cd1sc2',name:"Préparer les commandes des clients issues de l'omnicanal"},
+          {id:'mrc-b2cp4cd1sc3',name:"Réceptionner, contrôler et stocker les marchandises (quantitatif et qualitatif)"},
+          {id:'mrc-b2cp4cd1sc4',name:"Effectuer les relances et préparer les retours fournisseurs"}
+        ]}
+      ]},
+      {id:'mrc-b2cp5',name:"MCVB — Prospecter et valoriser l'offre commerciale",competencesDetaillees:[
+        {id:'mrc-b2cp5cd1',name:"Valoriser les produits et/ou services",sousCp:[
+          {id:'mrc-b2cp5cd1sc1',name:"Mettre en valeur l'offre dans un salon, showroom, un espace de vente éphémère, chez le client, sur les sites marchands et sur les réseaux sociaux"}
+        ]}
+      ]}
+    ]},
+    {id:'mrc-b3',name:"Bloc 3 — Collecter et exploiter l'information dans le cadre de la relation client",competencesPrincipales:[
+      {id:'mrc-b3cp1',name:"MA — Gérer l'information et des prestations à des fins organisationnelles",competencesDetaillees:[
+        {id:'mrc-b3cp1cd1',name:"Gérer l'information",sousCp:[
+          {id:'mrc-b3cp1cd1sc1',name:"Repérer les sources d'information"},
+          {id:'mrc-b3cp1cd1sc2',name:"Contrôler l'information"},
+          {id:'mrc-b3cp1cd1sc3',name:"Actualiser une base de données"},
+          {id:'mrc-b3cp1cd1sc4',name:"Sélectionner l'information utile au service"},
+          {id:'mrc-b3cp1cd1sc5',name:"Mutualiser l'information nécessaire à la continuité du service"},
+          {id:'mrc-b3cp1cd1sc6',name:"Rendre compte de l'activité"}
+        ]}
+      ]},
+      {id:'mrc-b3cp2',name:"MA — Gérer la relation commerciale",competencesDetaillees:[
+        {id:'mrc-b3cp2cd1',name:"Satisfaire et fidéliser le public",sousCp:[
+          {id:'mrc-b3cp2cd1sc1',name:"Collecter et identifier les motifs de satisfaction et d'insatisfaction"}
+        ]}
+      ]},
+      {id:'mrc-b3cp3',name:"MCVA et MCVB — Conseiller et vendre",competencesDetaillees:[
+        {id:'mrc-b3cp3cd1',name:"Assurer la veille commerciale",sousCp:[
+          {id:'mrc-b3cp3cd1sc1',name:"Rechercher, hiérarchiser, exploiter et actualiser en continu les informations sur l'entreprise et son marché"}
+        ]}
+      ]},
+      {id:'mrc-b3cp4',name:"MCVA et MCVB — Suivre les ventes",competencesDetaillees:[
+        {id:'mrc-b3cp4cd1',name:"Mettre en oeuvre le ou les services associés",sousCp:[
+          {id:'mrc-b3cp4cd1sc1',name:"Collecter et transmettre les informations au service de l'entreprise"}
+        ]}
+      ]},
+      {id:'mrc-b3cp5',name:"MCVA et MCVB — Fidéliser la clientèle et développer la relation client",competencesDetaillees:[
+        {id:'mrc-b3cp5cd1',name:"Traiter et exploiter l'information ou le contact client",sousCp:[
+          {id:'mrc-b3cp5cd1sc1',name:"Traiter les messages et/ou les demandes des clients"},
+          {id:'mrc-b3cp5cd1sc2',name:"Recueillir, extraire, exploiter, synthétiser les données internes et/ou externes"},
+          {id:'mrc-b3cp5cd1sc3',name:"Rendre compte des données appropriées"}
+        ]},
+        {id:'mrc-b3cp5cd2',name:"S'assurer de la satisfaction du client",sousCp:[
+          {id:'mrc-b3cp5cd2sc1',name:"Transmettre les informations sur la satisfaction du client"}
+        ]}
+      ]},
+      {id:'mrc-b3cp6',name:"MCVA — Animer et gérer l'espace commercial",competencesDetaillees:[
+        {id:'mrc-b3cp6cd1',name:"Assurer les opérations préalables à la vente",sousCp:[
+          {id:'mrc-b3cp6cd1sc1',name:"Enrichir et exploiter le système d'information commercial"}
+        ]}
+      ]},
+      {id:'mrc-b3cp7',name:"MCVB — Prospecter et valoriser l'offre commerciale",competencesDetaillees:[
+        {id:'mrc-b3cp7cd1',name:"Rechercher et analyser les informations à des fins d'exploitation",sousCp:[
+          {id:'mrc-b3cp7cd1sc1',name:"Identifier, au sein du SIC, les informations internes utiles à l'opération de prospection, les extraire et les analyser"},
+          {id:'mrc-b3cp7cd1sc2',name:"Collecter, traiter et analyser les informations externes"},
+          {id:'mrc-b3cp7cd1sc3',name:"Mettre à jour le système d'information commercial"}
+        ]},
+        {id:'mrc-b3cp7cd2',name:"Mettre en oeuvre une opération de prospection",sousCp:[
+          {id:'mrc-b3cp7cd2sc1',name:"Construire et/ou mettre à jour le fichier prospects"}
+        ]}
+      ]}
+    ]}
   ]}
 ],sc:"Vous êtes en stage dans une entreprise possédant un magasin physique et un site e-commerce. Affecté(e) au pôle Relation Client, vous répondez aux demandes clients en face à face, par téléphone et par e-mail."},
 'bac-ma':{name:'BAC PRO MA',niveaux:[
@@ -780,7 +989,7 @@ const CUR={
         {id:'ma-b1cp6s2',name:"Les facteurs de stress et le contrôle de soi"},
         {id:'ma-b1cp6s3',name:"La gestion des conflits"}
       ]}
-    ]},,
+    ]},
     {id:'ma-b2',name:"Bloc 2 — Gérer l'information et des prestations à des fins organisationnelles",competencesPrincipales:[
       {id:'ma-b2cp1',name:"2.1 Gérer l'information",competencesDetaillees:[
         {id:'ma-b2cp1cd1',name:"Repérer les sources d'information"},
@@ -814,7 +1023,7 @@ const CUR={
       ],savoirs:[
         {id:'ma-b2cp3s1',name:"La démarche de projet"}
       ]}
-    ]},,
+    ]},
     {id:'ma-b3',name:"Bloc 3 — Gérer la relation commerciale",competencesPrincipales:[
       {id:'ma-b3cp1',name:"3.1 Contribuer au développement de la relation commerciale",competencesDetaillees:[
         {id:'ma-b3cp1cd1',name:"Identifier les supports utiles à la relation commerciale"},
@@ -905,7 +1114,7 @@ const CUR={
         {id:'ma-b1cp6s2',name:"Les facteurs de stress et le contrôle de soi"},
         {id:'ma-b1cp6s3',name:"La gestion des conflits"}
       ]}
-    ]},,
+    ]},
     {id:'ma-b2',name:"Bloc 2 — Gérer l'information et des prestations à des fins organisationnelles",competencesPrincipales:[
       {id:'ma-b2cp1',name:"2.1 Gérer l'information",competencesDetaillees:[
         {id:'ma-b2cp1cd1',name:"Repérer les sources d'information"},
@@ -939,7 +1148,7 @@ const CUR={
       ],savoirs:[
         {id:'ma-b2cp3s1',name:"La démarche de projet"}
       ]}
-    ]},,
+    ]},
     {id:'ma-b3',name:"Bloc 3 — Gérer la relation commerciale",competencesPrincipales:[
       {id:'ma-b3cp1',name:"3.1 Contribuer au développement de la relation commerciale",competencesDetaillees:[
         {id:'ma-b3cp1cd1',name:"Identifier les supports utiles à la relation commerciale"},
@@ -1032,7 +1241,7 @@ const CUR={
         {id:'mcva-gc1cp3s3',name:"Le contrat de vente"},
         {id:'mcva-gc1cp3s4',name:"La garantie"}
       ]}
-    ]},,
+    ]},
     {id:'mcva-gc2',name:"GC2 — Suivre les ventes",competencesPrincipales:[
       {id:'mcva-gc2cp1',name:"Assurer le suivi de la commande du produit et/ou du service",competencesDetaillees:[
         {id:'mcva-gc2cp1cd1',name:"Suivre l'évolution de la commande et éventuellement du règlement"},
@@ -1068,7 +1277,7 @@ const CUR={
       ],savoirs:[
         {id:'mcva-gc2cp3s1',name:"Le système d'information commercial de l'entreprise"}
       ]}
-    ]},,
+    ]},
     {id:'mcva-gc3',name:"GC3 — Fidéliser la clientèle et développer la relation client",competencesPrincipales:[
       {id:'mcva-gc3cp1',name:"Traiter et exploiter l'information ou le contact client",competencesDetaillees:[
         {id:'mcva-gc3cp1cd1',name:"Traiter les messages et/ou les demandes des clients"},
@@ -1241,7 +1450,7 @@ const CUR={
         {id:'mcva-gc1cp3s3',name:"Le contrat de vente"},
         {id:'mcva-gc1cp3s4',name:"La garantie"}
       ]}
-    ]},,
+    ]},
     {id:'mcva-gc2',name:"GC2 — Suivre les ventes",competencesPrincipales:[
       {id:'mcva-gc2cp1',name:"Assurer le suivi de la commande du produit et/ou du service",competencesDetaillees:[
         {id:'mcva-gc2cp1cd1',name:"Suivre l'évolution de la commande et éventuellement du règlement"},
@@ -1277,7 +1486,7 @@ const CUR={
       ],savoirs:[
         {id:'mcva-gc2cp3s1',name:"Le système d'information commercial de l'entreprise"}
       ]}
-    ]},,
+    ]},
     {id:'mcva-gc3',name:"GC3 — Fidéliser la clientèle et développer la relation client",competencesPrincipales:[
       {id:'mcva-gc3cp1',name:"Traiter et exploiter l'information ou le contact client",competencesDetaillees:[
         {id:'mcva-gc3cp1cd1',name:"Traiter les messages et/ou les demandes des clients"},
@@ -1451,7 +1660,7 @@ const CUR={
         {id:'mcvb-gc1cp3s3',name:"Le contrat de vente"},
         {id:'mcvb-gc1cp3s4',name:"La garantie"}
       ]}
-    ]},,
+    ]},
     {id:'mcvb-gc2',name:"GC2 — Suivre les ventes",competencesPrincipales:[
       {id:'mcvb-gc2cp1',name:"Assurer le suivi de la commande du produit et/ou du service",competencesDetaillees:[
         {id:'mcvb-gc2cp1cd1',name:"Suivre l'évolution de la commande et éventuellement du règlement"},
@@ -1481,7 +1690,7 @@ const CUR={
       ],savoirs:[
         {id:'mcvb-gc2cp3s1',name:"Le système d'information commercial de l'entreprise"}
       ]}
-    ]},,
+    ]},
     {id:'mcvb-gc3',name:"GC3 — Fidéliser la clientèle et développer la relation client",competencesPrincipales:[
       {id:'mcvb-gc3cp1',name:"Traiter et exploiter l'information ou le contact client",competencesDetaillees:[
         {id:'mcvb-gc3cp1cd1',name:"Traiter les messages et/ou les demandes des clients"},
@@ -1638,7 +1847,7 @@ const CUR={
         {id:'mcvb-gc1cp3s3',name:"Le contrat de vente"},
         {id:'mcvb-gc1cp3s4',name:"La garantie"}
       ]}
-    ]},,
+    ]},
     {id:'mcvb-gc2',name:"GC2 — Suivre les ventes",competencesPrincipales:[
       {id:'mcvb-gc2cp1',name:"Assurer le suivi de la commande du produit et/ou du service",competencesDetaillees:[
         {id:'mcvb-gc2cp1cd1',name:"Suivre l'évolution de la commande et éventuellement du règlement"},
@@ -1668,7 +1877,7 @@ const CUR={
       ],savoirs:[
         {id:'mcvb-gc2cp3s1',name:"Le système d'information commercial de l'entreprise"}
       ]}
-    ]},,
+    ]},
     {id:'mcvb-gc3',name:"GC3 — Fidéliser la clientèle et développer la relation client",competencesPrincipales:[
       {id:'mcvb-gc3cp1',name:"Traiter et exploiter l'information ou le contact client",competencesDetaillees:[
         {id:'mcvb-gc3cp1cd1',name:"Traiter les messages et/ou les demandes des clients"},
@@ -1813,7 +2022,8 @@ function isHierarchique(){
   const nv=ref.niveaux.find(n=>n.id===S.niv);if(!nv) return false;
   return !!(nv.competences&&nv.competences[0]&&nv.competences[0].competencesPrincipales);
 }
-function isCapEpc(){return isHierarchique();}
+function isMrc(){return S.ref==='2nde-mrc';}
+function isCapEpc(){return isHierarchique()&&!isMrc();}
 function getNiveau(){const ref=CUR[S.ref];return ref&&ref.niveaux.find(n=>n.id===S.niv);}
 /* Retourne toutes les compétences principales d'un niveau CAP EPC */
 function getAllCPs(nv){const cps=[];(nv.competences||[]).forEach(b=>b.competencesPrincipales&&b.competencesPrincipales.forEach(cp=>cps.push({bloc:b,cp})));return cps;}
@@ -1830,8 +2040,137 @@ function onNiveauChange(){
   const ref=CUR[S.ref];if(!ref||!nid){['s2','s-prob'].forEach(id=>document.getElementById(id).classList.add('hidden'));return;}
   const nv=ref.niveaux.find(n=>n.id===nid);if(!nv)return;
   document.getElementById('s2').classList.remove('hidden');
-  isCapEpc()?renderCapEpc(nv):renderComps(nv.competences);
+  if(isMrc()) renderMrc(nv);
+  else if(isCapEpc()) renderCapEpc(nv);
+  else renderComps(nv.competences);
   clearProb();
+}
+
+/* ══ Rendu MRC : Bloc → CP → CD → Sous-compétences (4 niveaux) ══ */
+function renderMrc(nv){
+  const fl=document.getElementById('search-comp').value.toLowerCase();
+  const cl=document.getElementById('comp-list');
+  const sc=document.getElementById('savoirs-container');
+  cl.innerHTML=''; sc.innerHTML='';
+  cl.style.display='block';
+
+  (nv.competences||[]).forEach(bloc=>{
+    const blocOpen=S.openBlocs&&S.openBlocs[bloc.id];
+
+    // En-tête bloc
+    const bh=document.createElement('div');
+    bh.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--gn-l);border:1px solid var(--gn);border-radius:var(--r);font-size:11px;font-weight:600;color:var(--gn);margin-top:10px;cursor:pointer;user-select:none';
+    const bTitle=document.createElement('span'); bTitle.textContent=bloc.name;
+    const bArrow=document.createElement('span'); bArrow.textContent=blocOpen?'▲':'▼'; bArrow.style.fontSize='10px';
+    bh.appendChild(bTitle); bh.appendChild(bArrow);
+    bh.addEventListener('click',function(){
+      if(!S.openBlocs) S.openBlocs={};
+      S.openBlocs[bloc.id]=!S.openBlocs[bloc.id];
+      renderMrc(getNiveau());
+    });
+    cl.appendChild(bh);
+    if(!blocOpen) return;
+
+    // Compétences principales (filière)
+    (bloc.competencesPrincipales||[]).forEach(cp=>{
+      const cpOpen=S.openBlocs&&S.openBlocs[cp.id];
+      const cpSel=!!S.comp[cp.id];
+
+      // Label CP
+      const cpRow=document.createElement('div');
+      cpRow.style.cssText='display:flex;align-items:center;justify-content:space-between;margin-top:5px;margin-left:12px;padding:6px 10px;background:'+(cpSel?'var(--gn-l)':'var(--white)')+';border:1px solid '+(cpSel?'var(--gn)':'var(--ru)')+';border-radius:var(--r);cursor:pointer;user-select:none';
+
+      const cpLeft=document.createElement('label');
+      cpLeft.style.cssText='display:flex;align-items:flex-start;gap:7px;cursor:pointer;flex:1';
+      const chkCp=document.createElement('input'); chkCp.type='checkbox'; chkCp.checked=cpSel;
+      chkCp.style.cssText='margin-top:2px;flex-shrink:0;accent-color:#0F6E56';
+      chkCp.addEventListener('change',function(e){
+        e.stopPropagation();
+        if(S.comp[cp.id]) delete S.comp[cp.id];
+        else S.comp[cp.id]={cd:[],sc:{}};
+        if(!S.openBlocs) S.openBlocs={};
+        S.openBlocs[cp.id]=!!S.comp[cp.id];
+        renderMrc(getNiveau()); updSt();
+      });
+      const cpSpan=document.createElement('span'); cpSpan.style.cssText='font-size:12px;font-weight:600;color:var(--ink)'; cpSpan.textContent=cp.name;
+      cpLeft.appendChild(chkCp); cpLeft.appendChild(cpSpan);
+
+      const cpArrow=document.createElement('span'); cpArrow.textContent=cpOpen?'▲':'▼'; cpArrow.style.cssText='font-size:10px;color:var(--ink-mu);margin-left:8px;flex-shrink:0';
+      cpRow.appendChild(cpLeft); cpRow.appendChild(cpArrow);
+      cpRow.addEventListener('click',function(e){
+        if(e.target===chkCp) return;
+        if(!S.openBlocs) S.openBlocs={};
+        S.openBlocs[cp.id]=!S.openBlocs[cp.id];
+        renderMrc(getNiveau());
+      });
+      cl.appendChild(cpRow);
+
+      if(!cpOpen) return;
+
+      // Compétences détaillées
+      (cp.competencesDetaillees||[]).forEach(cd=>{
+        const cdSel=cpSel&&S.comp[cp.id]&&S.comp[cp.id].cd&&S.comp[cp.id].cd.includes(cd.id);
+        const cdOpen=S.openBlocs&&S.openBlocs[cd.id];
+
+        const cdRow=document.createElement('div');
+        cdRow.style.cssText='display:flex;align-items:center;justify-content:space-between;margin-top:4px;margin-left:26px;padding:5px 10px;background:'+(cdSel?'#EBF8F2':'var(--cr)')+';border:1px solid '+(cdSel?'#7DD3B5':'var(--ru-l)')+';border-radius:var(--r);cursor:pointer;user-select:none';
+
+        const cdLeft=document.createElement('label');
+        cdLeft.style.cssText='display:flex;align-items:flex-start;gap:6px;cursor:pointer;flex:1';
+        const chkCd=document.createElement('input'); chkCd.type='checkbox'; chkCd.checked=cdSel;
+        chkCd.style.cssText='margin-top:2px;flex-shrink:0;accent-color:#0F6E56';
+        chkCd.addEventListener('change',function(e){
+          e.stopPropagation();
+          if(!S.comp[cp.id]) S.comp[cp.id]={cd:[],sc:{}};
+          const arr=S.comp[cp.id].cd;
+          const i=arr.indexOf(cd.id);
+          if(i>=0){arr.splice(i,1); if(S.comp[cp.id].sc) delete S.comp[cp.id].sc[cd.id];}
+          else arr.push(cd.id);
+          if(!S.openBlocs) S.openBlocs={};
+          S.openBlocs[cd.id]=arr.includes(cd.id);
+          renderMrc(getNiveau()); updSt();
+        });
+        const cdSpan=document.createElement('span'); cdSpan.style.cssText='font-size:12px;color:var(--ink-m);font-style:italic'; cdSpan.textContent=cd.name;
+        cdLeft.appendChild(chkCd); cdLeft.appendChild(cdSpan);
+
+        const cdArrow=document.createElement('span'); cdArrow.textContent=cdOpen?'▲':'▼'; cdArrow.style.cssText='font-size:10px;color:var(--ink-mu);margin-left:6px;flex-shrink:0';
+        cdRow.appendChild(cdLeft); cdRow.appendChild(cdArrow);
+        cdRow.addEventListener('click',function(e){
+          if(e.target===chkCd) return;
+          if(!S.openBlocs) S.openBlocs={};
+          S.openBlocs[cd.id]=!S.openBlocs[cd.id];
+          renderMrc(getNiveau());
+        });
+        cl.appendChild(cdRow);
+
+        if(!cdOpen) return;
+
+        // Sous-compétences
+        (cd.sousCp||[]).forEach(sc=>{
+          const scSel=cpSel&&S.comp[cp.id]&&S.comp[cp.id].sc&&S.comp[cp.id].sc[cd.id]&&S.comp[cp.id].sc[cd.id].includes(sc.id);
+          const scRow=document.createElement('label');
+          scRow.style.cssText='display:flex;align-items:flex-start;gap:6px;margin-top:3px;margin-left:40px;padding:4px 8px;border-radius:3px;cursor:pointer;font-size:11px;color:var(--ink-m)';
+          scRow.addEventListener('mouseenter',()=>scRow.style.background='var(--gn-l)');
+          scRow.addEventListener('mouseleave',()=>scRow.style.background='');
+          const chkSc=document.createElement('input'); chkSc.type='checkbox'; chkSc.checked=scSel;
+          chkSc.style.cssText='margin-top:2px;flex-shrink:0;accent-color:#0F6E56';
+          chkSc.addEventListener('change',function(){
+            if(!S.comp[cp.id]) S.comp[cp.id]={cd:[],sc:{}};
+            if(!S.comp[cp.id].sc) S.comp[cp.id].sc={};
+            if(!S.comp[cp.id].sc[cd.id]) S.comp[cp.id].sc[cd.id]=[];
+            const arr=S.comp[cp.id].sc[cd.id];
+            const i=arr.indexOf(sc.id);
+            if(i>=0) arr.splice(i,1); else arr.push(sc.id);
+            updSt();
+          });
+          const scSpan=document.createElement('span'); scSpan.textContent='→ '+sc.name;
+          scRow.appendChild(chkSc); scRow.appendChild(scSpan);
+          cl.appendChild(scRow);
+        });
+      });
+    });
+  });
+  updSt();
 }
 
 /* ══ Rendu CAP EPC : Bloc → CP → CD + Savoirs ══ */
@@ -1982,7 +2321,7 @@ function renderSav(comp,container){
 }
 function tComp(cid){const nv=getNiveau();if(S.comp[cid])delete S.comp[cid];else S.comp[cid]=[];renderComps(nv.competences,document.getElementById('search-comp').value);}
 function tSav(cid,sid){if(!S.comp[cid])S.comp[cid]=[];const i=S.comp[cid].indexOf(sid);if(i>=0)S.comp[cid].splice(i,1);else S.comp[cid].push(sid);}
-function filterComp(){const nv=getNiveau();if(!nv)return;isCapEpc()?renderCapEpc(nv):renderComps(nv.competences,document.getElementById('search-comp').value);}
+function filterComp(){const nv=getNiveau();if(!nv)return;if(isMrc())renderMrc(nv);else if(isCapEpc())renderCapEpc(nv);else renderComps(nv.competences,document.getElementById('search-comp').value);}
 function updSt(){
   const hc=Object.keys(S.comp).length>0;
   document.getElementById('btn-gen').disabled=!(hc&&S.ref&&S.niv);
@@ -2000,7 +2339,7 @@ async function generateProblematics(){
   const ref=S.ref&&CUR[S.ref],nv=ref&&ref.niveaux.find(n=>n.id===S.niv);
   if(!nv||!Object.keys(S.comp).length){alert('Sélectionnez au moins une compétence.');return;}
   let comps='';
-  if(isCapEpc()){
+  if(isMrc()||isCapEpc()){
     (nv.competences||[]).forEach(bloc=>{(bloc.competencesPrincipales||[]).forEach(cp=>{if(S.comp[cp.id]) comps+='- '+cp.name+' ('+bloc.name+')\n';});});
   } else {
     comps=Object.keys(S.comp).map(cid=>{const c=nv.competences.find(x=>x.id===cid);return c?'- '+c.name:'';}).filter(Boolean).join('\n');
@@ -2044,7 +2383,7 @@ async function genScenario(){
   const ctMap={local:'entreprise locale indépendante guyanaise','national-guyane':'enseigne nationale implantée en Guyane','national-france':'enseigne nationale implantée en France métropolitaine'};
   let comps='';
   if(ref&&nv){
-    if(isCapEpc()){
+    if(isMrc()||isCapEpc()){
       (nv.competences||[]).forEach(bloc=>{(bloc.competencesPrincipales||[]).forEach(cp=>{if(S.comp[cp.id]) comps+='- '+cp.name+' ('+bloc.name+')\n';});});
     } else {
       comps=Object.keys(S.comp).map(cid=>{const c=nv.competences.find(x=>x.id===cid);return c?'- '+c.name:'';}).filter(Boolean).join('\n');
@@ -2128,7 +2467,28 @@ function buildPrompt(){
   const em={entiere:"classe entière (~24-30 élèves)",'demi-groupe':"demi-groupe (~12-15 élèves)"};
   const cm={local:"Entreprise locale/indépendante guyanaise",'national-guyane':"Entreprise nationale implantée en Guyane (spécificités DOM)",'national-france':"Entreprise nationale implantée en France métropolitaine"};
   let compsT='';
-  if(isCapEpc()){
+  if(isMrc()){
+    // Hiérarchie MRC : Bloc → CP → CD → Sous-compétences
+    (nv.competences||[]).forEach(bloc=>{
+      const cpLines=[];
+      (bloc.competencesPrincipales||[]).forEach(cp=>{
+        if(!S.comp[cp.id]) return;
+        const sel=S.comp[cp.id];
+        let line='  · '+cp.name;
+        if(sel.cd&&sel.cd.length){
+          sel.cd.forEach(cdId=>{
+            const cdObj=(cp.competencesDetaillees||[]).find(c=>c.id===cdId);
+            if(!cdObj) return;
+            line+='\n    Compétence détaillée : '+cdObj.name;
+            const scIds=sel.sc&&sel.sc[cdId];
+            if(scIds&&scIds.length) line+='\n      Sous-compétences : '+scIds.map(scId=>(cdObj.sousCp||[]).find(s=>s.id===scId)?.name).filter(Boolean).join(' | ');
+          });
+        }
+        cpLines.push(line);
+      });
+      if(cpLines.length) compsT+='- '+bloc.name+'\n'+cpLines.join('\n')+'\n';
+    });
+  } else if(isCapEpc()){
     // Hiérarchie : Bloc → CP → CD + Savoirs
     (nv.competences||[]).forEach(bloc=>{
       const cpLines=[];
@@ -2147,6 +2507,7 @@ function buildPrompt(){
   }
   const calcs=Array.from(document.querySelectorAll('#calcs input:checked')).map(i=>i.value);
   const dig=Array.from(document.querySelectorAll('#dig input:checked')).map(i=>i.value);
+  const mat=Array.from(document.querySelectorAll('#materiel input:checked')).map(i=>i.value);
   const acts=Array.from(document.querySelectorAll('#act-types input:checked')).map(i=>i.value);
   let ent='';if(cn)ent+='\nEntreprise "Fil Rouge" : '+cn+'.';if(ct&&cm[ct])ent+='\nType : '+cm[ct]+'.';if(rayon)ent+='\nRayon / département : '+rayon+'.';if(produits)ent+='\nProduits vendus : '+produits+'.';
   const pbl=S.prob?'\nProblématique : "'+S.prob+'"':'';
@@ -2156,7 +2517,7 @@ function buildPrompt(){
   const filesBlock=S.files.filter(f=>f.content&&!f.content.startsWith('[Fichier')).map(f=>'--- RESSOURCE : '+f.name+' ---\n'+f.content.substring(0,3000)+'\n--- FIN ---').join('\n\n');
   const ext=document.getElementById('ext-resources').value.trim();
   const add=document.getElementById('add-instructions').value.trim();
-  return 'Agis en expert en ingénierie pédagogique pour lycées professionnels français (filière commerce/vente). Contexte : Lycée Max Joséphine, Cayenne, Guyane. Élèves niveau hétérogène, globalement faible. Ancrer TOUS les exemples dans la réalité guyanaise.\n\n**MISE EN SITUATION (Fil rouge) :**\n'+sc+ent+pbl+'\n\n**MISSION :** Créer un plan de cours détaillé pour '+(nb===1?'une séance unique':'une séquence de '+nb+' séances')+'.\n\n**CONTEXTE :**\n- Référentiel : '+ref.name+' | Niveau : '+nv.name+'\n- Effectif : '+em[ef]+'\n- Pédagogie(s) : '+(pedas.length?pedas.join(', '):'Non spécifiée')+'\n- Difficulté : '+dm[df]+'\n\n**COMPÉTENCES ET SAVOIRS :**\n'+(compsT||'Non spécifié')+'\n\n**TYPES D\'ACTIVITÉS :**\n'+(acts.length?acts.map(a=>'- '+a).join('\n'):'Non spécifié')+evalBlock+'\n\n**ABC LEARNING DESIGN (OBLIGATOIRE) :**\nVarier : Acquisition / Discussion / Entraînement / Enquête / Production / Collaboration.\n\n**EXIGENCES :**\n1. Déroulement en PROSE (pas de tableau) — chaque activité : Type ABC | Organisation | Support | puis Description / Démarche pédagogique / Intérêt / Apports élèves\n2. Consignes élèves précises et actionnables\n3. Vocabulaire professionnel défini systématiquement\n4. Lien PFMP quand pertinent\n5. Signature : Olivier NUGUET — Région académique Guyane + pagination\n6. TVA métropolitaine : 20%, 10%, 5,5%, 2,1%\n'+(calcs.length?'\n**CALCULS :** '+calcs.join(', '):'')+(dig.length?'\n**NUMÉRIQUE :** '+dig.join(', '):'')+lud+(filesBlock?'\n**SUPPORTS FOURNIS :**\n'+filesBlock:'')+(ext?'\n**RESSOURCES SUPPLÉMENTAIRES :**\n'+ext:'')+(add?'\n**INSTRUCTIONS SPÉCIFIQUES :**\n'+add:'')+folders+'\nGénérer en français.';
+  return 'Agis en expert en ingénierie pédagogique pour lycées professionnels français (filière commerce/vente). Contexte : Lycée Max Joséphine, Cayenne, Guyane. Élèves niveau hétérogène, globalement faible. Ancrer TOUS les exemples dans la réalité guyanaise.\n\n**MISE EN SITUATION (Fil rouge) :**\n'+sc+ent+pbl+'\n\n**MISSION :** Créer un plan de cours détaillé pour '+(nb===1?'une séance unique':'une séquence de '+nb+' séances')+'.\n\n**CONTEXTE :**\n- Référentiel : '+ref.name+' | Niveau : '+nv.name+'\n- Effectif : '+em[ef]+'\n- Pédagogie(s) : '+(pedas.length?pedas.join(', '):'Non spécifiée')+'\n- Difficulté : '+dm[df]+'\n- Durée par séance : '+document.getElementById('sel-duree').value+'\n- Type de séance : '+{decouverte:'DÉCOUVERTE — première approche de la notion',entrainement:'ENTRAÎNEMENT — mise en pratique guidée',approfondissement:'APPROFONDISSEMENT — complexification et transfert',evaluation:'ÉVALUATION — bilan des acquis'}[document.getElementById('sel-type-seance').value]+'\n\n**COMPÉTENCES ET SAVOIRS :**\n'+(compsT||'Non spécifié')+'\n\n**TYPES D\'ACTIVITÉS :**\n'+(acts.length?acts.map(a=>'- '+a).join('\n'):'Non spécifié')+evalBlock+'\n\n**ABC LEARNING DESIGN (OBLIGATOIRE) :**\nVarier : Acquisition / Discussion / Entraînement / Enquête / Production / Collaboration.\n\n**EXIGENCES :**\n1. Déroulement en PROSE (pas de tableau) — chaque activité : Type ABC | Organisation | Support | puis Description / Démarche pédagogique / Intérêt / Apports élèves\n2. Consignes élèves précises et actionnables\n3. Vocabulaire professionnel défini systématiquement\n4. Lien PFMP quand pertinent\n5. Signature : Olivier NUGUET — Région académique Guyane + pagination\n6. TVA métropolitaine : 20%, 10%, 5,5%, 2,1%\n7. Inclure OBLIGATOIREMENT à la fin du support une SYNTHÈSE DU COURS : résumé structuré des notions clés, points de vigilance et à-retenir, présentés de façon claire et mémorisable\n8. Avant CHAQUE activité, rédiger une CONTEXTUALISATION complète : nom du tuteur fictif, nom et description de l\'environnement de travail, contexte de la mission, rôle précis de l\'élève — cette mise en situation doit être différente et progressive d\'une activité à l\'autre\n9. Inclure OBLIGATOIREMENT un GLOSSAIRE du vocabulaire professionnel mobilisé dans le cours : pour chaque terme, fournir une définition simple, un exemple concret en contexte guyanais, et si possible un lien avec la PFMP\n10. Pour CHAQUE activité, prévoir OBLIGATOIREMENT deux variantes de différenciation :\n    - Version « Coup de pouce » (élèves en difficulté) : consigne reformulée, aide méthodologique, ressource simplifiée\n    - Version « Défi » (élèves à l\'aise) : consigne enrichie, complexification, autonomie accrue\n'+(calcs.length?'\n**CALCULS :** '+calcs.join(', '):'')+(dig.length?'\n**NUMÉRIQUE :** '+dig.join(', '):'')+(mat.length?'\n**MATÉRIEL DISPONIBLE :** '+mat.join(' | ')+'\nAdapter OBLIGATOIREMENT les activités et consignes au matériel listé ci-dessus. Ne pas proposer d\'activité nécessitant un équipement absent de cette liste.':'')+lud+(filesBlock?'\n**SUPPORTS FOURNIS :**\n'+filesBlock:'')+(ext?'\n**RESSOURCES SUPPLÉMENTAIRES :**\n'+ext:'')+(add?'\n**INSTRUCTIONS SPÉCIFIQUES :**\n'+add:'')+folders+'\n\n**FORMAT DE SORTIE OBLIGATOIRE :**\nTout le contenu produit doit être structuré et rédigé de façon à être directement intégrable dans un document Word (.docx) modifiable par l\'enseignant. Utiliser des titres numérotés hiérarchisés (Titre 1, Titre 2, Titre 3), des listes à puces claires, des tableaux si pertinent. Chaque section doit être clairement délimitée avec un en-tête identifiable. Le document doit inclure en en-tête : Lycée Max Joséphine | Région académique Guyane | '+ref.name+' — '+nv.name+' | Olivier NUGUET, et en pied de page la pagination.\n\nGénérer en français.';
 }
 
 function generatePrompt(){
@@ -2164,7 +2525,119 @@ function generatePrompt(){
   document.getElementById('prompt-display').textContent=S.prompt;
   document.getElementById('s-prompt').classList.remove('hidden');
   document.getElementById('btn-copy').disabled=false;
+  renderPromptPreview(S.prompt);
   document.getElementById('s-prompt').scrollIntoView({behavior:'smooth'});
+}
+
+function toggleRaw(){
+  const wrap=document.getElementById('prompt-raw-wrap');
+  const btn=document.getElementById('btn-toggle-raw');
+  const visible=wrap.style.display!=='none';
+  wrap.style.display=visible?'none':'block';
+  btn.textContent=visible?'Afficher le prompt brut':'Masquer le prompt brut';
+}
+
+function renderPromptPreview(prompt){
+  const container=document.getElementById('prompt-preview');
+  container.innerHTML='';
+
+  // Parse sections delimited by **TITLE:** or **TITLE :**
+  const sectionDefs=[
+    {key:"MISE EN SITUATION",icon:"—",color:"#0F6E56"},
+    {key:"MISSION",icon:"—",color:"#0F6E56"},
+    {key:"CONTEXTE",icon:"—",color:"#1e3a5f"},
+    {key:"COMPETENCES",icon:"—",color:"#1e3a5f"},
+    {key:"TYPES",icon:"—",color:"#4a4a44"},
+    {key:"MATERIEL",icon:"—",color:"#4a4a44"},
+    {key:"ABC LEARNING",icon:"—",color:"#4a4a44"},
+    {key:"EXIGENCES",icon:"—",color:"#4a4a44"},
+    {key:"FORMAT DE SORTIE",icon:"—",color:"#085041"},
+    {key:"CALCULS",icon:"—",color:"#4a4a44"},
+    {key:"NUMERIQUE",icon:"—",color:"#4a4a44"},
+    {key:"GAMIFICATION",icon:"—",color:"#4a4a44"},
+    {key:"SUPPORTS FOURNIS",icon:"—",color:"#4a4a44"},
+    {key:"RESSOURCES",icon:"—",color:"#4a4a44"},
+    {key:"INSTRUCTIONS",icon:"—",color:"#4a4a44"},
+    {key:"DOSSIER ELEVE",icon:"—",color:"#085041"},
+    {key:"DOSSIER ENSEIGNANT",icon:"—",color:"#085041"},
+    {key:"CONTENU H5P",icon:"—",color:"#085041"},
+    {key:"QCM PRONOTE",icon:"—",color:"#085041"},
+    {key:"FORME",icon:"—",color:"#4a4a44"},
+  ];
+
+  // Split on **...: pattern
+  const parts=prompt.split(/\n(?=\*\*[^*]+\*\*)/);
+
+  // First part = intro text (before first **)
+  if(parts.length>0){
+    const intro=parts[0].trim();
+    if(intro){
+      const introDiv=document.createElement('div');
+      introDiv.style.cssText='font-size:11px;color:#7A7A72;font-style:italic;padding:8px 12px;background:#F4F2ED;border-radius:4px;margin-bottom:8px;line-height:1.5';
+      introDiv.textContent=intro.length>160?intro.substring(0,160)+'…':intro;
+      container.appendChild(introDiv);
+    }
+  }
+
+  parts.slice(1).forEach(part=>{
+    const titleMatch=part.match(/^\*\*([^*]+)\*\*/);
+    if(!titleMatch) return;
+    const title=titleMatch[1].replace(/:$/,'').trim();
+    const body=part.replace(/^\*\*[^*]+\*\*\s*:?\s*/,'').trim();
+    if(!body) return;
+
+    // Find matching color
+    const normalizeKey=s=>s.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Z0-9 ]/g,' '); const def=sectionDefs.find(d=>normalizeKey(title).includes(d.key))||{color:'#4a4a44'};
+
+    const block=document.createElement('div');
+    block.style.cssText='margin-bottom:6px;border:1px solid #EAE7E0;border-radius:4px;overflow:hidden';
+
+    // Header — clickable accordion
+    const header=document.createElement('div');
+    header.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:7px 12px;background:#FDFCF9;cursor:pointer;user-select:none';
+    const htitle=document.createElement('span');
+    htitle.style.cssText='font-size:11px;font-weight:600;color:'+def.color+';text-transform:uppercase;letter-spacing:.06em';
+    htitle.textContent=title;
+    const harrow=document.createElement('span');
+    harrow.style.cssText='font-size:10px;color:#7A7A72';
+    harrow.textContent='▼';
+    header.appendChild(htitle); header.appendChild(harrow);
+
+    // Body
+    const bodyDiv=document.createElement('div');
+    bodyDiv.style.cssText='padding:8px 12px;font-size:12px;line-height:1.6;color:#4A4A44;background:#fff;border-top:1px solid #EAE7E0;white-space:pre-wrap;display:none';
+    bodyDiv.textContent=body.length>600?body.substring(0,600)+'…':body;
+
+    header.addEventListener('click',function(){
+      const open=bodyDiv.style.display!=='none';
+      bodyDiv.style.display=open?'none':'block';
+      harrow.textContent=open?'▼':'▲';
+    });
+
+    block.appendChild(header); block.appendChild(bodyDiv);
+    container.appendChild(block);
+  });
+
+  // Summary badges
+  const summary=document.createElement('div');
+  summary.style.cssText='display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;padding-top:8px;border-top:1px solid #EAE7E0';
+  const ref=CUR[S.ref],nv=ref&&ref.niveaux.find(n=>n.id===S.niv);
+  const badges=[
+    ref?ref.name:'',
+    nv?nv.name:'',
+    document.getElementById('sel-duree').value,
+    {decouverte:'Découverte',entrainement:'Entraînement',approfondissement:'Approfondissement',evaluation:'Évaluation'}[document.getElementById('sel-type-seance').value]||'',
+    document.getElementById('sel-effectif').value==='demi-groupe'?'Demi-groupe':'Classe entière',
+    Object.keys(S.comp).length+' compétence(s)',
+    Math.round(S.prompt.length/4)+' tokens env.'
+  ].filter(Boolean);
+  badges.forEach(b=>{
+    const badge=document.createElement('span');
+    badge.style.cssText='display:inline-block;padding:2px 8px;background:#E1F5EE;color:#085041;border-radius:20px;font-size:10px;font-weight:500';
+    badge.textContent=b;
+    summary.appendChild(badge);
+  });
+  container.appendChild(summary);
 }
 
 async function generateWithClaude(){
@@ -2186,7 +2659,7 @@ function copyPrompt(){if(S.prompt)navigator.clipboard.writeText(S.prompt).then((
 function resetAll(){
   if(!confirm('Réinitialiser tout le formulaire ?'))return;
   S={ref:'',niv:'',comp:{},openBlocs:{},sw:{eleve:false,enseignant:false,h5p:false,pronote:false,ludic:false},pdiff:'intermediaire',prob:'',prompt:'',files:[]};
-  ['sel-ref','sel-niveau','company-type'].forEach(id=>document.getElementById(id).value='');
+  ['sel-ref','sel-niveau','company-type','sel-duree','sel-type-seance'].forEach(id=>document.getElementById(id).value=''); document.getElementById('sel-duree').value='2h'; document.getElementById('sel-type-seance').value='decouverte';
   document.getElementById('sel-niveau').disabled=true;
   ['pro-context','company-name','company-rayon','company-produits','add-instructions','ext-resources','search-comp'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('nb-seances').value='1';
