@@ -2439,28 +2439,11 @@ function selectDiff(d){S.pdiff=d;document.querySelectorAll('[id^=diff-]').forEac
 function clearProb(){S.prob='';document.getElementById('prob-list').innerHTML='';const w=document.getElementById('prob-sel-wrap');w.classList.add('hidden');w.innerHTML='';}
 
 async function callClaude(prompt){
-  const resp=await fetch('/api/claude',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-opus-4-6',max_tokens:2048,messages:[{role:'user',content:prompt}]})
-  });
-  if(!resp.ok){const e=await resp.json();throw new Error(e.error?.message||'Erreur serveur proxy');}
-  const data=await resp.json();
-  return data.content?.map(c=>c.text||'').join('')||'';
+  const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+  const d=await r.json();
+  if(d.error) throw new Error(d.error.message);
+  return d.content.map(i=>i.text||'').join('');
 }
-
-async function checkProxyStatus(){
-  const dot=document.getElementById('status-dot');
-  const label=document.getElementById('status-label');
-  if(!dot||!label) return;
-  try{
-    const r=await fetch('/api/claude',{method:'OPTIONS'});
-    dot.style.background='#0F6E56';label.textContent='Service actif';
-  }catch(e){
-    dot.style.background='#f39c12';label.textContent='Proxy non joignable';
-  }
-}
-document.addEventListener('DOMContentLoaded',checkProxyStatus);
 
 async function generateProblematics(){
   const ref=S.ref&&CUR[S.ref],nv=ref&&ref.niveaux.find(n=>n.id===S.niv);
@@ -2516,7 +2499,11 @@ async function genScenario(){
       comps=Object.keys(S.comp).map(cid=>{const c=nv.competences.find(x=>x.id===cid);return c?'- '+c.name:'';}).filter(Boolean).join('\n');
     }
   }
-  const prompt='Tu es expert en ingénierie pédagogique pour lycées professionnels en Guyane française.\n\nRédige une mise en situation professionnelle courte et immersive (8-12 lignes) pour un(e) élève de '+(nv?nv.name:'lycée professionnel')+(ref?' en '+ref.name:'')+'. Utilise le vouvoiement ("Vous êtes...").\n\n'+(cn?'Entreprise fil rouge : '+cn+(ct&&ctMap[ct]?' ('+ctMap[ct]+')':'')+'.\n':'')+(rayon?'Rayon / département : '+rayon+'.\n':'')+(produits?'Type de produits vendus : '+produits+'.\n':'')+(comps?'Compétences visées :\n'+comps+'\n':'')+'\nLa mise en situation doit :\n- Placer l\'élève dans un rôle professionnel précis avec un prénom fictif\n- Nommer un tuteur fictif avec prénom et nom\n- Décrire l\'environnement de travail de façon concrète'+(rayon?' en mentionnant le rayon/département':'')+'\n- Mentionner 2-3 missions principales en lien avec les compétences\n- Être ancrée dans la réalité guyanaise\n\nRédige uniquement la mise en situation, sans titre ni introduction.';
+  const prenomsEleves=['Kylian','Jordane','Théo','Nadia','Bryan','Cindy','Steeve','Anaïs','Dimitri','Priscilla','Yohan','Soraya','Mickaël','Laëtitia','Dorian','Shanelle','Axel','Mélissa','Corentin','Tifany','Dylan','Noémie','Romain','Jessy','Mathieu','Ornella','Kevin','Wendy','Julien','Inès'];
+  const prenomsTuteurs=['M. Sainte-Rose','Mme Céleste','M. Dorival','Mme Ibars','M. Charpentier','Mme Turpin','M. Fortuné','Mme Laborde','M. Régis','Mme Noël','M. Calmette','Mme Bertrand'];
+  const prenomEleve=prenomsEleves[Math.floor(Math.random()*prenomsEleves.length)];
+  const tuteur=prenomsTuteurs[Math.floor(Math.random()*prenomsTuteurs.length)];
+  const prompt='Tu es expert en ingénierie pédagogique pour lycées professionnels en Guyane française.\n\nRédige une mise en situation professionnelle courte et immersive (8-12 lignes) pour un(e) élève de '+(nv?nv.name:'lycée professionnel')+(ref?' en '+ref.name:'')+'. Utilise le vouvoiement ("Vous êtes...").\n\n'+(cn?'Entreprise fil rouge : '+cn+(ct&&ctMap[ct]?' ('+ctMap[ct]+')':'')+'.\n':'')+(rayon?'Rayon / département : '+rayon+'.\n':'')+(produits?'Type de produits vendus : '+produits+'.\n':'')+(comps?'Compétences visées :\n'+comps+'\n':'')+'\nLa mise en situation doit :\n- Placer l\'élève dans un rôle professionnel précis et utiliser OBLIGATOIREMENT le prénom : '+prenomEleve+'\n- Nommer le tuteur fictif avec OBLIGATOIREMENT ce nom : '+tuteur+'\n- Décrire l\'environnement de travail de façon concrète'+(rayon?' en mentionnant le rayon/département':'')+'\n- Mentionner 2-3 missions principales en lien avec les compétences\n- Être ancrée dans la réalité guyanaise\n\nRédige uniquement la mise en situation, sans titre ni introduction.';
   const loader=document.getElementById('sc-loader');loader.classList.remove('hidden');
   try{
     const text=await callClaude(prompt);
