@@ -106,6 +106,10 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
 .section.done .acc-header .acc-title{color:var(--gn)}
 .section.done{border-color:var(--gn-l)}
 .acc-summary{font-size:10px;color:var(--gn);font-weight:500;background:var(--gn-l);padding:2px 8px;border-radius:20px;white-space:nowrap;max-width:240px;overflow:hidden;text-overflow:ellipsis}
+.acc-done{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--gn);font-weight:600;background:var(--gn-l);padding:2px 8px;border-radius:20px;flex-shrink:0}
+.acc-done::before{content:"✓";font-size:10px}
+.section.s-done{border-color:#a7f3d0}
+.section.s-done .acc-title{color:var(--gn)}
 @media(max-width:580px){.g2,.g3{grid-template-columns:1fr}.cbg{grid-template-columns:1fr}.app-header{padding:12px 14px;flex-direction:column;align-items:flex-start}.main{padding:14px 10px 40px}}
 </style>
 </head>
@@ -403,6 +407,10 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
 <div class="br">
   <button class="btn p" id="btn-gen" onclick="generatePrompt()" disabled>Générer le prompt</button>
   <button class="btn" onclick="copyPrompt()" id="btn-copy" disabled>Copier le prompt</button>
+</div>
+<div id="output-estimate" style="display:none;margin-top:10px;padding:10px 14px;background:var(--cr);border:1px solid var(--ru);border-radius:var(--r);font-size:12px;color:var(--ink-m);line-height:1.8">
+  <div style="font-weight:600;color:var(--ink);margin-bottom:4px">📄 Estimation de la sortie</div>
+  <div id="estimate-detail"></div>
 </div>
 
 <div id="s-prompt" class="hidden" style="margin-top:14px">
@@ -2362,6 +2370,22 @@ function renderSav(comp,container){
 function tComp(cid){const nv=getNiveau();if(S.comp[cid])delete S.comp[cid];else S.comp[cid]=[];renderComps(nv.competences,document.getElementById('search-comp').value);}
 function tSav(cid,sid){if(!S.comp[cid])S.comp[cid]=[];const i=S.comp[cid].indexOf(sid);if(i>=0)S.comp[cid].splice(i,1);else S.comp[cid].push(sid);}
 function filterComp(){const nv=getNiveau();if(!nv)return;if(isMrc())renderMrc(nv);else if(isCapEpc())renderCapEpc(nv);else renderComps(nv.competences,document.getElementById('search-comp').value);}
+function markDone(sectionId, done, label){
+  const sec=document.getElementById('acc-'+sectionId);
+  const header=sec&&sec.querySelector('.acc-header');
+  if(!sec||!header) return;
+  sec.classList.toggle('s-done', done);
+  // Remove existing badge
+  const existing=header.querySelector('.acc-done');
+  if(existing) existing.remove();
+  if(done && label){
+    const badge=document.createElement('span');
+    badge.className='acc-done';
+    badge.textContent=label;
+    header.insertBefore(badge, header.querySelector('.acc-arrow'));
+  }
+}
+
 function updSt(){
   const hc=Object.keys(S.comp).length>0;
   document.getElementById('btn-gen').disabled=!(hc&&S.ref&&S.niv);
@@ -2369,6 +2393,43 @@ function updSt(){
   const sprobWasHidden=document.getElementById('s-prob').classList.contains('hidden');
   document.getElementById('s-prob').classList.toggle('hidden',!hc);
   if(hc&&sprobWasHidden){const bsp=document.getElementById('body-sprob');const asp=document.getElementById('arr-sprob');if(bsp)bsp.classList.remove('open');if(asp)asp.classList.remove('open');}
+
+  // ── Indicateurs de complétude ──
+  // S1 — référentiel + niveau
+  const s1done=!!(S.ref&&S.niv);
+  markDone('s1', s1done, s1done?(CUR[S.ref]?.name+' · '+(CUR[S.ref]?.niveaux.find(n=>n.id===S.niv)?.name||'')):'');
+
+  // S2 — au moins une compétence cochée
+  const nbComps=Object.keys(S.comp).length;
+  markDone('s2', nbComps>0, nbComps>0?nbComps+' compétence'+(nbComps>1?'s':''):'');
+
+  // S3 — entreprise renseignée
+  const cn3=document.getElementById('company-name')?.value.trim();
+  markDone('s3', !!cn3, cn3?'"'+cn3+'"':'');
+
+  // S3b — fichier déposé ou ressource renseignée
+  const s3bDone=S.files.length>0||!!(document.getElementById('ext-resources')?.value.trim());
+  markDone('s3b', s3bDone, s3bDone?(S.files.length?S.files.length+' fichier'+(S.files.length>1?'s':''):'Ressource ajoutée'):'');
+
+  // S4 — activités cochées
+  const nbActs=document.querySelectorAll('#act-types input:checked').length;
+  markDone('s4', nbActs>0, nbActs>0?nbActs+' activité'+(nbActs>1?'s':''):'');
+
+  // S4b — évaluation cochée
+  const nbEvals=document.querySelectorAll('#evals input:checked').length;
+  markDone('s4b', nbEvals>0, nbEvals>0?nbEvals+' forme'+(nbEvals>1?'s':''):'');
+
+  // S4c — matériel coché
+  const nbMat=document.querySelectorAll('#materiel input:checked').length;
+  markDone('s4c', nbMat>0, nbMat>0?nbMat+' équipement'+(nbMat>1?'s':''):'');
+
+  // S5 — au moins un toggle actif
+  const s5done=Object.values(S.sw).some(v=>v)||document.querySelectorAll('#calcs input:checked').length>0||document.querySelectorAll('#dig input:checked').length>0;
+  markDone('s5', s5done, s5done?'Configuré':'');
+
+  // S6 — instruction ou ressource renseignée
+  const add6=document.getElementById('add-instructions')?.value.trim();
+  markDone('s6', !!add6, add6?'Instruction ajoutée':'');
 }
 function toggleSwitch(k){
   S.sw[k]=!S.sw[k];if(k==='enseignant'&&S.sw.enseignant)S.sw.eleve=true;if(k==='eleve'&&!S.sw.eleve)S.sw.enseignant=false;
@@ -2566,7 +2627,53 @@ function buildPrompt(){
   const filesBlock=S.files.filter(f=>f.content&&!f.content.startsWith('[Fichier')).map(f=>'--- RESSOURCE : '+f.name+' ---\n'+f.content.substring(0,3000)+'\n--- FIN ---').join('\n\n');
   const ext=document.getElementById('ext-resources').value.trim();
   const add=document.getElementById('add-instructions').value.trim();
-  return 'Agis en expert en ingénierie pédagogique pour lycées professionnels français (filière commerce/vente). Contexte : Lycée Max Joséphine, Cayenne, Guyane. Élèves niveau hétérogène, globalement faible. Ancrer TOUS les exemples dans la réalité guyanaise.\n\n**MISE EN SITUATION (Fil rouge) :**\n'+sc+ent+pbl+'\n\n**MISSION :** Créer un plan de cours détaillé pour '+(nb===1?'une séance unique':'une séquence de '+nb+' séances')+'.\n\n**CONTEXTE :**\n- Référentiel : '+ref.name+' | Niveau : '+nv.name+'\n- Effectif : '+em[ef]+'\n- Pédagogie(s) : '+(pedas.length?pedas.join(', '):'Non spécifiée')+'\n- Difficulté : '+dm[df]+'\n- Durée par séance : '+document.getElementById('sel-duree').value+'\n- Type de séance : '+{decouverte:'DÉCOUVERTE — première approche de la notion',entrainement:'ENTRAÎNEMENT — mise en pratique guidée',approfondissement:'APPROFONDISSEMENT — complexification et transfert',evaluation:'ÉVALUATION — bilan des acquis'}[document.getElementById('sel-type-seance').value]+'\n\n**COMPÉTENCES ET SAVOIRS :**\n'+(compsT||'Non spécifié')+'\n\n**TYPES D\'ACTIVITÉS :**\n'+(acts.length?acts.map(a=>'- '+a).join('\n'):'Non spécifié')+evalBlock+'\n\n**ABC LEARNING DESIGN (OBLIGATOIRE) :**\nVarier : Acquisition / Discussion / Entraînement / Enquête / Production / Collaboration.\n\n**EXIGENCES :**\n1. Déroulement en PROSE (pas de tableau) — chaque activité : Type ABC | Organisation | Support | puis Description / Démarche pédagogique / Intérêt / Apports élèves\n2. Consignes élèves précises et actionnables\n3. Vocabulaire professionnel défini systématiquement\n4. Lien PFMP quand pertinent\n5. Signature : Olivier NUGUET — Région académique Guyane + pagination\n6. TVA métropolitaine : 20%, 10%, 5,5%, 2,1%\n7. Inclure OBLIGATOIREMENT à la fin du support une SYNTHÈSE DU COURS : résumé structuré des notions clés, points de vigilance et à-retenir, présentés de façon claire et mémorisable\n8. Avant CHAQUE activité, rédiger une CONTEXTUALISATION complète : nom du tuteur fictif, nom et description de l\'environnement de travail, contexte de la mission, rôle précis de l\'élève — cette mise en situation doit être différente et progressive d\'une activité à l\'autre\n9. Inclure OBLIGATOIREMENT un GLOSSAIRE du vocabulaire professionnel mobilisé dans le cours : pour chaque terme, fournir une définition simple, un exemple concret en contexte guyanais, et si possible un lien avec la PFMP\n10. Pour CHAQUE activité, prévoir OBLIGATOIREMENT deux variantes de différenciation :\n    - Version « Coup de pouce » (élèves en difficulté) : consigne reformulée, aide méthodologique, ressource simplifiée\n    - Version « Défi » (élèves à l\'aise) : consigne enrichie, complexification, autonomie accrue\n'+(calcs.length?'\n**CALCULS :** '+calcs.join(', '):'')+(dig.length?'\n**NUMÉRIQUE :** '+dig.join(', '):'')+(mat.length?'\n**MATÉRIEL DISPONIBLE :** '+mat.join(' | ')+'\nAdapter OBLIGATOIREMENT les activités et consignes au matériel listé ci-dessus. Ne pas proposer d\'activité nécessitant un équipement absent de cette liste.':'')+lud+(filesBlock?'\n**SUPPORTS FOURNIS :**\n'+filesBlock:'')+(ext?'\n**RESSOURCES SUPPLÉMENTAIRES :**\n'+ext:'')+(add?'\n**INSTRUCTIONS SPÉCIFIQUES :**\n'+add:'')+folders+'\n\n**FORMAT DE SORTIE OBLIGATOIRE :**\nTout le contenu produit doit être structuré et rédigé de façon à être directement intégrable dans un document Word (.docx) modifiable par l\'enseignant. Utiliser des titres numérotés hiérarchisés (Titre 1, Titre 2, Titre 3), des listes à puces claires, des tableaux si pertinent. Chaque section doit être clairement délimitée avec un en-tête identifiable. Le document doit inclure en en-tête : Lycée Max Joséphine | Région académique Guyane | '+ref.name+' — '+nv.name+' | Olivier NUGUET, et en pied de page la pagination.\n\nGénérer en français.';
+  return 'Agis en expert en ingénierie pédagogique pour lycées professionnels français (filière commerce/vente). Contexte : Lycée Max Joséphine, Cayenne, Guyane. Élèves niveau hétérogène, globalement faible. Ancrer TOUS les exemples dans la réalité guyanaise.\n\n**MISE EN SITUATION (Fil rouge) :**\n'+sc+ent+pbl+'\n\n**MISSION :** Créer un plan de cours détaillé pour '+(nb===1?'une séance unique':'une séquence de '+nb+' séances')+'.\n\n**CONTEXTE :**\n- Référentiel : '+ref.name+' | Niveau : '+nv.name+'\n- Effectif : '+em[ef]+'\n- Pédagogie(s) : '+(pedas.length?pedas.join(', '):'Non spécifiée')+'\n- Difficulté : '+dm[df]+'\n- Durée par séance : '+document.getElementById('sel-duree').value+'\n- Type de séance : '+{decouverte:'DÉCOUVERTE — première approche de la notion',entrainement:'ENTRAÎNEMENT — mise en pratique guidée',approfondissement:'APPROFONDISSEMENT — complexification et transfert',evaluation:'ÉVALUATION — bilan des acquis'}[document.getElementById('sel-type-seance').value]+'\n\n**COMPÉTENCES ET SAVOIRS :**\n'+(compsT||'Non spécifié')+'\n\n**TYPES D\'ACTIVITÉS :**\n'+(acts.length?acts.map(a=>'- '+a).join('\n'):'Non spécifié')+evalBlock+'\n\n**ABC LEARNING DESIGN (OBLIGATOIRE) :**\nVarier : Acquisition / Discussion / Entraînement / Enquête / Production / Collaboration.\n\n**EXIGENCES :**\n1. Déroulement en PROSE (pas de tableau) — chaque activité : Type ABC | Organisation | Support | puis Description / Démarche pédagogique / Intérêt / Apports élèves\n2. Consignes élèves précises et actionnables\n3. Vocabulaire professionnel défini systématiquement\n4. Lien PFMP quand pertinent\n5. Signature : Olivier NUGUET — Région académique Guyane + pagination\n6. TVA métropolitaine : 20%, 10%, 5,5%, 2,1%\n7. Inclure OBLIGATOIREMENT à la fin du support une SYNTHÈSE DU COURS : résumé structuré des notions clés, points de vigilance et à-retenir, présentés de façon claire et mémorisable\n8. Avant CHAQUE activité, rédiger une CONTEXTUALISATION complète : nom du tuteur fictif, nom et description de l\'environnement de travail, contexte de la mission, rôle précis de l\'élève — cette mise en situation doit être différente et progressive d\'une activité à l\'autre\n9. Inclure OBLIGATOIREMENT un GLOSSAIRE du vocabulaire professionnel mobilisé dans le cours : pour chaque terme, fournir une définition simple, un exemple concret en contexte guyanais, et si possible un lien avec la PFMP\n10. Pour CHAQUE activité, prévoir OBLIGATOIREMENT deux variantes de différenciation :\n    - Version « Coup de pouce » (élèves en difficulté) : consigne reformulée, aide méthodologique, ressource simplifiée\n    - Version « Défi » (élèves à l\'aise) : consigne enrichie, complexification, autonomie accrue\n11. CERTIFICATION — Garder en ligne de mire les épreuves certificatives du référentiel concerné (pour BAC PRO MCVA : E31 Prévention-Santé-Environnement, E32 Économie-Droit, E33 Management et Gestion des Unités Commerciales, E41/E42 épreuves professionnelles en situation ; pour CAP EPC : EP1/EP2 ; pour BAC PRO MA : E31/E32/E41). Calibrer les activités et critères d\'évaluation en cohérence avec les grilles d\'évaluation CCF et les attendus des épreuves ponctuelles terminales.\n12. CHARTE DOCUMENTAIRE OBLIGATOIRE — Appliquer systématiquement le gabarit suivant pour tout dossier élève produit :\n    - Page de garde : Lycée Max Joséphine | Logo République française | Référentiel + Niveau | Titre de la séance | Compétences visées | Savoirs associés | Objectifs de séance | Nom élève / Classe / Date\n    - En-tête de chaque page : Nom lycée | Référentiel | Titre séance | Page X/Y\n    - Structure interne de chaque activité : [Contextualisation] → [Consigne(s)] → [Je réalise — espace travail] → [Je retiens — trace écrite] → [Vocabulaire professionnel]\n    - Charte couleur : bleu clair #DBEAFE (en-têtes), vert pastel #D1FAE5 (cadres Je retiens), gris clair #F3F4F6 (fonds neutres) — jamais de couleurs vives\n    - Police : Arial 11pt corps, Arial 14pt titres — jamais Times, jamais Comic Sans\n    - Marges : 2 cm haut/bas, 2,5 cm gauche/droite\n    - Signature pied de page : Olivier NUGUET — Région académique Guyane — Lycée Max Joséphine\n13. ENTRAÎNEMENT À L\'ÉPREUVE E2 (ÉTUDE DE CAS) — Inclure OBLIGATOIREMENT, en fin de dossier élève, une section intitulée « Entraînement à l\'étude de cas » comprenant 4 à 5 scénarios professionnels distincts, tous ancrés dans la réalité guyanaise et en lien direct avec la (les) compétence(s) travaillée(s) lors de la séance. Chaque scénario doit :\n    - Décrire une situation professionnelle réaliste et contextualisée (enseigne guyanaise identifiée, rôle précis, problème ou mission concrète)\n    - Comporter 2 à 3 questions de réflexion progressives (de la compréhension vers l\'analyse puis la proposition de solution)\n    - Exiger une production écrite rédigée et argumentée de la part de l\'élève (pas de cases à cocher, pas de mots à relier)\n    - Être calibré sur le format, la durée et les critères de l\'épreuve E2 du BAC PRO (ou équivalent selon le référentiel)\n    - Proposer un barème indicatif par question\n    Ces scénarios constituent un entraînement progressif à la rédaction en situation professionnelle et à la mobilisation des compétences en contexte d\'examen.\n'+(calcs.length?'\n**CALCULS :** '+calcs.join(', '):'')+(dig.length?'\n**NUMÉRIQUE :** '+dig.join(', '):'')+(mat.length?'\n**MATÉRIEL DISPONIBLE :** '+mat.join(' | ')+'\nAdapter OBLIGATOIREMENT les activités et consignes au matériel listé ci-dessus. Ne pas proposer d\'activité nécessitant un équipement absent de cette liste.':'')+lud+(filesBlock?'\n**SUPPORTS FOURNIS :**\n'+filesBlock:'')+(ext?'\n**RESSOURCES SUPPLÉMENTAIRES :**\n'+ext:'')+(add?'\n**INSTRUCTIONS SPÉCIFIQUES :**\n'+add:'')+folders+'\n\n**FORMAT DE SORTIE OBLIGATOIRE :**\nTout le contenu produit doit être structuré et rédigé de façon à être directement intégrable dans un document Word (.docx) modifiable par l\'enseignant. Utiliser des titres numérotés hiérarchisés (Titre 1, Titre 2, Titre 3), des listes à puces claires, des tableaux si pertinent. Chaque section doit être clairement délimitée avec un en-tête identifiable. Le document doit inclure en en-tête : Lycée Max Joséphine | Région académique Guyane | '+ref.name+' — '+nv.name+' | Olivier NUGUET, et en pied de page la pagination.\n\nGénérer en français.';
+}
+
+function computeEstimate(){
+  const nb=parseInt(document.getElementById('nb-seances').value)||1;
+  const nbComps=Object.keys(S.comp).length;
+  const hasEleve=S.sw.eleve;
+  const hasEnseignant=S.sw.enseignant;
+  const hasH5p=S.sw.h5p;
+  const hasPronote=S.sw.pronote;
+  const hasLudic=S.sw.ludic;
+  const nbActs=document.querySelectorAll('#act-types input:checked').length;
+  const duree=document.getElementById('sel-duree').value;
+  const dureeH={'1h':1,'2h':2,'3h':3,'4h':4}[duree]||2;
+
+  // Base : déroulé enseignant
+  let wordsBase=800+(nb*dureeH*300)+(nbComps*80)+(nbActs*120);
+  let docs=[];
+  let totalWords=wordsBase;
+
+  // Dossier élève
+  if(hasEleve){
+    const w=600+(nb*dureeH*250)+(nbComps*60);
+    totalWords+=w;
+    docs.push('Dossier Élève (~'+Math.round(w/400)+' p.)');
+  }
+  // Dossier enseignant
+  if(hasEnseignant){
+    const w=400+(nb*200);
+    totalWords+=w;
+    docs.push('Dossier Enseignant (~'+Math.round(w/400)+' p.)');
+  }
+  if(hasH5p){totalWords+=300; docs.push('Contenu H5P');}
+  if(hasPronote){totalWords+=200; docs.push('QCM Pronote');}
+  if(hasLudic){totalWords+=400; docs.push('Activité ludique + cartes');}
+
+  const pages=Math.round(totalWords/400);
+  const tokens=Math.round(totalWords*1.4);
+
+  const el=document.getElementById('output-estimate');
+  const det=document.getElementById('estimate-detail');
+  el.style.display='block';
+
+  let html='<span style="color:var(--gn);font-weight:600">~'+pages+' pages Word</span> estimées · ~'+tokens.toLocaleString('fr-FR')+' tokens générés';
+  if(docs.length) html+='<br><span style="color:var(--ink-mu)">Documents : '+docs.join(', ')+'</span>';
+  html+='<br><span style="color:var(--ink-mu);font-size:11px">Estimation indicative selon '+nb+' séance'+(nb>1?'s':'')+' de '+duree+', '+nbComps+' compétence'+(nbComps>1?'s':'')+' sélectionnée'+(nbComps>1?'s':'')+(nbActs?' et '+nbActs+' type'+(nbActs>1?'s':'')+" d'activité":'')+'.</span>';
+  det.innerHTML=html;
 }
 
 function generatePrompt(){
@@ -2575,6 +2682,7 @@ function generatePrompt(){
   document.getElementById('s-prompt').classList.remove('hidden');
   document.getElementById('btn-copy').disabled=false;
   renderPromptPreview(S.prompt);
+  computeEstimate();
   document.getElementById('s-prompt').scrollIntoView({behavior:'smooth'});
 }
 
