@@ -105,8 +105,6 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
     <p>CAP EPC · 2nde MRC · BAC PRO MCVA · BAC PRO MCVB · BAC PRO MA — Conception : Olivier NUGUET</p>
   </div>
   <div style="display:flex;gap:8px;align-items:center;flex-shrink:0">
-    <div style="font-size:11px;color:var(--ink-mu)">Clé API :</div>
-    <input type="password" id="api-key" placeholder="sk-ant-..." style="width:180px;font-size:12px;padding:6px 9px">
     <button class="btn sm" onclick="resetAll()">↺ Réinitialiser</button>
   </div>
 </header>
@@ -1815,15 +1813,11 @@ const CUR={
 
 let S={ref:'',niv:'',comp:{},openBlocs:{},sw:{eleve:false,enseignant:false,h5p:false,pronote:false,ludic:false},pdiff:'intermediaire',prob:'',prompt:'',files:[]};
 
-function getApiKey(){return document.getElementById('api-key').value.trim();}
-
 async function callClaude(prompt){
-  const key=getApiKey();
-  if(!key){alert('Veuillez saisir votre clé API Anthropic en haut de page (sk-ant-...).');return null;}
-  const resp=await fetch('https://api.anthropic.com/v1/messages',{
+  const resp=await fetch('/api/claude',{
     method:'POST',
-    headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},
-    body:JSON.stringify({model:'claude-opus-4-6',max_tokens:2048,messages:[{role:'user',content:prompt}]})
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:2048,messages:[{role:'user',content:prompt}]})
   });
   if(!resp.ok){const e=await resp.json();throw new Error(e.error?.message||'Erreur API');}
   const data=await resp.json();
