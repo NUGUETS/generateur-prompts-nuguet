@@ -231,6 +231,10 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
     <div class="dz-sub">TXT, MD, PDF — contenu extrait et intégré au prompt</div>
   </div>
   <input type="file" id="file-input" multiple accept=".txt,.md,.pdf" style="display:none" onchange="handleFiles(this.files)">
+  <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
+    <input type="text" id="url-input" placeholder="https://... — coller une URL pour extraire le contenu" style="flex:1;padding:8px 10px;border:1.5px solid var(--ru);border-radius:var(--r);background:var(--cr);color:var(--ink);font-size:13px;outline:none" onkeydown="if(event.key==='Enter')addUrl()">
+    <button onclick="addUrl()" style="padding:8px 14px;background:var(--bl);color:#fff;border:none;border-radius:var(--r);font-size:13px;cursor:pointer;white-space:nowrap">Ajouter l'URL</button>
+  </div>
   <div id="file-list" class="file-list"></div>
   <div id="file-loader" class="ld hidden"><div class="sp"></div> Lecture...</div>
 </div>
@@ -719,11 +723,44 @@ const CUR={
 ],sc:"Vous êtes un(e) employé(e) commercial(e) polyvalent(e) dans une enseigne de grande distribution. Votre tuteur vous confie des missions variées : réception des marchandises, mise en rayon, conseil client et encaissement."},
 '2nde-mrc':{name:'2nde MRC',niveaux:[
   {id:'2-mrc',name:'Seconde MRC',competences:[
-    {id:'c1',name:'Intégrer la relation client dans un cadre omnicanal',savoirs:[{id:'s1',name:"Gérer simultanément les activités"},{id:'s2',name:"Prendre contact avec le public"},{id:'s3',name:"Identifier et traiter la demande"},{id:'s4',name:"Repérer les caractéristiques du public"},{id:'s5',name:"Intégrer l'omnicanal dans le processus de vente"},{id:'s6',name:"S'adapter au contexte commercial et au comportement du client"},{id:'s7',name:"Découvrir, identifier et reformuler les besoins du client"},{id:'s8',name:"Conseiller le client en proposant la solution adaptée"},{id:'s9',name:"Proposer les produits et/ou services associés"},{id:'s10',name:"Effectuer des ventes au rebond"}]},
-    {id:'c2',name:'Assurer le suivi de la relation client',savoirs:[{id:'s1',name:"Identifier les prestations inhérentes aux activités d'accueil"},{id:'s2',name:"Assurer le suivi d'une prestation"},{id:'s3',name:"Suivre l'évolution de la commande et du règlement"},{id:'s4',name:"Identifier et proposer une solution aux problèmes du client"},{id:'s5',name:"Collecter les informations de satisfaction"},{id:'s6',name:"Sélectionner et mettre en œuvre les outils de fidélisation"}]},
-    {id:'c3',name:"Collecter et exploiter l'information",savoirs:[{id:'s1',name:"Repérer les sources d'information"},{id:'s2',name:"Actualiser une base de données"},{id:'s3',name:"Rendre compte de l'activité"},{id:'s4',name:"Collecter et identifier les motifs de satisfaction et d'insatisfaction"},{id:'s5',name:"Traiter les messages et/ou les demandes des clients"},{id:'s6',name:"Analyser les données (recueillir, extraire, exploiter, synthétiser)"}]}
+    {id:'META1',name:'META-COMPÉTENCE 1 — Intégrer la relation client dans un cadre omnicanal',savoirs:[
+      {id:'M1-MA-1',name:'[MA] Gérer simultanément les activités'},
+      {id:'M1-MA-2',name:'[MA] Prendre contact avec le public'},
+      {id:'M1-MA-3',name:'[MA] Identifier la demande'},
+      {id:'M1-MA-4',name:'[MA] Traiter la demande'},
+      {id:'M1-MA-5',name:'[MA] Contribuer au développement de la relation commerciale — Repérer les caractéristiques du public'},
+      {id:'M1-MCVA-1',name:'[MCVA] Réaliser la vente dans un cadre omnicanal — Prendre contact | Identifier les besoins | Identifier le client et repérer ses caractéristiques | Proposer une solution adaptée au parcours client'},
+      {id:'M1-MCVA-2',name:'[MCVA] Contribuer à des actions de fidélisation — Effectuer des ventes au rebond'},
+      {id:'M1-MCVA-3',name:'[MCVA] Rendre l\'unité commerciale attractive — Accueillir, informer et orienter le client'},
+      {id:'M1-MCVA-4',name:'[MCVA] Développer la clientèle — Proposer des actions génératrices de trafic | Sélectionner les gammes de produits | Recourir aux sites marchands et réseaux sociaux | Inciter à l\'achat'},
+      {id:'M1-MCVB-1',name:'[MCVB] Mettre en œuvre une opération de prospection — Établir le contact avec le prospect | Identifier les besoins du prospect | Argumenter'}
+    ]},
+    {id:'META2',name:'META-COMPÉTENCE 2 — Assurer le suivi de la relation client',savoirs:[
+      {id:'M2-MA-1',name:'[MA] Gérer des prestations internes et externes — Identifier les prestations | Formaliser une demande/offre | Assurer le suivi d\'une prestation'},
+      {id:'M2-MA-2',name:'[MA] Contribuer au développement de la relation commerciale — Identifier les supports utiles'},
+      {id:'M2-MA-3',name:'[MA] Satisfaire et fidéliser — Construire avec le public la solution adaptée | Contribuer à la satisfaction et à la fidélisation'},
+      {id:'M2-MA-4',name:'[MA] Gérer les réclamations — Recueillir les réclamations'},
+      {id:'M2-MCVA-1',name:'[MCVA] Assurer le suivi de la commande — Suivre l\'évolution de la commande | Informer le client des délais'},
+      {id:'M2-MCVA-2',name:'[MCVA] Mettre en œuvre les services associés — Sélectionner le prestataire | Suivre l\'exécution du service | Effectuer les relances'},
+      {id:'M2-MCVA-3',name:'[MCVA] Traiter les retours et réclamations — Identifier le(s) problème(s) | Proposer une solution adaptée'},
+      {id:'M2-MCVA-4',name:'[MCVA] S\'assurer de la satisfaction — Collecter les informations de satisfaction'},
+      {id:'M2-MCVA-5',name:'[MCVA] Fidélisation — Sélectionner et mettre en œuvre les outils de fidélisation | Concourir à la préparation d\'événements | Participer à la mise en œuvre des événements'},
+      {id:'M2-MCVA-6',name:'[MCVA] Assurer les opérations préalables à la vente — Établir les commandes fournisseurs | Préparer les commandes clients omnicanal | Réceptionner, contrôler et stocker | Effectuer les relances et préparer les retours fournisseurs'},
+      {id:'M2-MCVB-1',name:'[MCVB] Valoriser les produits et/ou services — Mettre en valeur l\'offre dans un salon, showroom, espace éphémère, sites marchands, réseaux sociaux'}
+    ]},
+    {id:'META3',name:'META-COMPÉTENCE 3 — Collecter et exploiter l\'information dans le cadre de la relation client',savoirs:[
+      {id:'M3-MA-1',name:'[MA] Gérer l\'information — Repérer les sources | Contrôler l\'information | Actualiser une base de données | Sélectionner l\'information utile | Mutualiser l\'information | Rendre compte de l\'activité'},
+      {id:'M3-MA-2',name:'[MA] Satisfaire et fidéliser — Collecter et identifier les motifs de satisfaction et d\'insatisfaction'},
+      {id:'M3-MCVA-1',name:'[MCVA] Assurer la veille commerciale — Rechercher, hiérarchiser, exploiter et actualiser les informations'},
+      {id:'M3-MCVA-2',name:'[MCVA] Mettre en œuvre les services associés — Collecter et transmettre les informations au service de l\'entreprise'},
+      {id:'M3-MCVA-3',name:'[MCVA] Traiter et exploiter l\'information ou le contact client — Traiter les messages/demandes clients | Recueillir, extraire, exploiter, synthétiser les données sources internes | Recueillir, extraire, exploiter, synthétiser les données sources externes | Rendre compte des données appropriées'},
+      {id:'M3-MCVA-4',name:'[MCVA] S\'assurer de la satisfaction — Transmettre les informations sur la satisfaction | Diffuser l\'information'},
+      {id:'M3-MCVA-5',name:'[MCVA] Assurer les opérations préalables à la vente — Enrichir et exploiter le système d\'information commercial'},
+      {id:'M3-MCVB-1',name:'[MCVB] Rechercher et analyser les informations — Identifier les infos internes SIC | Collecter, traiter, analyser les informations externes | Mettre à jour le SIC'},
+      {id:'M3-MCVB-2',name:'[MCVB] Mettre en œuvre une opération de prospection — Construire et/ou mettre à jour le fichier prospects'}
+    ]}
   ]}
-],sc:"Vous êtes en stage dans une entreprise possédant un magasin physique et un site e-commerce. Affecté(e) au pôle Relation Client, vous répondez aux demandes clients en face à face, par téléphone et par e-mail."},
+],sc:"Vous êtes en stage dans une structure commerciale (commerce, vente ou accueil). Votre tuteur vous confie des missions en lien avec la relation client, le suivi des ventes et la collecte d\'informations. Vous intervenez dans un contexte omnicanal (en face à face, par téléphone, par e-mail et via les outils numériques)."},
 'bac-ma':{name:'BAC PRO MA',niveaux:[
   {id:'ma-1',name:'1ère BAC PRO MA',competences:[
     {id:'ma-b1',name:"Bloc 1 — Gérer l'accueil multicanal à des fins d'information, d'orientation et de conseil",competencesPrincipales:[
@@ -2091,6 +2128,29 @@ function handleFiles(files){
   });
 }
 function addFile(name,size,content){S.files.push({name,size,content});renderFileList();}
+async function addUrl(){
+  const input=document.getElementById('url-input');
+  const url=input.value.trim();
+  if(!url||!url.startsWith('http'))return;
+  if(S.files.find(f=>f.name===url))return;
+  input.value='';
+  document.getElementById('file-loader').classList.remove('hidden');
+  try{
+    const proxyUrl='https://api.allorigins.win/get?url='+encodeURIComponent(url);
+    const resp=await fetch(proxyUrl);
+    const data=await resp.json();
+    const html=data.contents||'';
+    const tmp=document.createElement('div');
+    tmp.innerHTML=html;
+    ['script','style','nav','header','footer','aside'].forEach(t=>{tmp.querySelectorAll(t).forEach(el=>el.remove());});
+    const text=(tmp.innerText||tmp.textContent||'').replace(/\s{3,}/g,'\n\n').trim();
+    const label=url.replace(/^https?:\/\//,'').substring(0,60);
+    addFile(label,text.length,text||'[Page sans contenu textuel extractible]');
+  }catch(err){
+    addFile(url.substring(0,60),0,'[Erreur extraction URL : '+err.message+']');
+  }
+  document.getElementById('file-loader').classList.add('hidden');
+}
 function removeFile(name){S.files=S.files.filter(f=>f.name!==name);renderFileList();}
 function renderFileList(){
   const list=document.getElementById('file-list');list.innerHTML='';
