@@ -94,8 +94,69 @@ textarea{resize:vertical;min-height:80px;line-height:1.5}
 .footer{font-size:11px;color:var(--ink-mu);text-align:center;margin-top:30px;padding-top:14px;border-top:1px solid var(--ru);line-height:1.9}
 @media(max-width:580px){.g2,.g3{grid-template-columns:1fr}.cbg{grid-template-columns:1fr}.app-header{padding:12px 14px;flex-direction:column;align-items:flex-start}.main{padding:14px 10px 40px}}
 </style>
+<style>
+/* ── Écran de connexion ── */
+#login-screen{position:fixed;inset:0;background:var(--cr);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-box{background:var(--white);border:1px solid var(--ru);border-radius:8px;padding:40px 36px;width:100%;max-width:380px;text-align:center}
+.login-box h2{font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.login-box h2 em{font-style:italic;color:var(--gn)}
+.login-box p{font-size:12px;color:var(--ink-mu);margin-bottom:28px}
+.login-box label{display:block;font-size:12px;font-weight:500;color:var(--ink-m);text-align:left;margin-bottom:5px}
+.login-box input[type=password]{width:100%;padding:10px 12px;font-size:14px;border:1.5px solid var(--ru);border-radius:var(--r);background:var(--cr);color:var(--ink);outline:none;transition:border .15s;margin-bottom:16px}
+.login-box input[type=password]:focus{border-color:var(--gn)}
+.login-btn{width:100%;padding:11px;background:var(--gn);color:#fff;border:none;border-radius:var(--r);font-size:14px;font-weight:500;cursor:pointer;transition:background .15s}
+.login-btn:hover{background:var(--gn-m)}
+.login-error{font-size:12px;color:#c0392b;margin-top:10px;min-height:18px}
+.login-footer{font-size:10px;color:var(--ink-mu);margin-top:24px}
+</style>
 </head>
 <body>
+
+<!-- ── Écran de connexion ── -->
+<div id="login-screen">
+  <div class="login-box">
+    <h2>Générateur de <em>prompts</em></h2>
+    <p>Accès réservé — Lycée Max Joséphine</p>
+    <label for="pwd-input">Mot de passe</label>
+    <input type="password" id="pwd-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkLogin()">
+    <button class="login-btn" onclick="checkLogin()">Accéder à l'application</button>
+    <div class="login-error" id="login-error"></div>
+    <div class="login-footer">O. NUGUET — Académie de Guyane</div>
+  </div>
+</div>
+<script>
+// Hash SHA-256 du mot de passe (côté client)
+// Mot de passe par défaut : ProNuguet2024
+// Pour changer : générer le hash SHA-256 du nouveau mot de passe et remplacer la constante PWD_HASH
+const PWD_HASH='f29b2a6a36a1fd4addbcfd6d376ffd8a89870ecad6aa24b40f18b844f180a559';
+// ↑ Ce hash correspond à : ProNuguet2024
+// Pour régénérer : https://emn178.github.io/online-tools/sha256.html
+
+async function sha256(str){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function checkLogin(){
+  const val=document.getElementById('pwd-input').value;
+  if(!val){document.getElementById('login-error').textContent='Veuillez saisir un mot de passe.';return;}
+  const h=await sha256(val);
+  if(h===PWD_HASH){
+    document.getElementById('login-screen').style.display='none';
+    sessionStorage.setItem('app-auth','1');
+  } else {
+    document.getElementById('login-error').textContent='Mot de passe incorrect.';
+    document.getElementById('pwd-input').value='';
+    document.getElementById('pwd-input').focus();
+  }
+}
+// Vérifier si déjà authentifié dans cette session de navigation
+if(sessionStorage.getItem('app-auth')==='1'){
+  document.addEventListener('DOMContentLoaded',()=>{
+    const s=document.getElementById('login-screen');
+    if(s)s.style.display='none';
+  });
+}
+</script>
 
 <!-- Résultat Claude affiché directement dans le formulaire -->
 
